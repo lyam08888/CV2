@@ -372,6 +372,7 @@
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content"><i class="fa-solid fa-file-lines mr-1"></i> Contenu & Sections</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout"><i class="fa-solid fa-columns mr-1"></i> Design & Styles</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-banner"><i class="fa-solid fa-user-tie mr-1"></i> Bannière</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-settings"><i class="fa-solid fa-cog mr-1"></i> Paramètres</button>
             </div>
 
             <div id="tab-content" class="py-4 flex-grow overflow-y-auto">
@@ -599,6 +600,73 @@
                         </div>
                     </details>
                 </div>
+
+                <!-- TAB: PARAMÈTRES -->
+                <div id="panel-settings" class="tab-panel hidden space-y-4">
+                    <details class="control-group" open>
+                        <summary><span>Actions CV</span><label class="completion-label"><input type="checkbox" id="completion-actions" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <button id="pdf-btn" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-pdf"></i> Générer PDF
+                            </button>
+                            <button id="share-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-share"></i> Partager
+                            </button>
+                            <button id="anonymize-btn" class="w-full bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-user-secret"></i> Anonymiser le CV
+                            </button>
+                            <button id="new-cv-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Nouveau CV
+                            </button>
+                        </div>
+                    </details>
+
+                    <details class="control-group" open>
+                        <summary><span>Intelligence Artificielle</span><label class="completion-label"><input type="checkbox" id="completion-api" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div>
+                                <label for="api-key-input" class="block text-sm font-medium text-gray-700">Clé API OpenAI</label>
+                                <div class="flex gap-2 mt-1">
+                                    <input type="password" id="api-key-input" placeholder="sk-..." class="flex-1 p-2 border rounded-md text-sm" />
+                                    <button id="save-api-key-btn" class="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 text-sm">
+                                        <i class="fa-solid fa-save"></i>
+                                    </button>
+                                    <button id="show-api-key-btn" class="bg-gray-600 text-white px-3 py-2 rounded-md hover:bg-gray-700 text-sm">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">La clé sera sauvegardée localement dans votre navigateur</p>
+                            </div>
+                            <button id="test-api-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-flask"></i> Tester l'API
+                            </button>
+                            <div class="border-t pt-3">
+                                <p class="text-sm font-medium text-gray-700 mb-2">Actions IA Avancées</p>
+                                <button id="ai-analyze-fill-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center gap-2 mb-2">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Analyser et Remplir
+                                </button>
+                                <button id="ai-summary-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2 mb-2">
+                                    <i class="fa-solid fa-file-text"></i> Synthèse IA
+                                </button>
+                                <button id="ai-email-btn" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-envelope"></i> Générer Mail
+                                </button>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="control-group" open>
+                        <summary><span>Outils Avancés</span><label class="completion-label"><input type="checkbox" id="completion-tools" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <button id="overflow-detection-btn" class="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-exclamation-triangle"></i> Détection Dépassement
+                            </button>
+                            <button id="presentation-mode-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-desktop"></i> Mode Présentation
+                            </button>
+                        </div>
+                    </details>
+                </div>
             </div>
 
         </div>
@@ -730,6 +798,19 @@
                 fontFamilyH1Select: document.getElementById('font-family-h1-select'),
                 fontFamilyH2Select: document.getElementById('font-family-h2-select'),
                 fontFamilyBodySelect: document.getElementById('font-family-body-select'),
+                // Nouveaux contrôles Paramètres
+                pdfBtn: document.getElementById('pdf-btn'),
+                shareBtn: document.getElementById('share-btn'),
+                newCvBtn: document.getElementById('new-cv-btn'),
+                apiKeyInput: document.getElementById('api-key-input'),
+                saveApiKeyBtn: document.getElementById('save-api-key-btn'),
+                showApiKeyBtn: document.getElementById('show-api-key-btn'),
+                testApiBtn: document.getElementById('test-api-btn'),
+                aiAnalyzeFillBtn: document.getElementById('ai-analyze-fill-btn'),
+                aiSummaryBtn: document.getElementById('ai-summary-btn'),
+                aiEmailBtn: document.getElementById('ai-email-btn'),
+                overflowDetectionBtn: document.getElementById('overflow-detection-btn'),
+                presentationModeBtn: document.getElementById('presentation-mode-btn'),
                 shareBtn: document.getElementById('share-btn'), shareModal: document.getElementById('share-modal'), closeShareModal: document.getElementById('close-share-modal'), shareLinkInput: document.getElementById('share-link-input'), copyShareLinkBtn: document.getElementById('copy-share-link-btn'),
                 iconPickerModal: document.getElementById('icon-picker-modal'), closeIconPickerModal: document.getElementById('close-icon-picker-modal'), iconPickerGrid: document.getElementById('icon-picker-grid'), iconSearchInput: document.getElementById('icon-search-input'),
                 addPageBtn: document.getElementById('add-page-btn'),
@@ -2229,7 +2310,175 @@
                 controls.modularBannerBtn.addEventListener('click', () => moveBannerTo('modular'));
                 controls.addSkillLevelBtn.addEventListener('click', () => createSkillLevelItem());
 
+                // Gestionnaires d'événements pour l'onglet Paramètres
+                controls.pdfBtn.addEventListener('click', () => generatePDF());
+                controls.shareBtn.addEventListener('click', () => shareCV());
+                controls.newCvBtn.addEventListener('click', () => createNewCV());
+                controls.saveApiKeyBtn.addEventListener('click', () => saveApiKey());
+                controls.showApiKeyBtn.addEventListener('click', () => toggleApiKeyVisibility());
+                controls.testApiBtn.addEventListener('click', () => testApiConnection());
+                controls.aiAnalyzeFillBtn.addEventListener('click', () => aiAnalyzeAndFill());
+                controls.aiSummaryBtn.addEventListener('click', () => generateAISummary());
+                controls.aiEmailBtn.addEventListener('click', () => generateAIEmail());
+                controls.overflowDetectionBtn.addEventListener('click', () => toggleOverflowDetection());
+                controls.presentationModeBtn.addEventListener('click', () => togglePresentationMode());
+
+                // Charger la clé API sauvegardée au démarrage
+                loadSavedApiKey();
+
                 document.querySelectorAll('.a4-page').forEach(setupOverflowObserver);
+            }
+
+            // --- FONCTIONS PARAMÈTRES ---
+            
+            function generatePDF() {
+                // Réutilise la fonction PDF existante
+                if (controls.downloadPdfBtn) {
+                    controls.downloadPdfBtn.click();
+                } else {
+                    showNotification('Génération PDF en cours...', 'info');
+                    // Code de génération PDF existant
+                    const element = document.getElementById('cv-preview-wrapper');
+                    const opt = {
+                        margin: 0,
+                        filename: 'CV.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true },
+                        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                    };
+                    html2pdf().set(opt).from(element).save();
+                }
+            }
+
+            function shareCV() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Mon CV',
+                        text: 'Voici mon CV créé avec le générateur IA',
+                        url: window.location.href
+                    }).catch(err => console.log('Erreur de partage:', err));
+                } else {
+                    // Fallback: copier le lien
+                    navigator.clipboard.writeText(window.location.href).then(() => {
+                        showNotification('Lien copié dans le presse-papiers !', 'success');
+                    }).catch(() => {
+                        showNotification('Impossible de copier le lien', 'error');
+                    });
+                }
+            }
+
+            function createNewCV() {
+                if (confirm('Êtes-vous sûr de vouloir créer un nouveau CV ? Toutes les données actuelles seront perdues.')) {
+                    localStorage.removeItem('cv-data');
+                    location.reload();
+                }
+            }
+
+            function saveApiKey() {
+                const apiKey = controls.apiKeyInput.value.trim();
+                if (apiKey) {
+                    localStorage.setItem('openai-api-key', apiKey);
+                    showNotification('Clé API sauvegardée !', 'success');
+                    controls.apiKeyInput.type = 'password';
+                } else {
+                    showNotification('Veuillez saisir une clé API', 'error');
+                }
+            }
+
+            function loadSavedApiKey() {
+                const savedKey = localStorage.getItem('openai-api-key');
+                if (savedKey && controls.apiKeyInput) {
+                    controls.apiKeyInput.value = savedKey;
+                }
+            }
+
+            function toggleApiKeyVisibility() {
+                if (controls.apiKeyInput.type === 'password') {
+                    controls.apiKeyInput.type = 'text';
+                    controls.showApiKeyBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+                } else {
+                    controls.apiKeyInput.type = 'password';
+                    controls.showApiKeyBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+                }
+            }
+
+            async function testApiConnection() {
+                const apiKey = controls.apiKeyInput.value.trim() || localStorage.getItem('openai-api-key');
+                if (!apiKey) {
+                    showNotification('Veuillez d\'abord saisir une clé API', 'error');
+                    return;
+                }
+
+                showNotification('Test de connexion en cours...', 'info');
+                
+                try {
+                    const response = await fetch('https://api.openai.com/v1/models', {
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        showNotification('Connexion API réussie !', 'success');
+                    } else {
+                        showNotification('Erreur de connexion API', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Erreur de réseau', 'error');
+                }
+            }
+
+            function aiAnalyzeAndFill() {
+                // Réutilise la fonction d'analyse existante
+                if (controls.analyzeBtn) {
+                    controls.analyzeBtn.click();
+                } else {
+                    showNotification('Fonction d\'analyse non disponible', 'error');
+                }
+            }
+
+            function generateAISummary() {
+                // Réutilise la fonction de synthèse existante
+                if (controls.aiSummarizeBtn) {
+                    controls.aiSummarizeBtn.click();
+                } else {
+                    showNotification('Fonction de synthèse non disponible', 'error');
+                }
+            }
+
+            function generateAIEmail() {
+                // Réutilise la fonction de génération d'email existante
+                if (controls.generateMailBtn) {
+                    controls.generateMailBtn.click();
+                } else {
+                    showNotification('Fonction de génération d\'email non disponible', 'error');
+                }
+            }
+
+            function toggleOverflowDetection() {
+                // Réutilise la fonction de détection de dépassement existante
+                if (controls.toggleOverflowBtn) {
+                    controls.toggleOverflowBtn.click();
+                } else {
+                    document.body.classList.toggle('overflow-check-active');
+                    const isActive = document.body.classList.contains('overflow-check-active');
+                    controls.overflowDetectionBtn.innerHTML = isActive ? 
+                        '<i class="fa-solid fa-eye-slash"></i> Arrêter Détection' : 
+                        '<i class="fa-solid fa-exclamation-triangle"></i> Détection Dépassement';
+                    showNotification(isActive ? 'Détection activée' : 'Détection désactivée', 'info');
+                }
+            }
+
+            function togglePresentationMode() {
+                // Réutilise la fonction de mode présentation existante
+                if (controls.togglePresentationModeBtn) {
+                    controls.togglePresentationModeBtn.click();
+                } else {
+                    document.body.classList.toggle('presentation-mode');
+                    const isActive = document.body.classList.contains('presentation-mode');
+                    showNotification(isActive ? 'Mode présentation activé' : 'Mode présentation désactivé', 'info');
+                }
             }
             
             // --- START THE APP ---
