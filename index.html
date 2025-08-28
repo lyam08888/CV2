@@ -167,8 +167,7 @@
             ring: #4f46e5;
         }
         
-        #ai-summarize-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background-color: #2563eb; color: white; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 24px; z-index: 999; transition: transform 0.2s ease-in-out; }
-        #ai-summarize-btn:hover { transform: scale(1.1); }
+
 
         /* --- Specific styles for skills section --- */
         #cv-competences-preview h3.skill-category { font-family: var(--font-family-h2); font-weight: 700; color: var(--secondary-color); margin-top: 0.8rem; margin-bottom: 0.4rem; padding-bottom: 0.2rem; border-bottom: 1px solid #e5e7eb; font-size: calc(var(--font-size-p) * 1.05); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -275,7 +274,6 @@
         }
         body.presentation-mode .column-resizer,
         body.presentation-mode .drag-handle,
-        body.presentation-mode #ai-summarize-btn,
         body.presentation-mode .remove-page-btn,
         body.presentation-mode #add-page-btn-wrapper,
         body.presentation-mode .section-ai-actions,
@@ -330,7 +328,7 @@
     </div>
 
     <div id="notification"></div>
-    <button id="ai-summarize-btn" title="Synthèse IA des expériences (5 lignes max)" class="no-print"><i class="fas fa-compress-arrows-alt"></i></button>
+
 
     <div class="flex flex-col lg:flex-row min-h-screen">
         <!-- CONTROLS PANEL -->
@@ -352,19 +350,6 @@
                 </div>
                 <p id="progress-text" class="text-xs text-right text-gray-500 mt-1">0/X sections complétées</p>
             </div>
-
-            <!-- Actions Rapides -->
-            <div class="space-y-2 mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200 flex-shrink-0">
-                 <div class="grid grid-cols-2 gap-2">
-                      <button id="download-pdf-btn" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900 flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> PDF</button>
-                      <button id="share-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"><i class="fa-solid fa-share-alt"></i> Partager</button>
-                 </div>
-                 <button id="anonymize-btn" class="w-full bg-slate-500 text-white py-2 px-4 rounded-md hover:bg-slate-600 flex items-center justify-center gap-2"><i class="fa-solid fa-user-secret"></i>Anonymiser le CV</button>
-                 <button id="reset-cv-btn" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 flex items-center justify-center gap-2"><i class="fa-solid fa-file-circle-plus"></i> Nouveau CV</button>
-                 <button id="toggle-overflow-btn" class="w-full bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 flex items-center justify-center gap-2"><i class="fa-solid fa-ruler-combined"></i> Détection Dépassement</button>
-                 <button id="toggle-presentation-mode-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center gap-2 mt-2"><i class="fa-solid fa-eye"></i> Mode Présentation</button>
-            </div>
-
 
             <!-- TABS -->
             <div id="tab-navigation" class="flex flex-wrap -mb-px border-b border-gray-200">
@@ -393,6 +378,14 @@
                             <input type="text" id="qualification-loc" placeholder="Localisation" class="cv-input w-full p-2 border rounded-md">
                             <button id="generate-mail-btn" class="mt-2 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"><i class="fas fa-wand-magic-sparkles"></i> Générer le mail</button>
                             <textarea id="recruiter-mail-content" rows="8" class="cv-input w-full p-2 border rounded-md mt-2" placeholder="Le mail de présentation apparaîtra ici..."></textarea>
+                        </div>
+                    </details>
+                    <details class="control-group" open>
+                        <summary><span>Actions IA</span><label class="completion-label"><input type="checkbox" id="completion-ia-actions" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-2">
+                            <button id="ai-summarize-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 flex items-center justify-center gap-2"><i class="fas fa-compress-arrows-alt"></i> Synthèse IA des expériences</button>
+                            <button id="ai-synthesize-skills-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2"><i class="fas fa-magic-wand-sparkles"></i> Synthétiser les compétences</button>
+                            <button id="ai-limit-skills-btn" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 flex items-center justify-center gap-2"><i class="fas fa-filter"></i> Limiter les compétences</button>
                         </div>
                     </details>
                 </div>
@@ -768,11 +761,9 @@
                 fixBannerTopBtn: document.getElementById('fix-banner-top-btn'), fixBannerBottomBtn: document.getElementById('fix-banner-bottom-btn'), modularBannerBtn: document.getElementById('modular-banner-btn'),
                 qualificationDispo: document.getElementById('qualification-dispo'), qualificationSalaire: document.getElementById('qualification-salaire'), qualificationLoc: document.getElementById('qualification-loc'),
                 generateMailBtn: document.getElementById('generate-mail-btn'), recruiterMailContent: document.getElementById('recruiter-mail-content'),
-                anonymizeBtn: document.getElementById('anonymize-btn'), downloadPdfBtn: document.getElementById('download-pdf-btn'),
-                resetCvBtn: document.getElementById('reset-cv-btn'),
-                togglePresentationModeBtn: document.getElementById('toggle-presentation-mode-btn'),
-                toggleOverflowBtn: document.getElementById('toggle-overflow-btn'),
+                resetCvBtn: document.getElementById('new-cv-btn'), // Nouveau bouton dans Paramètres
                 aiSummarizeBtn: document.getElementById('ai-summarize-btn'),
+                aiSynthesizeSkillsBtn: document.getElementById('ai-synthesize-skills-btn'),
                 resetRecruiterBtn: document.getElementById('reset-recruiter-btn'),
                 aiLimitSkillsBtn: document.getElementById('ai-limit-skills-btn'),
                 pageMargin: document.getElementById('page-margin'), pageMarginValue: document.getElementById('page-margin-value'),
@@ -2191,105 +2182,14 @@
                     }
                 });
 
-                controls.downloadPdfBtn.addEventListener('click', async () => {
-                    const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
-                    document.body.classList.add('presentation-mode');
-
-                    const bannerImg = preview.bannerImg;
-                    const bannerBg = preview.bannerBgImg;
-                    const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
-                    const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
-
-                    const processImage = async (imgElement, isCircle = false) => {
-                        if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
-
-                        const img = new Image();
-                        img.crossOrigin = "anonymous";
-                        
-                        const promise = new Promise((resolve) => {
-                            img.onload = () => {
-                                const canvas = document.createElement('canvas');
-                                const ctx = canvas.getContext('2d');
-                                const size = Math.min(img.naturalWidth, img.naturalHeight);
-                                canvas.width = isCircle ? size : img.naturalWidth;
-                                canvas.height = isCircle ? size : img.naturalHeight;
-
-                                if (isCircle) {
-                                    ctx.beginPath();
-                                    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-                                    ctx.clip();
-                                }
-                                
-                                const hRatio = canvas.width / img.naturalWidth;
-                                const vRatio = canvas.height / img.naturalHeight;
-                                const ratio = Math.max(hRatio, vRatio);
-                                const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-                                const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
-                                
-                                const opacity = imgElement.style.opacity || '1';
-                                const filter = imgElement.style.filter || 'none';
-                                ctx.globalAlpha = parseFloat(opacity);
-                                ctx.filter = filter;
-                                
-                                ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
-
-                                imgElement.src = canvas.toDataURL('image/png');
-                                imgElement.style.borderRadius = '0';
-                                imgElement.style.objectFit = 'contain';
-                                imgElement.style.filter = 'none';
-                                imgElement.style.opacity = '1';
-                                resolve();
-                            };
-                            img.onerror = () => {
-                                console.error("Could not load image for PDF processing:", imgElement.src);
-                                resolve(); // Resolve anyway to not block PDF generation
-                            };
-                        });
-                        img.src = imgElement.src;
-                        return promise;
-                    };
-                    
-                    await processImage(bannerImg, true);
-                    await processImage(bannerBg, false);
-
-                    const opt = {
-                        margin: 0,
-                        filename: filename,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, logging: false },
-                        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
-                    };
-
-                    html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
-                        bannerImg.src = originalBannerImg.src;
-                        bannerImg.style.cssText = originalBannerImg.style;
-                        bannerBg.src = originalBannerBg.src;
-                        bannerBg.style.cssText = originalBannerBg.style;
-                        document.body.classList.remove('presentation-mode');
-                    });
-                });
-
                 controls.resetCvBtn.addEventListener('click', async () => {
                     const confirmed = await showConfirmModal("Nouveau CV", "Êtes-vous sûr de vouloir réinitialiser complètement le CV ?");
                     if (confirmed) resetCVToDefault();
-                });
-                
-                controls.togglePresentationModeBtn.addEventListener('click', () => {
-                    document.body.classList.toggle('presentation-mode');
-                    const isActive = document.body.classList.contains('presentation-mode');
-                    controls.togglePresentationModeBtn.innerHTML = `<i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i> ${isActive ? 'Quitter Présentation' : 'Mode Présentation'}`;
-                });
-                
-                controls.toggleOverflowBtn.addEventListener('click', (e) => {
-                    document.body.classList.toggle('overflow-check-active');
-                    e.currentTarget.classList.toggle('active');
-                    checkAllPagesOverflow();
                 });
 
                 controls.aiSummarizeBtn.addEventListener('click', summarizeAllExperiencesAI);
                 controls.aiSynthesizeSkillsBtn.addEventListener('click', synthesizeSkillsWithAI);
                 controls.aiLimitSkillsBtn.addEventListener('click', limitSkillsWithAI);
-                controls.anonymizeBtn.addEventListener('click', anonymizeCV);
                 controls.resetRecruiterBtn.addEventListener('click', () => { setDefaultRecruiterInfo(); updatePreview('form'); });
                 controls.addPageBtn.addEventListener('click', () => addNewPage());
                 controls.removeBannerBgBtn.addEventListener('click', () => removeBannerBackground());
@@ -2332,22 +2232,83 @@
             // --- FONCTIONS PARAMÈTRES ---
             
             function generatePDF() {
-                // Réutilise la fonction PDF existante
-                if (controls.downloadPdfBtn) {
-                    controls.downloadPdfBtn.click();
-                } else {
-                    showNotification('Génération PDF en cours...', 'info');
-                    // Code de génération PDF existant
-                    const element = document.getElementById('cv-preview-wrapper');
+                const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
+                document.body.classList.add('presentation-mode');
+
+                const bannerImg = preview.bannerImg;
+                const bannerBg = preview.bannerBgImg;
+                const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
+                const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
+
+                const processImage = async (imgElement, isCircle = false) => {
+                    if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
+
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    
+                    const promise = new Promise((resolve) => {
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const size = Math.min(img.naturalWidth, img.naturalHeight);
+                            canvas.width = isCircle ? size : img.naturalWidth;
+                            canvas.height = isCircle ? size : img.naturalHeight;
+
+                            if (isCircle) {
+                                ctx.beginPath();
+                                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+                                ctx.clip();
+                            }
+                            
+                            const hRatio = canvas.width / img.naturalWidth;
+                            const vRatio = canvas.height / img.naturalHeight;
+                            const ratio = Math.max(hRatio, vRatio);
+                            const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
+                            const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
+                            
+                            const opacity = imgElement.style.opacity || '1';
+                            const filter = imgElement.style.filter || 'none';
+                            ctx.globalAlpha = parseFloat(opacity);
+                            ctx.filter = filter;
+                            
+                            ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
+
+                            imgElement.src = canvas.toDataURL('image/png');
+                            imgElement.style.borderRadius = '0';
+                            imgElement.style.objectFit = 'contain';
+                            imgElement.style.filter = 'none';
+                            imgElement.style.opacity = '1';
+                            resolve();
+                        };
+                        img.onerror = () => {
+                            console.error("Could not load image for PDF processing:", imgElement.src);
+                            resolve();
+                        };
+                    });
+                    img.src = imgElement.src;
+                    return promise;
+                };
+                
+                (async () => {
+                    await processImage(bannerImg, true);
+                    await processImage(bannerBg, false);
+
                     const opt = {
                         margin: 0,
-                        filename: 'CV.pdf',
+                        filename: filename,
                         image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true },
-                        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                        html2canvas: { scale: 2, useCORS: true, logging: false },
+                        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
                     };
-                    html2pdf().set(opt).from(element).save();
-                }
+
+                    html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
+                        bannerImg.src = originalBannerImg.src;
+                        bannerImg.style.cssText = originalBannerImg.style;
+                        bannerBg.src = originalBannerBg.src;
+                        bannerBg.style.cssText = originalBannerBg.style;
+                        document.body.classList.remove('presentation-mode');
+                    });
+                })();
             }
 
             function shareCV() {
