@@ -330,38 +330,9 @@
     </div>
 
     <div id="notification"></div>
+    <button id="ai-summarize-btn" title="Synthèse IA des expériences (5 lignes max)" class="no-print"><i class="fas fa-compress-arrows-alt"></i></button>
 
     <div class="flex flex-col lg:flex-row min-h-screen">
-        <!-- TOP BAR -->
-        <div class="w-full bg-white shadow-sm border-b border-gray-200 p-4 flex items-center justify-between flex-shrink-0 no-print">
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-chart-line text-blue-600"></i>
-                    <span id="progress-text-top" class="text-sm font-medium text-gray-600">0/X sections complétées</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button id="download-pdf-btn-top" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900 flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-download"></i> PDF
-                </button>
-                <button id="share-btn-top" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-share-alt"></i> Partager
-                </button>
-                <button id="anonymize-btn-top" class="bg-slate-500 text-white py-2 px-4 rounded-md hover:bg-slate-600 flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-user-secret"></i> Anonymiser
-                </button>
-                <button id="reset-cv-btn-top" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-file-circle-plus"></i> Nouveau CV
-                </button>
-                <button id="toggle-overflow-btn-top" class="bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-ruler-combined"></i> Détection
-                </button>
-                <button id="toggle-presentation-mode-btn-top" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-eye"></i> Présentation
-                </button>
-            </div>
-        </div>
-
         <!-- CONTROLS PANEL -->
         <div id="controls" class="w-full lg:w-1/3 xl:w-1/4 p-6 bg-white shadow-2xl overflow-y-auto flex flex-col no-print">
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
@@ -379,11 +350,11 @@
                 <div id="progress-bar-container" class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
                     <div id="progress-bar" class="bg-green-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
-                <p id="progress-text" class="text-xs text-right text-gray-500 mt-1 hidden">0/X sections complétées</p>
+                <p id="progress-text" class="text-xs text-right text-gray-500 mt-1">0/X sections complétées</p>
             </div>
 
             <!-- Actions Rapides -->
-            <div class="space-y-2 mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200 flex-shrink-0 hidden">
+            <div class="space-y-2 mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200 flex-shrink-0">
                  <div class="grid grid-cols-2 gap-2">
                       <button id="download-pdf-btn" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900 flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> PDF</button>
                       <button id="share-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"><i class="fa-solid fa-share-alt"></i> Partager</button>
@@ -409,11 +380,6 @@
             <div id="tab-content" class="py-4 flex-grow overflow-y-auto">
                 <!-- TAB: IA -->
                 <div id="panel-ia" class="tab-panel space-y-4">
-                    <div class="flex justify-end mb-2">
-                        <button id="api-settings-btn" class="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 flex items-center gap-2 text-sm">
-                            <i class="fa-solid fa-key"></i> API
-                        </button>
-                    </div>
                     <details class="control-group" open>
                         <summary><span>Analyse IA</span><label class="completion-label"><input type="checkbox" id="completion-ia-analyse" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-2">
@@ -422,11 +388,7 @@
                         </div>
                     </details>
                     <details class="control-group" open>
-                        <summary><span>Synthèse IA</span><label class="completion-label"><input type="checkbox" id="completion-ia-synthese" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-2">
-                            <button id="ai-summarize-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2"><i class="fas fa-compress-arrows-alt"></i> Synthétiser les expériences (5 lignes max)</button>
-                        </div>
-                    </details>
+                        <summary><span>Présentation Recruteur</span><label class="completion-label"><input type="checkbox" id="completion-ia-presentation" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
                             <input type="text" id="qualification-dispo" placeholder="Disponibilité" class="cv-input w-full p-2 border rounded-md">
                             <input type="text" id="qualification-salaire" placeholder="Prétentions salariales" class="cv-input w-full p-2 border rounded-md">
@@ -728,27 +690,6 @@
         </div>
     </div>
 
-    <div id="api-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h2 class="text-xl font-bold mb-4">Configuration API Gemini</h2>
-            <p class="text-sm text-gray-600 mb-4">Entrez votre clé API Gemini pour utiliser les fonctionnalités d'analyse et de génération.</p>
-            <div class="space-y-4">
-                <div>
-                    <label for="gemini-api-key" class="block text-sm font-medium text-gray-700 mb-2">Clé API Gemini</label>
-                    <input type="password" id="gemini-api-key" class="w-full p-2 border rounded-md" placeholder="Entrez votre clé API...">
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="save-api-key" class="cv-input">
-                    <label for="save-api-key" class="text-sm text-gray-600">Sauvegarder la clé dans le navigateur</label>
-                </div>
-            </div>
-            <div class="flex justify-end gap-4 mt-6">
-                <button id="api-modal-cancel" class="px-4 py-2 bg-gray-200 text-sm rounded-md hover:bg-gray-300">Annuler</button>
-                <button id="api-modal-save" class="px-4 py-2 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700">Sauvegarder</button>
-            </div>
-        </div>
-    </div>
-
     <script type="module">
         // This script is now self-contained and does not use Firebase for saving.
         
@@ -815,22 +756,7 @@
                     text: document.getElementById('confirm-modal-text'),
                     okBtn: document.getElementById('confirm-modal-ok-btn'),
                     cancelBtn: document.getElementById('confirm-modal-cancel-btn'),
-                },
-                // Top bar buttons
-                downloadPdfBtnTop: document.getElementById('download-pdf-btn-top'),
-                shareBtnTop: document.getElementById('share-btn-top'),
-                anonymizeBtnTop: document.getElementById('anonymize-btn-top'),
-                resetCvBtnTop: document.getElementById('reset-cv-btn-top'),
-                toggleOverflowBtnTop: document.getElementById('toggle-overflow-btn-top'),
-                togglePresentationModeBtnTop: document.getElementById('toggle-presentation-mode-btn-top'),
-                progressTextTop: document.getElementById('progress-text-top'),
-                // API modal
-                apiSettingsBtn: document.getElementById('api-settings-btn'),
-                apiModal: document.getElementById('api-modal'),
-                apiModalCancel: document.getElementById('api-modal-cancel'),
-                apiModalSave: document.getElementById('api-modal-save'),
-                geminiApiKey: document.getElementById('gemini-api-key'),
-                saveApiKey: document.getElementById('save-api-key')
+                }
             };
 
             // --- DYNAMIC SELECTORS ---
@@ -1827,11 +1753,9 @@
 
                 const progressBar = document.getElementById('progress-bar');
                 const progressText = document.getElementById('progress-text');
-                const progressTextTop = document.getElementById('progress-text-top');
 
                 if(progressBar) progressBar.style.width = `${percentage}%`;
                 if(progressText) progressText.textContent = `${completed}/${total} sections complétées`;
-                if(progressTextTop) progressTextTop.textContent = `${completed}/${total} sections complétées`;
             }
 
             function populateLevelsFromText() {
@@ -2294,143 +2218,6 @@
                 controls.resetRecruiterBtn.addEventListener('click', () => { setDefaultRecruiterInfo(); updatePreview('form'); });
                 controls.addPageBtn.addEventListener('click', () => addNewPage());
                 controls.removeBannerBgBtn.addEventListener('click', () => removeBannerBackground());
-                
-                // Top bar button event listeners
-                controls.downloadPdfBtnTop.addEventListener('click', async () => {
-                    const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
-                    document.body.classList.add('presentation-mode');
-
-                    const bannerImg = preview.bannerImg;
-                    const bannerBg = preview.bannerBgImg;
-                    const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
-                    const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
-
-                    const processImage = async (imgElement, isCircle = false) => {
-                        if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
-
-                        const img = new Image();
-                        img.crossOrigin = "anonymous";
-                        
-                        const promise = new Promise((resolve) => {
-                            img.onload = () => {
-                                const canvas = document.createElement('canvas');
-                                const ctx = canvas.getContext('2d');
-                                const size = Math.min(img.naturalWidth, img.naturalHeight);
-                                canvas.width = isCircle ? size : img.naturalWidth;
-                                canvas.height = isCircle ? size : img.naturalHeight;
-
-                                if (isCircle) {
-                                    ctx.beginPath();
-                                    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-                                    ctx.clip();
-                                }
-                                
-                                const hRatio = canvas.width / img.naturalWidth;
-                                const vRatio = canvas.height / img.naturalHeight;
-                                const ratio = Math.max(hRatio, vRatio);
-                                const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-                                const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
-                                
-                                const opacity = imgElement.style.opacity || '1';
-                                const filter = imgElement.style.filter || 'none';
-                                ctx.globalAlpha = parseFloat(opacity);
-                                ctx.filter = filter;
-                                
-                                ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
-
-                                imgElement.src = canvas.toDataURL('image/png');
-                                imgElement.style.borderRadius = '0';
-                                imgElement.style.objectFit = 'contain';
-                                imgElement.style.filter = 'none';
-                                imgElement.style.opacity = '1';
-                                resolve();
-                            };
-                            img.onerror = () => {
-                                console.error("Could not load image for PDF processing:", imgElement.src);
-                                resolve(); // Resolve anyway to not block PDF generation
-                            };
-                        });
-                        img.src = imgElement.src;
-                        return promise;
-                    };
-                    
-                    await processImage(bannerImg, true);
-                    await processImage(bannerBg, false);
-
-                    const opt = {
-                        margin: 0,
-                        filename: filename,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, logging: false },
-                        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
-                    };
-
-                    html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
-                        bannerImg.src = originalBannerImg.src;
-                        bannerImg.style.cssText = originalBannerImg.style;
-                        bannerBg.src = originalBannerBg.src;
-                        bannerBg.style.cssText = originalBannerBg.style;
-                        document.body.classList.remove('presentation-mode');
-                    });
-                });
-
-                controls.shareBtnTop.addEventListener('click', () => {
-                    controls.shareModal.classList.add('active');
-                    const shareUrl = generateShareUrl();
-                    controls.shareLinkInput.value = shareUrl;
-                });
-
-                controls.anonymizeBtnTop.addEventListener('click', anonymizeCV);
-
-                controls.resetCvBtnTop.addEventListener('click', async () => {
-                    const confirmed = await showConfirmModal("Nouveau CV", "Êtes-vous sûr de vouloir réinitialiser complètement le CV ?");
-                    if (confirmed) resetCVToDefault();
-                });
-
-                controls.toggleOverflowBtnTop.addEventListener('click', (e) => {
-                    document.body.classList.toggle('overflow-check-active');
-                    e.currentTarget.classList.toggle('active');
-                    checkAllPagesOverflow();
-                });
-
-                controls.togglePresentationModeBtnTop.addEventListener('click', () => {
-                    document.body.classList.toggle('presentation-mode');
-                    const isActive = document.body.classList.contains('presentation-mode');
-                    controls.togglePresentationModeBtnTop.innerHTML = `<i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i> Présentation`;
-                });
-
-                // API modal event listeners
-                controls.apiSettingsBtn.addEventListener('click', () => {
-                    // Load saved API key if exists
-                    const savedKey = localStorage.getItem('gemini-api-key');
-                    if (savedKey) {
-                        controls.geminiApiKey.value = savedKey;
-                        controls.saveApiKey.checked = true;
-                    }
-                    controls.apiModal.classList.add('active');
-                });
-
-                controls.apiModalCancel.addEventListener('click', () => {
-                    controls.apiModal.classList.remove('active');
-                    controls.geminiApiKey.value = '';
-                    controls.saveApiKey.checked = false;
-                });
-
-                controls.apiModalSave.addEventListener('click', () => {
-                    const apiKey = controls.geminiApiKey.value.trim();
-                    if (apiKey) {
-                        if (controls.saveApiKey.checked) {
-                            localStorage.setItem('gemini-api-key', apiKey);
-                        } else {
-                            localStorage.removeItem('gemini-api-key');
-                        }
-                        showNotification("Clé API sauvegardée avec succès.", "success");
-                    } else {
-                        showNotification("Veuillez entrer une clé API valide.", "error");
-                        return;
-                    }
-                    controls.apiModal.classList.remove('active');
-                });
                 controls.addSectionBtn.addEventListener('click', () => {
                     const title = controls.newSectionTitleInput.value.trim();
                     if(title) {
