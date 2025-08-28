@@ -398,11 +398,8 @@
             <!-- TABS -->
             <div id="tab-navigation" class="flex flex-wrap -mb-px border-b border-gray-200">
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-ia"><i class="fa-solid fa-robot mr-1"></i> IA</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content"><i class="fa-solid fa-file-lines mr-1"></i> Contenu</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-skills"><i class="fa-solid fa-star mr-1"></i> Compétences</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-custom"><i class="fa-solid fa-puzzle-piece mr-1"></i> Sections</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout"><i class="fa-solid fa-columns mr-1"></i> Mise en Page</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-styles"><i class="fa-solid fa-palette mr-1"></i> Styles</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content"><i class="fa-solid fa-file-lines mr-1"></i> Contenu & Sections</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout"><i class="fa-solid fa-columns mr-1"></i> Design & Styles</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-banner"><i class="fa-solid fa-user-tie mr-1"></i> Bannière</button>
             </div>
 
@@ -437,7 +434,7 @@
                     </details>
                 </div>
 
-                <!-- TAB: Contenu -->
+                <!-- TAB: Contenu & Sections -->
                 <div id="panel-content" class="tab-panel hidden space-y-4">
                     <details class="control-group" open>
                         <summary><span>Informations Principales</span><label class="completion-label"><input type="checkbox" id="completion-content-infos" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -462,10 +459,7 @@
                             <div id="formation-list" class="space-y-2"></div>
                         </div>
                     </details>
-                </div>
-                
-                <!-- TAB: Compétences -->
-                <div id="panel-skills" class="tab-panel hidden space-y-4">
+                    <!-- Compétences -->
                      <details class="control-group" open>
                         <summary><span>Compétences</span><label class="completion-label"><input type="checkbox" id="completion-skills" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -495,10 +489,7 @@
                             </div>
                         </div>
                     </details>
-                </div>
-
-                <!-- TAB: Sections Perso -->
-                <div id="panel-custom" class="tab-panel hidden space-y-4">
+                    <!-- Sections Personnalisées -->
                     <details class="control-group" open>
                         <summary><span>Sections Personnalisées</span><label class="completion-label"><input type="checkbox" id="completion-custom" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -522,7 +513,7 @@
                     </details>
                 </div>
 
-                <!-- TAB: Mise en Page -->
+                <!-- TAB: Design & Styles -->
                 <div id="panel-layout" class="tab-panel hidden space-y-4">
                     <details class="control-group" open>
                         <summary><span>Mise en Colonnes</span><label class="completion-label"><input type="checkbox" id="completion-layout-cols" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -539,10 +530,7 @@
                             <div><label for="font-size-h1" class="block text-sm font-medium text-gray-700">Taille Titre Principal: <span id="font-size-h1-value">40</span>pt</label><input type="range" id="font-size-h1" min="20" max="50" step="1" value="40" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-h2" class="block text-sm font-medium text-gray-700">Taille Titres Section: <span id="font-size-h2-value">21</span>pt</label><input type="range" id="font-size-h2" min="14" max="30" step="1" value="21" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-p" class="block text-sm font-medium text-gray-700">Taille Paragraphe: <span id="font-size-p-value">10</span>pt</label><input type="range" id="font-size-p" min="8" max="14" step="0.5" value="10" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-banner" class="block text-sm font-medium text-gray-700">Taille Bannière: <span id="font-size-banner-value">9</span>pt</label><input type="range" id="font-size-banner" min="7" max="12" step="0.5" value="9" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="line-height" class="block text-sm font-medium text-gray-700">Interligne: <span id="line-height-value">1.6</span></label><input type="range" id="line-height" min="0.8" max="2.5" step="0.1" value="1.6" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="paragraph-spacing" class="block text-sm font-medium text-gray-700">Espace Paragraphe: <span id="paragraph-spacing-value">0.5</span>rem</label><input type="range" id="paragraph-spacing" min="0" max="2" step="0.1" value="0.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
                         </div>
                     </details>
-                </div>
-                
-                <!-- TAB: Styles Globaux -->
-                <div id="panel-styles" class="tab-panel hidden space-y-4">
+                    <!-- Thèmes et Styles -->
                      <details class="control-group" open>
                         <summary><span>Thèmes</span><label class="completion-label"><input type="checkbox" id="completion-styles-themes" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content">
@@ -598,6 +586,12 @@
                             <div class="grid grid-cols-2 gap-2">
                                 <button data-title-style="style-underline" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm active">Souligné</button>
                                 <button data-title-style="style-side-line" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Ligne Côté</button>
+                                <button data-title-style="style-background" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Fond</button>
+                                <button data-title-style="style-boxed" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Encadré</button>
+                            </div>
+                        </div>
+                    </details>
+                </div>
                                 <button data-title-style="style-background" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Fond</button>
                                 <button data-title-style="style-boxed" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Encadré</button>
                             </div>
