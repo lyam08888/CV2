@@ -619,9 +619,15 @@
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         >
                                             <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Rapide & Économique)</option>
-                                            <option value="gpt-4">GPT-4 (Plus Précis)</option>
+                                            <option value="gpt-4">GPT-4 (Haute Qualité)</option>
                                             <option value="gpt-4-turbo">GPT-4 Turbo (Équilibré)</option>
+                                            <option value="gpt-4o">GPT-4o (Optimisé - Recommandé)</option>
+                                            <option value="gpt-4o-mini">GPT-4o Mini (Rapide & Efficace)</option>
+                                            <option value="gpt-5" style="background-color: #fef3c7; font-weight: bold;">🚀 GPT-5 (Nouvelle Génération)</option>
                                         </select>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            💡 <strong>GPT-4o</strong> recommandé par défaut. <strong>GPT-5</strong> pour les tâches les plus avancées.
+                                        </p>
                                     </div>
 
                                     <!-- Priorité API -->
@@ -2378,7 +2384,10 @@
                 models: {
                     'gpt-3.5-turbo': 'gpt-3.5-turbo',
                     'gpt-4': 'gpt-4',
-                    'gpt-4-turbo': 'gpt-4-1106-preview'
+                    'gpt-4-turbo': 'gpt-4-turbo-preview',
+                    'gpt-4o': 'gpt-4o',
+                    'gpt-4o-mini': 'gpt-4o-mini',
+                    'gpt-5': 'gpt-5'
                 }
             };
 
@@ -2389,7 +2398,7 @@
                     throw new Error('Clé API OpenAI non configurée');
                 }
                 
-                const model = options.model || controls.openaiModel?.value || 'gpt-3.5-turbo';
+                const model = options.model || controls.openaiModel?.value || 'gpt-4o';
                 const temperature = options.temperature || parseFloat(controls.aiTemperature?.value || '0.7');
                 const maxTokens = options.maxTokens || parseInt(controls.aiMaxTokens?.value || '1000');
                 const retries = options.retries || 3;
@@ -2477,7 +2486,9 @@
                 
                 const tryOpenAI = async () => {
                     try {
-                        updateCombinedApiStatus('active', 'OpenAI actif', 'openai');
+                        const currentModel = controls.openaiModel?.value || 'gpt-4o';
+                        const modelDisplay = currentModel === 'gpt-5' ? '🚀 GPT-5 actif' : `OpenAI ${currentModel.toUpperCase()} actif`;
+                        updateCombinedApiStatus('active', modelDisplay, 'openai');
                         return await callOpenAIAPI(prompt, options);
                     } catch (error) {
                         if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
@@ -2496,7 +2507,9 @@
                         // Fallback vers OpenAI
                         const openaiKey = localStorage.getItem('openai-api-key');
                         if (openaiKey) {
-                            showToast('Basculement vers OpenAI (quota Gemini dépassé)', 'info');
+                            const currentModel = controls.openaiModel?.value || 'gpt-4o';
+                            const modelName = currentModel === 'gpt-5' ? '🚀 GPT-5' : currentModel.toUpperCase();
+                            showToast(`Basculement vers ${modelName} (quota Gemini dépassé)`, 'info');
                             let openaiResult = await tryOpenAI();
                             if (openaiResult !== null) return openaiResult;
                         }
@@ -2510,7 +2523,9 @@
                         }
                         
                         // Fallback vers Gemini
-                        showToast('Basculement vers Gemini (quota OpenAI dépassé)', 'info');
+                        const currentModel = controls.openaiModel?.value || 'gpt-4o';
+                        const modelName = currentModel === 'gpt-5' ? 'GPT-5' : currentModel.toUpperCase();
+                        showToast(`Basculement vers Gemini (quota ${modelName} dépassé)`, 'info');
                         let geminiResult2 = await tryGemini();
                         if (geminiResult2 !== null) return geminiResult2;
                         break;
@@ -2538,11 +2553,18 @@
                 updateCombinedApiStatus('testing', 'Test OpenAI en cours...', 'openai');
                 
                 try {
+                    const currentModel = controls.openaiModel?.value || 'gpt-4o';
                     const testPrompt = "Réponds simplement 'Test OpenAI réussi' si tu reçois ce message.";
                     const result = await callOpenAIAPI(testPrompt, { maxTokens: 20 });
                     
-                    updateCombinedApiStatus('success', 'OpenAI opérationnel', 'openai');
-                    showNotification('✅ Test OpenAI réussi: ' + result, 'success');
+                    // Message spécial pour GPT-5
+                    if (currentModel === 'gpt-5') {
+                        updateCombinedApiStatus('success', '🚀 GPT-5 opérationnel (Nouvelle Génération)', 'openai');
+                        showNotification('🚀 Test GPT-5 réussi: ' + result + ' (Nouvelle génération activée!)', 'success');
+                    } else {
+                        updateCombinedApiStatus('success', `OpenAI ${currentModel.toUpperCase()} opérationnel`, 'openai');
+                        showNotification(`✅ Test ${currentModel.toUpperCase()} réussi: ` + result, 'success');
+                    }
                 } catch (error) {
                     updateCombinedApiStatus('error', `Erreur OpenAI: ${error.message}`, 'openai');
                     showNotification(`❌ Erreur OpenAI: ${error.message}`, 'error');
@@ -2634,7 +2656,7 @@
             // Charger les configurations OpenAI
             function loadOpenAIConfig() {
                 const apiKey = localStorage.getItem('openai-api-key');
-                const model = localStorage.getItem('openai-model') || 'gpt-3.5-turbo';
+                const model = localStorage.getItem('openai-model') || 'gpt-4o';
                 const priority = localStorage.getItem('api-priority') || 'gemini-first';
                 
                 if (controls.openaiApiKey && apiKey) {
