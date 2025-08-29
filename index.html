@@ -35,14 +35,13 @@
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            z-index: 1 !important;
         }
         
         /* PANNEAU DE CONTRÔLES REDIMENSIONNABLE */
         .controls-panel {
-            min-width: 250px !important;
-            max-width: 300px !important;
-            width: 280px !important;
+            min-width: 300px !important;
+            max-width: 800px !important;
+            width: 400px !important;
             height: 100vh !important;
             background: white !important;
             border-right: 2px solid #e5e7eb !important;
@@ -53,269 +52,6 @@
             display: flex !important;
             flex-direction: column !important;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
-            z-index: 10 !important;
-            flex-shrink: 0 !important;
-        }
-
-        /* Contenu du panneau de contrôles */
-        .controls-panel > div {
-            padding: 1rem !important;
-            flex: 1 !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            box-sizing: border-box !important;
-        }
-
-        /* Assurer que tous les éléments restent dans le panneau */
-        .controls-panel * {
-            box-sizing: border-box !important;
-            max-width: 100% !important;
-        }
-
-        /* Empêcher le débordement horizontal sur tous les éléments de contenu */
-        .controls-panel .control-group-content *,
-        .controls-panel details *,
-        .controls-panel .bg-gray-50 *,
-        .controls-panel .bg-orange-50 *,
-        .controls-panel .bg-purple-50 *,
-        .controls-panel .bg-red-50 *,
-        .controls-panel .bg-green-50 * {
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        /* Forcer les grilles à se comporter en colonnes sur les petits écrans */
-        .controls-panel .grid {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 0.5rem !important;
-        }
-
-        /* Boutons et inputs - largeur complète dans le panneau */
-        .controls-panel input,
-        .controls-panel select,
-        .controls-panel button,
-        .controls-panel textarea {
-            width: 100% !important;
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        /* STRICT: Empêcher TOUT débordement horizontal */
-        .controls-panel,
-        .controls-panel > *,
-        .controls-panel .control-group-content,
-        .controls-panel details,
-        .controls-panel summary,
-        .controls-panel div,
-        .controls-panel button,
-        .controls-panel input,
-        .controls-panel select,
-        .controls-panel textarea {
-            overflow-x: hidden !important;
-            max-width: 280px !important;
-            word-break: break-word !important;
-            box-sizing: border-box !important;
-        }
-
-        /* Tab content strict */
-        #tab-content {
-            max-width: 280px !important;
-            overflow-x: hidden !important;
-            padding: 0.5rem !important;
-        }
-
-        /* Forcer les flex en colonne dans le panneau */
-        .controls-panel .flex:not(.zoom-controls) {
-            flex-direction: column !important;
-            align-items: stretch !important;
-        }
-
-        /* Espacements compacts pour éviter débordement */
-        .controls-panel .gap-2 { gap: 0.25rem !important; }
-        .controls-panel .gap-3 { gap: 0.5rem !important; }
-        .controls-panel .gap-4 { gap: 0.75rem !important; }
-        .controls-panel .space-y-4 > * + * { margin-top: 0.5rem !important; }
-        .controls-panel .space-y-3 > * + * { margin-top: 0.375rem !important; }
-        .controls-panel .space-y-2 > * + * { margin-top: 0.25rem !important; }
-
-        /* Textes longs - coupure forcée */
-        .controls-panel p,
-        .controls-panel span,
-        .controls-panel label {
-            word-break: break-word !important;
-            hyphens: auto !important;
-            max-width: 100% !important;
-        }
-
-        /* === SYSTÈME D'ONGLETS ENTIÈREMENT REFAIT === */
-        
-        /* Navigation des onglets - ULTRA COMPACT */
-        #tab-navigation {
-            display: grid !important;
-            grid-template-columns: repeat(5, 1fr) !important;
-            gap: 1px !important;
-            background: #e5e7eb !important;
-            border-radius: 6px !important;
-            padding: 2px !important;
-            margin: 8px !important;
-            width: calc(100% - 16px) !important;
-            max-width: 264px !important;
-            overflow: hidden !important;
-        }
-
-        /* Boutons d'onglets - GRILLE ÉGALE */
-        .tab-button {
-            background: #f9fafb !important;
-            border: none !important;
-            padding: 6px 2px !important;
-            font-size: 10px !important;
-            font-weight: 500 !important;
-            color: #6b7280 !important;
-            cursor: pointer !important;
-            transition: all 0.15s ease !important;
-            border-radius: 4px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            min-height: 32px !important;
-            overflow: hidden !important;
-            word-break: break-all !important;
-            line-height: 1.1 !important;
-        }
-
-        /* Onglet actif */
-        .tab-button.active {
-            background: #3b82f6 !important;
-            color: white !important;
-            font-weight: 600 !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-        }
-
-        /* Hover sur onglets inactifs */
-        .tab-button:not(.active):hover {
-            background: #e5e7eb !important;
-            color: #374151 !important;
-        }
-
-        /* === CONTENU DES ONGLETS === */
-        
-        /* Conteneur principal des onglets */
-        #tab-content {
-            padding: 4px 8px !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            max-width: 280px !important;
-            height: calc(100vh - 120px) !important;
-        }
-
-        /* Panneaux d'onglets */
-        .tab-panel {
-            display: none !important;
-            width: 100% !important;
-            max-width: 264px !important;
-            overflow-x: hidden !important;
-        }
-
-        .tab-panel.active {
-            display: block !important;
-        }
-
-        /* === BOUTON REPLIER === */
-        
-        /* Conteneur du bouton collapse */
-        .collapse-container {
-            padding: 4px 8px !important;
-            border-bottom: 1px solid #e5e7eb !important;
-        }
-
-        /* Bouton collapse compact */
-        #collapse-all-btn {
-            width: 100% !important;
-            background: #f3f4f6 !important;
-            border: 1px solid #d1d5db !important;
-            color: #6b7280 !important;
-            padding: 4px 8px !important;
-            border-radius: 4px !important;
-            font-size: 10px !important;
-            font-weight: 500 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 4px !important;
-            cursor: pointer !important;
-            transition: all 0.15s ease !important;
-            max-width: 264px !important;
-        }
-
-        #collapse-all-btn:hover {
-            background: #e5e7eb !important;
-            border-color: #9ca3af !important;
-        }
-
-        #collapse-all-btn.active {
-            background: #dbeafe !important;
-            border-color: #3b82f6 !important;
-            color: #1d4ed8 !important;
-        }
-
-        /* Groupes de contrôles - espacement réduit */
-        .control-group {
-            margin-bottom: 12px !important;
-            border: 1px solid #e5e7eb !important;
-            border-radius: 8px !important;
-            overflow: hidden !important;
-            max-width: 100% !important;
-        }
-
-        .control-group-content {
-            padding: 12px !important;
-            background-color: white !important;
-            max-width: 100% !important;
-            overflow-x: hidden !important;
-        }
-
-        /* Summary compacts */
-        .control-group summary {
-            padding: 8px 12px !important;
-            font-size: 0.875rem !important;
-            font-weight: 600 !important;
-            cursor: pointer !important;
-            background: #f8f9fa !important;
-            border-bottom: 1px solid #e5e7eb !important;
-            max-width: 100% !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-        }
-
-        /* Groupes de contrôles */
-        .control-group {
-            margin-bottom: 1rem !important;
-            max-width: 100% !important;
-        }
-
-        .control-group-content {
-            max-width: 100% !important;
-            overflow: hidden !important;
-        }
-
-        /* Inputs et éléments de formulaire */
-        .cv-input, .banner-input, .custom-section-input {
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        /* Grilles et flexbox */
-        .grid {
-            max-width: 100% !important;
-        }
-
-        .flex {
-            max-width: 100% !important;
-            flex-wrap: wrap !important;
         }
         
         /* POIGNÉE DE REDIMENSIONNEMENT */
@@ -829,23 +565,6 @@
             }
         }
 
-        /* Assurer que no-print est visible en mode normal */
-        @media screen {
-            .no-print {
-                display: block !important;
-            }
-            .controls-panel.no-print {
-                display: flex !important;
-            }
-        }
-
-        /* DEBUG: Forcer l'affichage du panneau de contrôles */
-        #controls {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
         /* 🚀 STYLES POUR CLÉS MULTIPLES GEMINI */
         .gemini-key-item {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -1020,25 +739,26 @@
             </div>
 
 
-            <!-- === NAVIGATION ONGLETS REFAITE === -->
-            <div id="tab-navigation">
-                <button class="tab-button active" data-target="panel-ia">API</button>
-                <button class="tab-button" data-target="panel-content">EDIT</button>
-                <button class="tab-button" data-target="panel-layout">PAGE</button>
-                <button class="tab-button" data-target="panel-styles">STYLE</button>
-                <button class="tab-button" data-target="panel-settings">CONF</button>
+            <!-- TABS -->
+            <div id="tab-navigation" class="flex flex-wrap -mb-px border-b border-gray-200">
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-ia"><i class="fa-solid fa-robot mr-1"></i> IA</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-api"><i class="fa-solid fa-key mr-1"></i> API</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content"><i class="fa-solid fa-file-lines mr-1"></i> Contenu</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout"><i class="fa-solid fa-columns mr-1"></i> Mise en Page</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-styles"><i class="fa-solid fa-palette mr-1"></i> Styles</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-recrutement"><i class="fa-solid fa-briefcase mr-1"></i> Recrutement</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-settings"><i class="fa-solid fa-cog mr-1"></i> Paramètres</button>
             </div>
 
-            <!-- === BOUTON REPLIER === -->
-            <div class="collapse-container">
-                <button id="collapse-all-btn">
+            <!-- COLLAPSE ALL BUTTON -->
+            <div class="px-4 pt-2 pb-1">
+                <button id="collapse-all-btn" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors">
                     <i class="fa-solid fa-compress" id="collapse-icon"></i>
-                    <span id="collapse-text">Replier</span>
+                    <span id="collapse-text">Replier tous les volets</span>
                 </button>
             </div>
 
-            <!-- === CONTENU ONGLETS === -->
-            <div id="tab-content">
+            <div id="tab-content" class="px-4 flex-grow overflow-y-auto">
                 <!-- TAB: IA -->
                 <div id="panel-ia" class="tab-panel space-y-4 pt-3">
                     <details class="control-group" open>
@@ -1111,213 +831,139 @@
                         </div>
                     </div>
 
-                    <!-- 🤖 CONFIGURATION GEMINI -->
+                    <!-- Configuration Google Gemini -->
                     <details id="gemini-config" class="control-group" open>
                         <summary>
                             <span class="flex items-center gap-2">
-                                <i class="fas fa-brain text-blue-600"></i>
-                                🤖 Clés Gemini
-                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full ml-auto">GRATUIT</span>
+                                <i class="fab fa-google text-blue-600"></i>
+                                Configuration Google Gemini
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full ml-auto">GRATUIT</span>
                             </span>
+                            <label class="completion-label">
+                                <input type="checkbox" id="completion-gemini-config" class="completion-checkbox">
+                                <span>Fait ✅</span>
+                            </label>
                         </summary>
                         <div class="control-group-content space-y-4">
-                            <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
-                                <p class="text-sm text-blue-800">
-                                    <strong>Créez autant de clés que vous voulez</strong> sur <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline font-medium">aistudio.google.com</a>
-                                </p>
-                                <div class="text-xs bg-blue-100 p-2 rounded mt-2">
-                                    💡 Ajoutez 5+ clés pour usage illimité !
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                <div class="flex items-start gap-3">
+                                    <i class="fab fa-google text-blue-600 text-xl mt-1"></i>
+                                    <div class="text-sm text-blue-800">
+                                        <p class="font-bold mb-1">Google AI Studio - API Gratuite</p>
+                                        <p class="mb-2">Obtenez votre clé API gratuitement sur <a href="https://makersuite.google.com/app/apikey" target="_blank" class="underline hover:text-blue-900 font-medium">Google AI Studio</a></p>
+                                        <div class="text-xs bg-blue-100 p-2 rounded">
+                                            ✅ <strong>50 requêtes/jour gratuites</strong> • Pas de carte bancaire requise
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="gemini-api-key" class="block text-sm font-bold text-gray-700 mb-2">
+                                    <i class="fas fa-key text-blue-600 mr-1"></i>
+                                    Clé API Google Gemini
+                                </label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="gemini-api-key" placeholder="AIza..." class="flex-1 p-3 border-2 border-gray-300 rounded-lg text-sm font-mono focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
+                                    <button id="toggle-api-key-visibility" class="bg-gray-500 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button id="save-gemini-api-key" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                                        <i class="fa-solid fa-save mr-1"></i> Sauver
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">🔒 Stockage sécurisé local uniquement (jamais envoyé ailleurs)</p>
+                            </div>
+
+                            <!-- Modèle Gemini -->
+                            <div>
+                                <label for="ai-model-select" class="block text-sm font-bold text-gray-700 mb-2">
+                                    <i class="fas fa-microchip text-blue-600 mr-1"></i>
+                                    Modèle Gemini
+                                </label>
+                                <select id="ai-model-select" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Rapide & Efficace - Recommandé)</option>
+                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Maximum de Qualité)</option>
+                                    <option value="gemini-1.0-pro">Gemini 1.0 Pro (Stable)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Statut Gemini -->
+                            <div id="api-status" class="hidden p-4 rounded-lg border-2">
+                                <div class="flex items-center gap-3">
+                                    <i id="api-status-icon" class="text-xl"></i>
+                                    <span id="api-status-text" class="font-medium"></span>
                                 </div>
                             </div>
 
-                            <!-- Interface multi-clés simplifiée -->
-                            <div>
-                                <div class="flex gap-2 mb-3">
-                                    <input 
-                                        type="password" 
-                                        id="new-gemini-key" 
-                                        placeholder="AIza..." 
-                                        class="flex-1 p-3 border-2 border-gray-300 rounded-lg text-sm font-mono focus:border-blue-500"
-                                    >
+                            <!-- 🚀 CLÉS GEMINI MULTIPLES POUR DÉPASSER LES LIMITES -->
+                            <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                                <h4 class="font-bold text-blue-800 mb-3 flex items-center">
+                                    <i class="fas fa-infinity text-blue-600 mr-2"></i>
+                                    Clés Gemini Multiples (Illimité)
+                                </h4>
+                                <p class="text-xs text-blue-700 mb-3">
+                                    🔄 Ajoutez plusieurs clés Gemini pour rotation automatique et contournement des limites de 50 requêtes/jour
+                                </p>
+                                
+                                <!-- Conseils d'optimisation -->
+                                <div class="bg-blue-100 rounded-lg p-3 mb-3">
+                                    <h5 class="font-semibold text-blue-800 mb-2">💡 Stratégies pour maximiser l'usage gratuit :</h5>
+                                    <ul class="text-xs text-blue-700 space-y-1">
+                                        <li>• Créez plusieurs comptes Google avec des emails différents</li>
+                                        <li>• Obtenez une clé API Gemini gratuite pour chaque compte</li>
+                                        <li>• Le système fera la rotation automatiquement (50×N requêtes/jour)</li>
+                                        <li>• Utilisez le fallback OpenAI pour une sécurité maximale</li>
+                                        <li>• Surveillez le compteur de requêtes en temps réel</li>
+                                    </ul>
+                                    <div class="mt-2 p-2 bg-blue-200 rounded text-xs">
+                                        <strong>Exemple :</strong> 3 clés = 150 requêtes gratuites par jour ! 🚀
+                                    </div>
+                                </div>
+                                
+                                <div id="gemini-keys-container">
+                                    <!-- Les clés supplémentaires apparaîtront ici -->
+                                </div>
+                                
+                                <div class="flex gap-2 mt-3">
                                     <button 
                                         id="add-gemini-key" 
                                         type="button" 
-                                        class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700"
+                                        class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                                     >
-                                        <i class="fa-solid fa-plus mr-1"></i> Ajouter
+                                        <i class="fas fa-plus mr-1"></i>
+                                        Ajouter une clé Gemini
+                                    </button>
+                                    <button 
+                                        id="test-all-gemini-keys" 
+                                        type="button" 
+                                        class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                                    >
+                                        <i class="fas fa-check-double mr-1"></i>
+                                        Tester toutes les clés
                                     </button>
                                 </div>
                                 
-                                <!-- Liste des clés -->
-                                <div id="gemini-keys-list" class="space-y-2 mb-4"></div>
-                                
-                                <!-- Statut compact -->
-                                <div class="bg-blue-50 p-3 rounded-lg">
-                                    <div class="grid grid-cols-3 gap-4 text-sm">
-                                        <div class="text-center">
-                                            <div id="active-gemini-keys-count" class="font-bold text-blue-600">0</div>
-                                            <div class="text-xs text-gray-500">Clés actives</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div id="total-gemini-requests" class="font-bold text-green-600">0</div>
-                                            <div class="text-xs text-gray-500">Aujourd'hui</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="font-bold text-purple-600" id="theoretical-limit">∞</div>
-                                            <div class="text-xs text-gray-500">Limite</div>
-                                        </div>
+                                <div id="gemini-keys-status" class="mt-3 text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Clés actives:</span>
+                                        <span id="active-gemini-keys-count" class="font-bold text-blue-600">1</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Requêtes aujourd'hui:</span>
+                                        <span id="total-gemini-requests" class="font-bold text-green-600">0</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Limite théorique:</span>
+                                        <span class="font-bold text-purple-600" id="theoretical-limit">50</span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                                    <div class="text-sm text-blue-800">
-                                        <p class="font-bold mb-1">Google AI Studio - API Gratuite</p>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
 
-                    <!-- 🟢 CONFIGURATION OPENAI -->
-                    <details class="control-group">
-                        <summary>
-                            <span class="flex items-center gap-2">
-                                <i class="fas fa-brain text-green-600"></i>
-                                🟢 OpenAI
-                                <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full ml-auto">PAYANT</span>
-                            </span>
-                        </summary>
-                        <div class="control-group-content space-y-4">
-                            <div class="bg-green-50 border border-green-200 rounded-md p-3">
-                                <p class="text-sm text-green-800">
-                                    <strong>Créez votre compte</strong> sur <a href="https://platform.openai.com/api-keys" target="_blank" class="underline font-medium">platform.openai.com</a>
-                                </p>
-                                <div class="text-xs bg-green-100 p-2 rounded mt-2">
-                                    💳 Facturation à l'usage • $5 gratuit au début
-                                </div>
-                            </div>
-                            
-                            <div class="space-y-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Clé API OpenAI</label>
-                                    <div class="flex gap-2">
-                                        <input 
-                                            type="password" 
-                                            id="openai-api-key" 
-                                            placeholder="sk-..." 
-                                            class="flex-1 p-3 border-2 border-gray-300 rounded-lg text-sm font-mono focus:border-green-500"
-                                        >
-                                        <button id="save-openai-api-key" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700">
-                                            Sauver
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Modèle</label>
-                                    <select id="openai-model" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-green-500">
-                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Économique)</option>
-                                        <option value="gpt-4o">GPT-4o (Recommandé)</option>
-                                        <option value="gpt-4o-mini">GPT-4o Mini (Rapide)</option>
-                                        <option value="gpt-4">GPT-4 (Premium)</option>
-                                        <option value="gpt-5">🚀 GPT-5 (Nouveau)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- 🇫🇷 APIS FRANÇAISES -->
-                    <details class="control-group">
-                        <summary>
-                            <span class="flex items-center gap-2">
-                                <i class="fas fa-flag text-blue-600"></i>
-                                🇫🇷 APIs Françaises
-                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full ml-auto">GRATUIT</span>
-                            </span>
-                        </summary>
-                        <div class="control-group-content space-y-4">
-                            
-                            <!-- Configuration responsive simplifiée -->
-                            <div class="space-y-4">
-                                
-                                <!-- Hugging Face -->
-                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                                    <h4 class="font-bold text-orange-800 mb-2 text-sm">🤗 Hugging Face</h4>
-                                    <input 
-                                        type="password" 
-                                        id="huggingface-token" 
-                                        placeholder="hf_..." 
-                                        class="w-full p-2 border border-gray-300 rounded text-sm font-mono mb-2"
-                                    >
-                                    <select id="huggingface-model" class="w-full p-2 border border-gray-300 rounded text-xs">
-                                        <option value="microsoft/DialoGPT-large">DialoGPT Large</option>
-                                        <option value="bigscience/bloom-560m">BLOOM (Français)</option>
-                                        <option value="EleutherAI/gpt-j-6B">GPT-J 6B</option>
-                                    </select>
-                                    <a href="https://huggingface.co/settings/tokens" target="_blank" class="text-xs text-orange-600 underline block mt-1">Créer compte</a>
-                                </div>
-                                
-                                <!-- Mistral AI -->
-                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                                    <h4 class="font-bold text-purple-800 mb-2 text-sm">🇫🇷 Mistral AI</h4>
-                                    <input 
-                                        type="password" 
-                                        id="mistral-api-key" 
-                                        placeholder="..." 
-                                        class="w-full p-2 border border-gray-300 rounded text-sm font-mono mb-2"
-                                    >
-                                    <select id="mistral-model" class="w-full p-2 border border-gray-300 rounded text-xs">
-                                        <option value="mistral-tiny">Mistral Tiny</option>
-                                        <option value="mistral-small">Mistral Small</option>
-                                        <option value="mistral-medium">Mistral Medium</option>
-                                    </select>
-                                    <a href="https://console.mistral.ai/" target="_blank" class="text-xs text-purple-600 underline block mt-1">Créer compte</a>
-                                </div>
-                                
-                                <!-- Groq -->
-                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
-                                    <h4 class="font-bold text-red-800 mb-2 text-sm">⚡ Groq</h4>
-                                    <input 
-                                        type="password" 
-                                        id="groq-api-key" 
-                                        placeholder="gsk_..." 
-                                        class="w-full p-2 border border-gray-300 rounded text-sm font-mono mb-2"
-                                    >
-                                    <select id="groq-model" class="w-full p-2 border border-gray-300 rounded text-xs">
-                                        <option value="llama3-70b-8192">Llama 3 70B</option>
-                                        <option value="llama3-8b-8192">Llama 3 8B</option>
-                                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                                    </select>
-                                    <a href="https://console.groq.com/keys" target="_blank" class="text-xs text-red-600 underline block mt-1">Créer compte</a>
-                                </div>
-                            </div>
-                            
-                            <!-- Test et statut français -->
-                            <div class="bg-gray-50 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h5 class="font-medium text-gray-800 text-sm">Tests & Statut</h5>
-                                </div>
-                                
-                                <!-- Boutons de test en colonne -->
-                                <div class="space-y-2 mb-3">
-                                    <button id="test-huggingface" class="w-full bg-orange-600 text-white py-2 px-3 rounded text-xs hover:bg-orange-700">
-                                        <i class="fas fa-flask mr-1"></i> Test Hugging Face
-                                    </button>
-                                    <button id="test-mistral" class="w-full bg-purple-600 text-white py-2 px-3 rounded text-xs hover:bg-purple-700">
-                                        <i class="fas fa-flask mr-1"></i> Test Mistral
-                                    </button>
-                                    <button id="test-groq" class="w-full bg-red-600 text-white py-2 px-3 rounded text-xs hover:bg-red-700">
-                                        <i class="fas fa-flask mr-1"></i> Test Groq
-                                    </button>
-                                </div>
-                                
-                                <!-- Statuts en colonne -->
-                                <div class="space-y-1 text-xs">
-                                    <div id="huggingface-status" class="text-gray-500 p-1 bg-white rounded">HF: Non testé</div>
-                                    <div id="mistral-status" class="text-gray-500 p-1 bg-white rounded">Mistral: Non testé</div>
-                                    <div id="groq-status" class="text-gray-500 p-1 bg-white rounded">Groq: Non testé</div>
-                                </div>
-                            </div>
+                            <!-- Test Gemini -->
+                            <button id="test-gemini-api" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 font-medium transition-colors">
+                                <i class="fa-solid fa-flask"></i> Tester la Connexion Gemini
+                            </button>
                         </div>
                     </details>
 
@@ -1574,14 +1220,14 @@
                             </div>
 
                             <!-- Test toutes les APIs gratuites -->
-                            <div class="space-y-2">
-                                <button id="test-huggingface" class="w-full bg-orange-600 text-white py-2 px-3 rounded text-sm hover:bg-orange-700">
-                                    <i class="fas fa-flask mr-1"></i> Test Hugging Face
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <button id="test-huggingface" class="bg-orange-600 text-white py-2 px-3 rounded text-sm hover:bg-orange-700">
+                                    <i class="fas fa-flask mr-1"></i> Test HF
                                 </button>
-                                <button id="test-mistral" class="w-full bg-purple-600 text-white py-2 px-3 rounded text-sm hover:bg-purple-700">
+                                <button id="test-mistral" class="bg-purple-600 text-white py-2 px-3 rounded text-sm hover:bg-purple-700">
                                     <i class="fas fa-flask mr-1"></i> Test Mistral
                                 </button>
-                                <button id="test-groq" class="w-full bg-red-600 text-white py-2 px-3 rounded text-sm hover:bg-red-700">
+                                <button id="test-groq" class="bg-red-600 text-white py-2 px-3 rounded text-sm hover:bg-red-700">
                                     <i class="fas fa-flask mr-1"></i> Test Groq
                                 </button>
                             </div>
@@ -1607,25 +1253,25 @@
                         </div>
                     </details>
 
-                    <!-- 🚀 SÉLECTEUR D'API UNIFIÉ ET SIMPLIFIÉ -->
+                    <!-- Configuration Avancée -->
                     <details class="control-group" open>
                         <summary>
                             <span class="flex items-center gap-2">
                                 <i class="fas fa-rocket text-purple-600"></i>
-                                🚀 Sélection d'API
+                                🚀 Sélecteur d'API Principal
                             </span>
                         </summary>
                         <div class="control-group-content space-y-4">
                             
-                            <!-- SÉLECTEUR PRINCIPAL COMPACT -->
+                            <!-- SÉLECTEUR API PRINCIPAL -->
                             <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border-2 border-blue-200">
                                 <label class="block text-sm font-bold text-gray-700 mb-3">
                                     <i class="fas fa-brain text-blue-600 mr-1"></i>
-                                    🎯 API Active
+                                    🎯 API Active Actuellement
                                 </label>
-                                <div class="grid grid-cols-1 gap-2">
+                                <div class="grid grid-cols-1 gap-3">
                                     
-                                    <!-- Gemini -->
+                                    <!-- Gemini Multi-Clés -->
                                     <label class="api-selector-card cursor-pointer">
                                         <input type="radio" name="primary-api" value="gemini-multi" id="select-gemini-multi" class="sr-only api-radio">
                                         <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-blue-400 transition-all">
@@ -1633,8 +1279,8 @@
                                                 <div class="flex items-center gap-3">
                                                     <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
                                                     <div>
-                                                        <div class="font-semibold text-gray-800">🤖 Gemini (Gratuit)</div>
-                                                        <div class="text-xs text-gray-500">Multi-clés • Unlimited</div>
+                                                        <div class="font-semibold text-gray-800">🤖 Gemini Multi-Clés</div>
+                                                        <div class="text-xs text-gray-500" id="gemini-multi-info">Rotation automatique • Unlimited</div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
@@ -1652,8 +1298,8 @@
                                                 <div class="flex items-center gap-3">
                                                     <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
                                                     <div>
-                                                        <div class="font-semibold text-gray-800">🟢 OpenAI (Payant)</div>
-                                                        <div class="text-xs text-gray-500">Haute qualité</div>
+                                                        <div class="font-semibold text-gray-800">🟢 OpenAI</div>
+                                                        <div class="text-xs text-gray-500" id="openai-model-info">Payant • Haute qualité</div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
@@ -1663,20 +1309,58 @@
                                         </div>
                                     </label>
                                     
-                                    <!-- APIs Françaises -->
+                                    <!-- Hugging Face -->
                                     <label class="api-selector-card cursor-pointer">
-                                        <input type="radio" name="primary-api" value="french-apis" id="select-french-apis" class="sr-only api-radio">
+                                        <input type="radio" name="primary-api" value="huggingface" id="select-huggingface" class="sr-only api-radio">
+                                        <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-yellow-400 transition-all">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
+                                                    <div>
+                                                        <div class="font-semibold text-gray-800">🤗 Hugging Face</div>
+                                                        <div class="text-xs text-gray-500" id="hf-model-info">Gratuit • 1000+ modèles</div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="text-xs font-mono bg-yellow-100 text-yellow-700 px-2 py-1 rounded" id="hf-model-display">DialoGPT</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Mistral AI -->
+                                    <label class="api-selector-card cursor-pointer">
+                                        <input type="radio" name="primary-api" value="mistral" id="select-mistral" class="sr-only api-radio">
                                         <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-red-400 transition-all">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center gap-3">
                                                     <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
                                                     <div>
-                                                        <div class="font-semibold text-gray-800">🇫🇷 APIs Françaises</div>
-                                                        <div class="text-xs text-gray-500">HF • Mistral • Groq • Gratuit</div>
+                                                        <div class="font-semibold text-gray-800">🇫🇷 Mistral AI</div>
+                                                        <div class="text-xs text-gray-500" id="mistral-model-info">Français • Quota généreux</div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <div class="text-xs font-mono bg-green-100 text-green-700 px-2 py-1 rounded">FREE</div>
+                                                    <div class="text-xs font-mono bg-red-100 text-red-700 px-2 py-1 rounded" id="mistral-model-display">mistral-tiny</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <!-- Groq -->
+                                    <label class="api-selector-card cursor-pointer">
+                                        <input type="radio" name="primary-api" value="groq" id="select-groq" class="sr-only api-radio">
+                                        <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-purple-400 transition-all">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
+                                                    <div>
+                                                        <div class="font-semibold text-gray-800">⚡ Groq</div>
+                                                        <div class="text-xs text-gray-500" id="groq-model-info">Ultra-rapide • Gratuit</div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="text-xs font-mono bg-purple-100 text-purple-700 px-2 py-1 rounded" id="groq-model-display">llama2-70b</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1702,25 +1386,35 @@
                                     </label>
                                 </div>
                                 
-                                <!-- Test et ordre -->
-                                <div class="mt-4 pt-3 border-t border-gray-200 space-y-3">
+                                <!-- Test de l'API sélectionnée -->
+                                <div class="mt-4 pt-3 border-t border-gray-200">
                                     <button id="test-selected-api" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
                                         <i class="fas fa-play-circle mr-1"></i> Tester l'API Sélectionnée
                                     </button>
-                                    <div id="selected-api-test-result" class="text-sm hidden"></div>
-                                    
-                                    <!-- Ordre de priorité -->
-                                    <div id="fallback-settings" class="bg-gray-50 p-3 rounded-lg">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Ordre de Priorité (Auto-Fallback)</label>
-                                        <select id="api-priority" class="w-full p-2 border border-gray-300 rounded text-sm">
-                                            <option value="gemini-first">🤖 Gemini → 🟢 OpenAI → 🇫🇷 Français</option>
-                                            <option value="openai-first">🟢 OpenAI → 🤖 Gemini → 🇫🇷 Français</option>
-                                            <option value="french-first">🇫🇷 Français → 🤖 Gemini → 🟢 OpenAI</option>
-                                        </select>
-                                    </div>
+                                    <div id="selected-api-test-result" class="mt-2 text-sm hidden"></div>
                                 </div>
                             </div>
-                        </div>
+
+                            <!-- Mode de Basculement (seulement pour auto-fallback) -->
+                            <div id="fallback-settings" class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-sm font-bold text-gray-700 mb-2">
+                                    <i class="fas fa-sort-amount-down text-purple-600 mr-1"></i>
+                                    Ordre de Priorité (Auto-Fallback)
+                                </label>
+                                <select 
+                                    id="api-priority" 
+                                    class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                                >
+                                    <option value="gemini-first">🤖 Gemini → 🟢 OpenAI → 🇫🇷 APIs Françaises</option>
+                                    <option value="openai-first">🟢 OpenAI → 🤖 Gemini → 🇫🇷 APIs Françaises</option>
+                                    <option value="french-first">🇫🇷 APIs Françaises → 🤖 Gemini → 🟢 OpenAI</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    🔄 En mode auto-fallback, si l'API principale échoue, le système bascule automatiquement vers la suivante.
+                                </p>
+                            </div>
+
+                            <!-- Paramètres IA -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="ai-temperature" class="block text-sm font-medium text-gray-700 mb-1">Créativité</label>
@@ -1773,10 +1467,71 @@
                         </div>
                     </details>
                     
+                    <!-- Tests -->
+                    <details class="control-group">
+                        <summary>
+                            <span class="flex items-center gap-2">
+                                <i class="fas fa-flask text-orange-600"></i>
+                                Test & Validation
+                            </span>
+                            <label class="completion-label">
+                                <input type="checkbox" id="completion-api-test" class="completion-checkbox">
+                                <span>Fait ✅</span>
+                            </label>
+                        </summary>
+                        <div class="control-group-content space-y-3">
+                            <div>
+                                <label for="test-prompt" class="block text-sm font-medium text-gray-700 mb-2">Test personnalisé (optionnel)</label>
+                                <textarea id="test-prompt" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="Écrivez un test personnalisé pour vérifier l'API..."></textarea>
+                                <button id="run-custom-test" class="mt-2 w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play"></i> Exécuter le test
+                                </button>
+                            </div>
+                            
+                            <div id="test-results" class="hidden mt-3 p-3 border rounded-md bg-gray-50">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Résultat du test :</h4>
+                                <div id="test-output" class="text-sm text-gray-600 whitespace-pre-wrap"></div>
+                            </div>
+                        </div>
+                    </details>
+                    
+                    <details class="control-group" open>
+                        <summary><span>Paramètres IA</span><label class="completion-label"><input type="checkbox" id="completion-api-settings" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div>
+                                <label for="ai-model-select" class="block text-sm font-medium text-gray-700 mb-2">Modèle Gemini</label>
+                                <select id="ai-model-select" class="w-full p-2 border rounded-md text-sm">
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Rapide)</option>
+                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Précis)</option>
+                                    <option value="gemini-pro">Gemini Pro (Standard)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="ai-temperature" class="block text-sm font-medium text-gray-700 mb-2">Créativité: <span id="temperature-value">0.7</span></label>
+                                <input type="range" id="ai-temperature" min="0" max="1" step="0.1" value="0.7" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Précis</span>
+                                    <span>Créatif</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="ai-max-tokens" class="block text-sm font-medium text-gray-700 mb-2">Longueur max: <span id="max-tokens-value">1000</span> tokens</label>
+                                <input type="range" id="ai-max-tokens" min="100" max="2000" step="100" value="1000" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                            </div>
+                            
+                            <div class="pt-3 border-t">
+                                <button id="reset-api-settings" class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-undo"></i> Réinitialiser les paramètres
+                                </button>
+                            </div>
+                        </div>
+                    </details>
                 </div>
 
                 <!-- TAB: Contenu -->
-                <div id="panel-content" class="tab-panel space-y-4 pt-3">
+                <div id="panel-content" class="tab-panel hidden space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Informations Principales</span><label class="completion-label"><input type="checkbox" id="completion-content-infos" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -1859,7 +1614,7 @@
                 <!-- TAB: Compétences -->
                 
                 <!-- TAB: Mise en Page -->
-                <div id="panel-layout" class="tab-panel space-y-4 pt-3">
+                <div id="panel-layout" class="tab-panel hidden space-y-4 pt-3">
                     <!-- IA LAYOUT GENERATOR -->
                     <details class="control-group" open>
                         <summary><span>🤖 Générateur IA de Mise en Page</span><label class="completion-label"><input type="checkbox" id="completion-layout-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -1980,7 +1735,7 @@
                 </div>
                 
                 <!-- TAB: Styles Globaux -->
-                <div id="panel-styles" class="tab-panel space-y-4 pt-3">
+                <div id="panel-styles" class="tab-panel hidden space-y-4 pt-3">
                     <!-- IA STYLE GENERATOR -->
                     <details class="control-group" open>
                         <summary><span>🎨 Générateur IA de Styles</span><label class="completion-label"><input type="checkbox" id="completion-styles-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -2188,78 +1943,7 @@
                                 <h3 class="font-semibold text-gray-700">Bannière Recruteur</h3>
                                 <button id="reset-recruiter-btn" class="text-sm text-gray-500 hover:text-red-600" title="Réinitialiser les informations recruteur"><i class="fas fa-undo"></i></button>
                             </div>
-                            <div id="banner-fix-controls">
-                                <button id="fix-banner-top-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2">
-                                    <i class="fas fa-arrow-up"></i>Fixer en haut
-                                </button>
-                                <button id="fix-banner-bottom-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2 mt-2">
-                                    <i class="fas fa-arrow-down"></i>Fixer en bas
-                                </button>
-                            </div>
-                            
-                            <button id="modular-banner-btn" class="cv-input w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 flex items-center justify-center gap-2 hidden">
-                                <i class="fas fa-arrows-up-down-left-right"></i>Rendre modulaire
-                            </button>
-                            
-                            <label class="flex items-center gap-2 text-sm">
-                                <input type="checkbox" id="toggle-banner-checkbox" class="cv-input">
-                                Afficher la bannière
-                            </label>
-                            
-                            <label for="banner-style-select" class="text-sm font-medium">Style de Bannière</label>
-                            <select id="banner-style-select" class="cv-input w-full p-2 border rounded-md">
-                                <option value="banner-style-modern">Moderne</option>
-                                <option value="banner-style-elegant">Élégant</option>
-                                <option value="banner-style-discret">Discret</option>
-                                <option value="banner-style-carte">Carte</option>
-                                <option value="banner-style-degrade">Dégradé</option>
-                                <option value="banner-style-premium">Premium</option>
-                                <option value="banner-style-minimal">Minimal</option>
-                                <option value="banner-style-encadre">Encadré</option>
-                                <option value="banner-style-ligne-haute">Ligne Haute</option>
-                            </select>
-                            
-                            <p class="text-sm font-medium">Alignement</p>
-                            <div class="flex gap-2">
-                                <button data-banner-align="left" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">
-                                    <i class="fas fa-align-left"></i>
-                                </button>
-                                <button data-banner-align="center" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">
-                                    <i class="fas fa-align-center"></i>
-                                </button>
-                                <button data-banner-align="right" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">
-                                    <i class="fas fa-align-right"></i>
-                                </button>
-                                <button id="banner-invert-btn" class="p-2 bg-gray-200 rounded-md text-sm" title="Inverser Logo/Texte">
-                                    <i class="fas fa-right-left"></i>
-                                </button>
-                            </div>
-                            
-                            <p class="text-sm font-medium">Taille Logo</p>
-                            <div class="flex gap-2">
-                                <button data-logo-size="sm" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">P</button>
-                                <button data-logo-size="md" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">M</button>
-                                <button data-logo-size="lg" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">G</button>
-                                <button data-logo-size="xl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XL</button>
-                                <button data-logo-size="xxl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XXL</button>
-                            </div>
-                            
-                            <div>
-                                <label for="banner-element-spacing" class="block text-sm font-medium text-gray-700">
-                                    Espace Bannière: <span id="banner-element-spacing-value">1</span>rem
-                                </label>
-                                <input type="range" id="banner-element-spacing" min="0.5" max="4" step="0.1" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
-                            </div>
-                            
-                            <input type="text" id="banner-nom" placeholder="Votre Nom & Prénom" class="banner-input w-full p-2 border rounded-md">
-                            <input type="text" id="banner-poste" placeholder="Votre Poste" class="banner-input w-full p-2 border rounded-md">
-                            <input type="email" id="banner-email" placeholder="Email" class="banner-input w-full p-2 border rounded-md">
-                            <input type="tel" id="banner-tel" placeholder="Téléphone" class="banner-input w-full p-2 border rounded-md">
-                            
-                            <div>
-                                <label for="banner-image" class="block text-sm font-medium text-gray-700">Photo/Logo</label>
-                                <input type="file" id="banner-image" accept="image/*" class="banner-input mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            </div>
+                            <div id="banner-fix-controls"><button id="fix-banner-top-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2"><i class="fas fa-arrow-up"></i>Fixer en haut</button><button id="fix-banner-bottom-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2 mt-2"><i class="fas fa-arrow-down"></i>Fixer en bas</button></div><button id="modular-banner-btn" class="cv-input w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 flex items-center justify-center gap-2 hidden"><i class="fas fa-arrows-up-down-left-right"></i>Rendre modulaire</button><label class="flex items-center gap-2 text-sm"><input type="checkbox" id="toggle-banner-checkbox" class="cv-input">Afficher la bannière</label><label for="banner-style-select" class="text-sm font-medium">Style de Bannière</label><select id="banner-style-select" class="cv-input w-full p-2 border rounded-md"><option value="banner-style-modern">Moderne</option><option value="banner-style-elegant">Élégant</option><option value="banner-style-discret">Discret</option><option value="banner-style-carte">Carte</option><option value="banner-style-degrade">Dégradé</option><option value="banner-style-premium">Premium</option><option value="banner-style-minimal">Minimal</option><option value="banner-style-encadre">Encadré</option><option value="banner-style-ligne-haute">Ligne Haute</option></select><p class="text-sm font-medium">Alignement</p><div class="flex gap-2"><button data-banner-align="left" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm"><i class="fas fa-align-left"></i></button><button data-banner-align="center" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm"><i class="fas fa-align-center"></i></button><button data-banner-align="right" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm"><i class="fas fa-align-right"></i></button><button id="banner-invert-btn" class="p-2 bg-gray-200 rounded-md text-sm" title="Inverser Logo/Texte"><i class="fas fa-right-left"></i></button></div><p class="text-sm font-medium">Taille Logo</p><div class="flex gap-2"><button data-logo-size="sm" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">P</button><button data-logo-size="md" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">M</button><button data-logo-size="lg" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">G</button><button data-logo-size="xl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XL</button><button data-logo-size="xxl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XXL</button></div><div><label for="banner-element-spacing" class="block text-sm font-medium text-gray-700">Espace Bannière: <span id="banner-element-spacing-value">1</span>rem</label><input type="range" id="banner-element-spacing" min="0.5" max="4" step="0.1" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><input type="text" id="banner-nom" placeholder="Votre Nom & Prénom" class="banner-input w-full p-2 border rounded-md"><input type="text" id="banner-poste" placeholder="Votre Poste" class="banner-input w-full p-2 border rounded-md"><input type="email" id="banner-email" placeholder="Email" class="banner-input w-full p-2 border rounded-md"><input type="tel" id="banner-tel" placeholder="Téléphone" class="banner-input w-full p-2 border rounded-md"><div><label for="banner-image" class="block text-sm font-medium text-gray-700">Photo/Logo</label><input type="file" id="banner-image" accept="image/*" class="banner-input mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"></div>
                         </div>
                     </details>
                     <details class="control-group" open>
@@ -2290,7 +1974,7 @@
                 </div>
                 
                 <!-- TAB: Paramètres -->
-                <div id="panel-settings" class="tab-panel space-y-4 pt-3">
+                <div id="panel-settings" class="tab-panel hidden space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Actions CV</span><label class="completion-label"><input type="checkbox" id="completion-actions" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -2449,10 +2133,20 @@
                 combinedStatusIcon: document.getElementById('combined-status-icon'),
                 combinedStatusText: document.getElementById('combined-status-text'),
                 activeApiIndicator: document.getElementById('active-api-indicator'),
-                // API Status
+                // Test Controls
+                testPrompt: document.getElementById('test-prompt'),
+                runCustomTest: document.getElementById('run-custom-test'),
+                testResults: document.getElementById('test-results'),
+                testOutput: document.getElementById('test-output'),
                 apiStatus: document.getElementById('api-status'),
                 apiStatusIcon: document.getElementById('api-status-icon'),
                 apiStatusText: document.getElementById('api-status-text'),
+                aiModelSelect: document.getElementById('ai-model-select'),
+                aiTemperature: document.getElementById('ai-temperature'),
+                temperatureValue: document.getElementById('temperature-value'),
+                aiMaxTokens: document.getElementById('ai-max-tokens'),
+                maxTokensValue: document.getElementById('max-tokens-value'),
+                resetApiSettings: document.getElementById('reset-api-settings'),
                 aiSummarizeBtn: document.getElementById('ai-summarize-btn'),
                 resetRecruiterBtn: document.getElementById('reset-recruiter-btn'),
                 aiLimitSkillsBtn: document.getElementById('ai-limit-skills-btn'),
@@ -4217,6 +3911,43 @@
                     updateApiStatus('error', `Erreur: ${error.message}`);
                     showNotification(`Erreur de connexion: ${error.message}`, 'error');
                 }
+            }
+            
+            // Test personnalisé
+            async function runCustomTest() {
+                const prompt = controls.testPrompt?.value?.trim();
+                if (!prompt) {
+                    showNotification('Veuillez saisir un prompt de test', 'error');
+                    return;
+                }
+                
+                if (!controls.testResults || !controls.testOutput) return;
+                
+                controls.testResults.classList.remove('hidden');
+                controls.testOutput.textContent = 'Exécution du test...';
+                
+                try {
+                    const result = await callGeminiAPI(prompt);
+                    controls.testOutput.textContent = result;
+                    showNotification('Test exécuté avec succès', 'success');
+                } catch (error) {
+                    controls.testOutput.textContent = `Erreur: ${error.message}`;
+                    showNotification(`Erreur lors du test: ${error.message}`, 'error');
+                }
+            }
+            
+            // Réinitialiser les paramètres API
+            function resetApiSettings() {
+                if (controls.aiModelSelect) controls.aiModelSelect.value = 'gemini-1.5-flash';
+                if (controls.aiTemperature) {
+                    controls.aiTemperature.value = '0.7';
+                    if (controls.temperatureValue) controls.temperatureValue.textContent = '0.7';
+                }
+                if (controls.aiMaxTokens) {
+                    controls.aiMaxTokens.value = '1000';
+                    if (controls.maxTokensValue) controls.maxTokensValue.textContent = '1000';
+                }
+                showNotification('Paramètres réinitialisés', 'success');
             }
             
             // Intégration avec les fonctions IA existantes
@@ -7536,48 +7267,21 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
 
                 // --- EVENT LISTENERS ---
 
-                // === NOUVEAU SYSTÈME D'ONGLETS ===
+                const tabNavigation = document.getElementById('tab-navigation');
+                const tabPanels = document.querySelectorAll('.tab-panel');
+                const tabButtons = document.querySelectorAll('.tab-btn');
                 
-                // Initialisation des onglets
-                function initTabs() {
-                    const tabButtons = document.querySelectorAll('.tab-button');
-                    const tabPanels = document.querySelectorAll('.tab-panel');
-                    
-                    // Fonction pour activer un onglet
-                    function activateTab(targetId) {
-                        // Désactiver tous les onglets et panneaux
-                        tabButtons.forEach(btn => btn.classList.remove('active'));
-                        tabPanels.forEach(panel => panel.classList.remove('active'));
-                        
-                        // Activer l'onglet cliqué
-                        const activeButton = document.querySelector(`[data-target="${targetId}"]`);
-                        const activePanel = document.getElementById(targetId);
-                        
-                        if (activeButton) activeButton.classList.add('active');
-                        if (activePanel) activePanel.classList.add('active');
-                        
-                        console.log(`📑 Onglet activé: ${targetId}`);
-                    }
-                    
-                    // Gestionnaire de clic sur les onglets
-                    tabButtons.forEach(button => {
-                        button.addEventListener('click', () => {
-                            const targetId = button.getAttribute('data-target');
-                            activateTab(targetId);
-                        });
+                tabNavigation.addEventListener('click', (e) => {
+                    const tabBtn = e.target.closest('.tab-btn');
+                    if (!tabBtn) return;
+                    tabPanels.forEach(panel => panel.classList.add('hidden'));
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('border-blue-600', 'text-blue-600');
+                        btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                     });
-                    
-                    // Activer le premier onglet par défaut
-                    if (tabButtons.length > 0) {
-                        const firstTarget = tabButtons[0].getAttribute('data-target');
-                        activateTab(firstTarget);
-                    }
-                    
-                    console.log(`✅ Système d'onglets initialisé avec ${tabButtons.length} onglets`);
-                }
-                
-                // Lancer l'initialisation des onglets
-                initTabs();
+                    const targetPanelId = tabBtn.dataset.target;
+                    document.querySelector(targetPanelId).classList.remove('hidden');
+                    tabBtn.classList.add('border-blue-600', 'text-blue-600');
                     tabBtn.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                 });
                 tabButtons[0].click();
@@ -8344,6 +8048,29 @@ Texte à analyser :
                     controls.testGeminiApi.addEventListener('click', testGeminiApi);
                 }
                 
+                // Test personnalisé
+                if (controls.runCustomTest) {
+                    controls.runCustomTest.addEventListener('click', runCustomTest);
+                }
+                
+                // Réinitialiser paramètres
+                if (controls.resetApiSettings) {
+                    controls.resetApiSettings.addEventListener('click', resetApiSettings);
+                }
+                
+                // Mise à jour des valeurs de curseurs
+                if (controls.aiTemperature && controls.temperatureValue) {
+                    controls.aiTemperature.addEventListener('input', () => {
+                        controls.temperatureValue.textContent = controls.aiTemperature.value;
+                    });
+                }
+                
+                if (controls.aiMaxTokens && controls.maxTokensValue) {
+                    controls.aiMaxTokens.addEventListener('input', () => {
+                        controls.maxTokensValue.textContent = controls.aiMaxTokens.value;
+                    });
+                }
+                
                 // === GESTIONNAIRES D'ÉVÉNEMENTS OPENAI ===
                 
                 // Basculer visibilité clé OpenAI
@@ -8712,7 +8439,7 @@ Texte à analyser :
                             detail.open = false;
                         });
                         collapseIcon.className = 'fa-solid fa-expand';
-                        collapseText.textContent = 'Déplier';
+                        collapseText.textContent = 'Déplier tous les volets';
                         controls.collapseAllBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200');
                         controls.collapseAllBtn.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
                         console.log('✅ Tous les volets repliés');
@@ -8723,7 +8450,7 @@ Texte à analyser :
                             detail.open = true;
                         });
                         collapseIcon.className = 'fa-solid fa-compress';
-                        collapseText.textContent = 'Replier';
+                        collapseText.textContent = 'Replier tous les volets';
                         controls.collapseAllBtn.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
                         controls.collapseAllBtn.classList.add('bg-gray-100', 'hover:bg-gray-200');
                         console.log('✅ Tous les volets dépliés');
@@ -9258,13 +8985,6 @@ Texte à analyser :
             // S'assurer que tous les éléments de contrôle sont disponibles avant de réinitialiser
             setTimeout(() => {
                 resetCVToDefault(); // Start with a clean slate
-                
-                // S'assurer que la bannière est bien désactivée par défaut
-                const bannerCheckbox = document.getElementById('toggle-banner-checkbox');
-                if (bannerCheckbox) {
-                    bannerCheckbox.checked = false;
-                    updatePreview('form'); // Mettre à jour la prévisualisation
-                }
             }, 100);
         });
 
