@@ -365,6 +365,14 @@
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-settings"><i class="fa-solid fa-cog mr-1"></i> Paramètres</button>
             </div>
 
+            <!-- COLLAPSE ALL BUTTON -->
+            <div class="px-4 py-2 border-b border-gray-100">
+                <button id="collapse-all-btn" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors">
+                    <i class="fa-solid fa-compress" id="collapse-icon"></i>
+                    <span id="collapse-text">Replier tous les volets</span>
+                </button>
+            </div>
+
             <div id="tab-content" class="py-4 flex-grow overflow-y-auto">
                 <!-- TAB: IA -->
                 <div id="panel-ia" class="tab-panel space-y-4">
@@ -820,6 +828,7 @@
                 resetCvBtn: document.getElementById('reset-cv-btn'),
                 togglePresentationModeBtn: document.getElementById('toggle-presentation-mode-btn'),
                 toggleOverflowBtn: document.getElementById('toggle-overflow-btn'),
+                collapseAllBtn: document.getElementById('collapse-all-btn'),
                 // API Controls
                 geminiApiKey: document.getElementById('gemini-api-key'),
                 toggleApiKeyVisibility: document.getElementById('toggle-api-key-visibility'),
@@ -3331,6 +3340,36 @@ Texte à analyser :
                     document.body.classList.toggle('overflow-check-active');
                     e.currentTarget.classList.toggle('active');
                     checkAllPagesOverflow();
+                });
+
+                // Collapse all details/expand functionality
+                controls.collapseAllBtn.addEventListener('click', () => {
+                    const allDetails = document.querySelectorAll('#tab-content details');
+                    const collapseIcon = document.getElementById('collapse-icon');
+                    const collapseText = document.getElementById('collapse-text');
+                    
+                    // Check current state - if any detail is open, collapse all
+                    const hasOpenDetails = Array.from(allDetails).some(detail => detail.open);
+                    
+                    if (hasOpenDetails) {
+                        // Collapse all
+                        allDetails.forEach(detail => {
+                            detail.open = false;
+                        });
+                        collapseIcon.className = 'fa-solid fa-expand';
+                        collapseText.textContent = 'Déplier tous les volets';
+                        controls.collapseAllBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                        controls.collapseAllBtn.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                    } else {
+                        // Expand all
+                        allDetails.forEach(detail => {
+                            detail.open = true;
+                        });
+                        collapseIcon.className = 'fa-solid fa-compress';
+                        collapseText.textContent = 'Replier tous les volets';
+                        controls.collapseAllBtn.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                        controls.collapseAllBtn.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                    }
                 });
 
                 // Gestionnaires d'événements avec vérification d'existence
