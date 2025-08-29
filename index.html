@@ -20,54 +20,84 @@
         }
         
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
-        /* Layout principal FORCÉ */
+        /* Layout principal FORCÉ avec priorité maximale */
         .main-layout {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            width: 100%;
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: 100vh !important;
+            width: 100% !important;
         }
         
+        /* Mobile first */
+        @media (max-width: 767px) {
+            .main-layout {
+                flex-direction: column !important;
+            }
+            .controls-panel {
+                width: 100% !important;
+                height: auto !important;
+                flex: none !important;
+            }
+            .preview-panel {
+                width: 100% !important;
+                height: auto !important;
+                flex: 1 !important;
+            }
+        }
+        
+        /* Desktop - Force côte à côte */
         @media (min-width: 768px) {
             .main-layout {
                 flex-direction: row !important;
-                height: 100vh;
-                overflow: hidden;
+                height: 100vh !important;
+                overflow: hidden !important;
             }
             
             .controls-panel {
-                width: 400px;
-                min-width: 400px;
-                max-width: 400px;
-                flex: 0 0 400px;
-                height: 100vh;
-                overflow-y: auto;
-                overflow-x: hidden;
-                border-right: 1px solid #e5e7eb;
+                width: 400px !important;
+                min-width: 400px !important;
+                max-width: 400px !important;
+                flex: 0 0 400px !important;
+                height: 100vh !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                border-right: 1px solid #e5e7eb !important;
             }
             
             .preview-panel {
-                flex: 1;
-                height: 100vh;
-                overflow-y: auto;
-                overflow-x: hidden;
-                width: calc(100vw - 400px);
+                flex: 1 !important;
+                height: 100vh !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                width: calc(100vw - 400px) !important;
             }
         }
         
+        /* Large desktop */
         @media (min-width: 1200px) {
             .controls-panel {
-                width: 450px;
-                min-width: 450px;
-                max-width: 450px;
-                flex: 0 0 450px;
+                width: 450px !important;
+                min-width: 450px !important;
+                max-width: 450px !important;
+                flex: 0 0 450px !important;
             }
             .preview-panel {
-                width: calc(100vw - 450px);
+                width: calc(100vw - 450px) !important;
+            }
+        }
+        
+        /* Classes d'override Tailwind */
+        .no-print { 
+            /* Garde pour l'impression */ 
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
             }
         }
         
@@ -380,7 +410,7 @@
 
     </style>
 </head>
-<body class="bg-gray-200 font-sans">
+<body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #f3f4f6;">
 
     <!-- OVERLAYS AND MODALS -->
     <div id="loader-overlay" class="hidden fixed inset-0 bg-white bg-opacity-75 flex-col items-center justify-center z-[9999]">
@@ -390,9 +420,9 @@
 
     <div id="notification"></div>
 
-    <div class="main-layout">
+    <div class="main-layout" style="display: flex; flex-direction: row; height: 100vh; width: 100%; overflow: hidden;">
         <!-- CONTROLS PANEL -->
-        <div id="controls" class="controls-panel bg-white shadow-2xl overflow-y-auto flex flex-col no-print" style="padding: 1.5rem;">
+        <div id="controls" class="controls-panel" style="width: 400px; min-width: 400px; max-width: 400px; height: 100vh; overflow-y: auto; overflow-x: hidden; background-color: white; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; padding: 1.5rem; border-right: 1px solid #e5e7eb;">
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
                 <div class="flex items-center gap-3"><i class="fas fa-magic-wand-sparkles text-3xl text-blue-600"></i><h1 class="text-2xl font-bold text-gray-800">Créateur de CV</h1></div>
                 <div class="flex items-center gap-2">
@@ -1033,7 +1063,7 @@
         </div>
 
         <!-- PREVIEW PANEL -->
-        <div class="preview-panel bg-gray-200 flex justify-center items-start overflow-auto" id="preview-area" style="padding: 2rem;">
+        <div class="preview-panel" style="flex: 1; height: 100vh; overflow-y: auto; overflow-x: hidden; background-color: #f3f4f6; display: flex; justify-content: center; align-items: flex-start; padding: 2rem;" id="preview-area">
             <div id="cv-preview-wrapper">
                 <div class="a4-page-container">
                     <div id="page-1" class="a4-page">
