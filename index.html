@@ -2179,6 +2179,12 @@
                 }, duration);
             }
             
+            // Alias pour compatibilité
+            function showToast(message, type = 'success', duration = 3000) {
+                console.log(`🍞 [TOAST] ${message}`, { type, duration });
+                return showNotification(message, type, duration);
+            }
+            
             // === GEMINI API FUNCTIONS ===
             
             // Configuration API
@@ -3086,12 +3092,15 @@
                         tokens: testPrompt.length
                     });
                     
-                    if (result.toLowerCase().includes('test')) {
+                    if (result && typeof result === 'string' && result.toLowerCase().includes('test')) {
                         updateApiStatus('success', 'Connexion API réussie !');
                         showNotification('API Gemini connectée avec succès', 'success');
-                    } else {
+                    } else if (result) {
                         updateApiStatus('success', 'API connectée (réponse inattendue)');
                         showNotification('API connectée mais réponse inattendue', 'warning');
+                    } else {
+                        updateApiStatus('error', 'Réponse vide de l\'API');
+                        showNotification('API Gemini: réponse vide', 'error');
                     }
                 } catch (error) {
                     const duration = Date.now() - startTime;
