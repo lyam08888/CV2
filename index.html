@@ -4000,10 +4000,19 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                         if (!profileText) { showNotification("Le profil est vide.", "error"); return; }
                         prompt = `En tant qu'expert en recrutement, réécris ce profil de CV pour qu'il soit plus percutant et professionnel, en utilisant des verbes d'action forts. Garde une longueur similaire et un ton professionnel. Ne retourne que le paragraphe final réécrit, sans aucun commentaire. Le profil actuel est : "${profileText}"`;
                         targetControl = controls.description;
-                        const newProfile = await callGeminiAPI(prompt);
-                        if (newProfile && targetControl) {
-                            targetControl.value = newProfile;
-                            showNotification("Profil amélioré par l'IA.", "success");
+                        try {
+                            const newProfile = await callAIWithPriority(prompt);
+                            if (newProfile && targetControl) {
+                                targetControl.value = newProfile;
+                                showNotification("Profil amélioré par l'IA.", "success");
+                            }
+                        } catch (error) {
+                            console.error("❌ Erreur lors de la réécriture du profil:", error);
+                            if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                                showNotification("⚠️ Quota dépassé. Configurez OpenAI dans l'onglet API pour continuer.", "warning");
+                            } else {
+                                showNotification(`❌ Erreur: ${error.message}`, "error");
+                            }
                         }
                         break;
                     case 'summarize-experience':
@@ -4014,11 +4023,30 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                         if (formations.length === 0) { showNotification("Aucune formation à améliorer.", "error"); return; }
                         const formationSchema = { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, meta: { type: "STRING" } } } };
                         const formationPrompt = `En tant qu'expert RH, améliore la formulation de ces entrées de formation pour un CV. Rends les titres plus percutants et les descriptions plus claires si nécessaire. Ne retourne que le résultat final sous forme de tableau JSON \`[{"title": "...", "meta": "..."}]\` sans aucun commentaire ou texte additionnel. Voici les données actuelles : ${JSON.stringify(formations.map(f => ({ title: f.title, meta: f.meta })))}`;
-                        const newFormations = await callGeminiAPI(formationPrompt, formationSchema);
-                        if (newFormations && Array.isArray(newFormations)) {
-                            controls.formationList.innerHTML = '';
-                            newFormations.forEach(form => createDynamicItem(controls.formationList, [{ key: 'title', placeholder: 'Nom du diplôme' }, { key: 'meta', placeholder: 'Établissement & Année' }], form));
-                            showNotification("Formations améliorées par l'IA.", "success");
+                        try {
+                            const newFormations = await callGeminiAPI(formationPrompt, formationSchema);
+                            if (newFormations && Array.isArray(newFormations)) {
+                                controls.formationList.innerHTML = '';
+                                newFormations.forEach(form => createDynamicItem(controls.formationList, [{ key: 'title', placeholder: 'Nom du diplôme' }, { key: 'meta', placeholder: 'Établissement & Année' }], form));
+                                showNotification("Formations améliorées par l'IA.", "success");
+                            }
+                        } catch (error) {
+                            console.error("❌ Erreur lors de l'amélioration des formations:", error);
+                            if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                                showNotification("⚠️ Quota Gemini dépassé. Tentative avec OpenAI...", "warning");
+                                try {
+                                    const newFormations = await callOpenAI(formationPrompt, formationSchema);
+                                    if (newFormations && Array.isArray(newFormations)) {
+                                        controls.formationList.innerHTML = '';
+                                        newFormations.forEach(form => createDynamicItem(controls.formationList, [{ key: 'title', placeholder: 'Nom du diplôme' }, { key: 'meta', placeholder: 'Établissement & Année' }], form));
+                                        showNotification("Formations améliorées par OpenAI.", "success");
+                                    }
+                                } catch (openaiError) {
+                                    showNotification(`❌ Toutes les APIs sont indisponibles: ${openaiError.message}`, "error");
+                                }
+                            } else {
+                                showNotification(`❌ Erreur: ${error.message}`, "error");
+                            }
                         }
                         break;
                     case 'rewrite-skills':
@@ -4070,20 +4098,34 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 }
 
                 showLoader("Synthèse des expériences...");
-                for (let i = 0; i < experienceItems.length; i++) {
-                    const textarea = experienceItems[i];
-                    const originalText = textarea.value;
-                    if (originalText) {
-                        const prompt = `Résume la description de cette mission professionnelle en 5 lignes maximum. Utilise des verbes d'action et un format de liste à puces (chaque point commençant par '• '). Ne retourne que le texte final formaté en liste à puces, sans aucune phrase d'introduction, de conclusion ou de commentaire. Voici la description : "${originalText}"`;
-                        const summary = await callGeminiAPI(prompt);
-                        if (summary) {
-                            textarea.value = summary;
+                try {
+                    for (let i = 0; i < experienceItems.length; i++) {
+                        const textarea = experienceItems[i];
+                        const originalText = textarea.value;
+                        if (originalText) {
+                            const prompt = `Résume la description de cette mission professionnelle en 5 lignes maximum. Utilise des verbes d'action et un format de liste à puces (chaque point commençant par '• '). Ne retourne que le texte final formaté en liste à puces, sans aucune phrase d'introduction, de conclusion ou de commentaire. Voici la description : "${originalText}"`;
+                            try {
+                                const summary = await callAIWithPriority(prompt);
+                                if (summary) {
+                                    textarea.value = summary;
+                                }
+                            } catch (error) {
+                                console.error(`❌ Erreur lors du résumé de l'expérience ${i+1}:`, error);
+                                if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                                    showNotification(`⚠️ Quota dépassé à l'expérience ${i+1}. Configurez OpenAI pour continuer.`, "warning");
+                                    break; // Arrêter le traitement des autres expériences
+                                }
+                            }
                         }
                     }
+                } catch (globalError) {
+                    console.error("❌ Erreur globale lors du résumé des expériences:", globalError);
+                    showNotification(`❌ Erreur: ${globalError.message}`, "error");
+                } finally {
+                    hideLoader();
+                    updatePreview('form');
                 }
-                hideLoader();
-                updatePreview('form');
-                showNotification("Toutes les expériences ont été synthétisées.", "success");
+                showNotification("Synthèse des expériences terminée.", "success");
             }
 
             async function synthesizeSkillsWithAI() {
@@ -4094,11 +4136,20 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 }
                 const prompt = `Analyse cette liste de compétences de CV: "${currentSkills}". Regroupe-les par catégories pertinentes (ex: Langages, Frameworks, Outils, Logiciels, Langues, etc.). Retourne le résultat sous la forme "Catégorie 1: compétence A, compétence B\nCatégorie 2: compétence C, compétence D". Ne retourne que le texte final formaté, sans aucune phrase d'introduction, de conclusion ou de commentaire.`;
 
-                const organizedSkills = await callGeminiAPI(prompt);
-                if (organizedSkills) {
-                    controls.competences.value = organizedSkills;
-                    updatePreview('form');
-                    showNotification("Compétences organisées par l'IA.", "success");
+                try {
+                    const organizedSkills = await callAIWithPriority(prompt);
+                    if (organizedSkills) {
+                        controls.competences.value = organizedSkills;
+                        updatePreview('form');
+                        showNotification("Compétences organisées par l'IA.", "success");
+                    }
+                } catch (error) {
+                    console.error("❌ Erreur lors de l'organisation des compétences:", error);
+                    if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                        showNotification("⚠️ Quota dépassé. Configurez OpenAI dans l'onglet API pour continuer.", "warning");
+                    } else {
+                        showNotification(`❌ Erreur: ${error.message}`, "error");
+                    }
                 }
             }
 
@@ -4115,11 +4166,20 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 }
                 const prompt = `À partir de cette liste de compétences: "${currentSkills}", sélectionne les 10 compétences les plus importantes et pertinentes pour un poste de "${jobTitle}". Retourne uniquement la liste des 10 compétences, séparées par des virgules, sans aucune phrase d'introduction, de conclusion ou de commentaire.`;
 
-                const limitedSkills = await callGeminiAPI(prompt);
-                if (limitedSkills) {
-                    controls.competences.value = limitedSkills;
-                    updatePreview('form');
-                    showNotification("Compétences limitées à 10 par l'IA.", "success");
+                try {
+                    const limitedSkills = await callAIWithPriority(prompt);
+                    if (limitedSkills) {
+                        controls.competences.value = limitedSkills;
+                        updatePreview('form');
+                        showNotification("Compétences limitées à 10 par l'IA.", "success");
+                    }
+                } catch (error) {
+                    console.error("❌ Erreur lors de la limitation des compétences:", error);
+                    if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                        showNotification("⚠️ Quota dépassé. Configurez OpenAI dans l'onglet API pour continuer.", "warning");
+                    } else {
+                        showNotification(`❌ Erreur: ${error.message}`, "error");
+                    }
                 }
             }
             
@@ -4634,8 +4694,30 @@ Texte à analyser :
                         }
                     } catch (error) {
                         console.warn("🔄 Erreur avec le système de priorité, tentative avec schema:", error.message);
-                        // Fallback vers la fonction legacy avec schema
-                        extractedData = await callGeminiAPI(prompt, schema);
+                        
+                        // Si c'est une erreur de quota, ne pas essayer le fallback Gemini
+                        if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                            console.log("⚠️ Quota Gemini dépassé, tentative avec OpenAI...");
+                            try {
+                                extractedData = await callOpenAI(prompt, schema);
+                            } catch (openaiError) {
+                                console.error("❌ Erreur OpenAI également:", openaiError.message);
+                                throw new Error(`Toutes les APIs sont indisponibles. Gemini: ${error.message}, OpenAI: ${openaiError.message}`);
+                            }
+                        } else {
+                            // Pour les autres erreurs, tenter le fallback vers callGeminiAPI avec schema
+                            try {
+                                extractedData = await callGeminiAPI(prompt, schema);
+                            } catch (geminiError) {
+                                // Si même le fallback Gemini échoue, essayer OpenAI
+                                if (geminiError.message.includes('QUOTA_EXCEEDED')) {
+                                    console.log("⚠️ Quota Gemini dépassé lors du fallback, tentative avec OpenAI...");
+                                    extractedData = await callOpenAI(prompt, schema);
+                                } else {
+                                    throw geminiError;
+                                }
+                            }
+                        }
                     }
                     
                     console.log("📥 Données extraites par l'IA:", extractedData);
@@ -4822,10 +4904,19 @@ Texte à analyser :
 
                     **Important:** Ne retourne QUE le texte de l'e-mail (objet inclus, sous la forme "Objet: ..."), sans aucune phrase d'introduction ou de conclusion de ta part. Le ton doit être celui d'un partenaire commercial, pas celui du candidat.`;
 
-                    const mailContent = await callGeminiAPI(prompt);
-                    if (mailContent) {
-                        controls.recruiterMailContent.value = mailContent;
-                        showNotification("E-mail de présentation client généré.", "success");
+                    try {
+                        const mailContent = await callAIWithPriority(prompt);
+                        if (mailContent) {
+                            controls.recruiterMailContent.value = mailContent;
+                            showNotification("E-mail de présentation client généré.", "success");
+                        }
+                    } catch (error) {
+                        console.error("❌ Erreur lors de la génération de l'e-mail:", error);
+                        if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                            showNotification("⚠️ Quota dépassé. Configurez OpenAI dans l'onglet API pour continuer.", "warning");
+                        } else {
+                            showNotification(`❌ Erreur: ${error.message}`, "error");
+                        }
                     }
                 });
 
