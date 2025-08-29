@@ -2732,8 +2732,26 @@
             
             // Appel à l'API Gemini avec gestion avancée des erreurs
             async function callGeminiAPI(prompt, options = {}) {
+                const startTime = Date.now();
                 const apiKey = localStorage.getItem('gemini-api-key');
+                
+                // Log du début de la fonction
+                console.log('🔵 [GEMINI] Début callGeminiAPI', {
+                    timestamp: new Date().toISOString(),
+                    prompt_length: prompt?.length || 0,
+                    options: options,
+                    has_api_key: !!apiKey
+                });
+                
+                APILogger.log('info', 'gemini', 'call-start', {
+                    prompt_length: prompt?.length || 0,
+                    model: options.model || controls.aiModelSelect?.value || 'gemini-1.5-flash',
+                    has_api_key: !!apiKey
+                });
+                
                 if (!apiKey) {
+                    console.error('❌ [GEMINI] Clé API manquante');
+                    APILogger.log('error', 'gemini', 'call-error', { error: 'Clé API non configurée' });
                     throw new Error('Clé API non configurée');
                 }
 
@@ -2741,13 +2759,28 @@
                 if (isQuotaExceeded()) {
                     const retryAfter = localStorage.getItem('gemini-retry-after');
                     const retryTime = new Date(parseInt(retryAfter));
-                    throw new Error(`QUOTA_EXCEEDED: Quota dépassé. Prochaine tentative possible à ${retryTime.toLocaleString()}`);
+                    const errorMsg = `QUOTA_EXCEEDED: Quota dépassé. Prochaine tentative possible à ${retryTime.toLocaleString()}`;
+                    
+                    console.warn('⚠️ [GEMINI] Quota déjà dépassé', { retryTime: retryTime.toISOString() });
+                    APILogger.log('warning', 'gemini', 'quota-check', { 
+                        error: 'Quota déjà dépassé',
+                        retry_time: retryTime.toISOString()
+                    });
+                    
+                    throw new Error(errorMsg);
                 }
                 
                 const model = options.model || controls.aiModelSelect?.value || 'gemini-1.5-flash';
                 const temperature = options.temperature || parseFloat(controls.aiTemperature?.value || '0.7');
                 const maxTokens = options.maxTokens || parseInt(controls.aiMaxTokens?.value || '1000');
                 const retries = options.retries || 3;
+                
+                console.log('🔧 [GEMINI] Configuration', {
+                    model: model,
+                    temperature: temperature,
+                    maxTokens: maxTokens,
+                    retries: retries
+                });
                 
                 const modelName = GEMINI_CONFIG.models[model] || model;
                 const url = `${GEMINI_CONFIG.baseUrl}${modelName}:generateContent?key=${apiKey}`;
@@ -2783,13 +2816,34 @@
                 };
 
                 for (let attempt = 1; attempt <= retries; attempt++) {
+                    console.log(`🔄 [GEMINI] Tentative ${attempt}/${retries}`, {
+                        attempt: attempt,
+                        url: url,
+                        model: model
+                    });
+                    
+                    APILogger.log('info', 'gemini', `attempt-${attempt}`, {
+                        attempt: attempt,
+                        total_retries: retries,
+                        model: model
+                    });
+                    
                     try {
+                        const fetchStart = Date.now();
                         const response = await fetch(url, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify(requestBody)
+                        });
+                        
+                        const fetchDuration = Date.now() - fetchStart;
+                        console.log(`🌐 [GEMINI] Réponse HTTP reçue`, {
+                            status: response.status,
+                            ok: response.ok,
+                            fetch_duration: fetchDuration,
+                            attempt: attempt
                         });
 
                         if (!response.ok) {
@@ -2800,6 +2854,13 @@
                             } catch (e) {
                                 errorObj = { error: { message: errorData } };
                             }
+                            
+                            console.error(`❌ [GEMINI] Erreur HTTP ${response.status}`, {
+                                status: response.status,
+                                attempt: attempt,
+                                error_data: errorObj,
+                                raw_error: errorData
+                            });
 
                             // Gestion spécifique des erreurs de quota
                             if (response.status === 429) {
@@ -2807,36 +2868,142 @@
                                 localStorage.setItem('gemini-quota-exceeded', Date.now().toString());
                                 localStorage.setItem('gemini-retry-after', (Date.now() + retryAfter).toString());
                                 
+                                console.error('🚫 [GEMINI] Quota dépassé détecté', {
+                                    retry_after_ms: retryAfter,
+                                    retry_time: new Date(Date.now() + retryAfter).toISOString(),
+                                    attempt: attempt
+                                });
+                                
+                                APILogger.log('error', 'gemini', 'quota-exceeded', {
+                                    error: 'Quota dépassé',
+                                    retry_after: retryAfter,
+                                    attempt: attempt,
+                                    duration: Date.now() - startTime
+                                });
+                                
                                 const quotaError = new Error('QUOTA_EXCEEDED');
                                 quotaError.originalError = errorObj;
                                 quotaError.retryAfter = retryAfter;
                                 throw quotaError;
                             }
 
-                            throw new Error(`Erreur API: ${response.status} - ${errorObj.error?.message || errorData}`);
+                            const errorMsg = `Erreur API: ${response.status} - ${errorObj.error?.message || errorData}`;
+                            APILogger.log('error', 'gemini', 'http-error', {
+                                error: errorMsg,
+                                status: response.status,
+                                attempt: attempt,
+                                duration: Date.now() - startTime
+                            });
+                            
+                            throw new Error(errorMsg);
                         }
 
+                        const responseStart = Date.now();
                         const data = await response.json();
+                        const responseParseTime = Date.now() - responseStart;
+                        
+                        console.log(`📥 [GEMINI] Réponse JSON parsée`, {
+                            parse_duration: responseParseTime,
+                            has_candidates: !!data.candidates,
+                            candidates_count: data.candidates?.length || 0,
+                            attempt: attempt
+                        });
                         
                         if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                            console.error('❌ [GEMINI] Réponse invalide - structure manquante', {
+                                data_structure: {
+                                    has_candidates: !!data.candidates,
+                                    candidates_length: data.candidates?.length,
+                                    first_candidate: data.candidates?.[0],
+                                    has_content: !!data.candidates?.[0]?.content,
+                                    has_parts: !!data.candidates?.[0]?.content?.parts,
+                                    parts_length: data.candidates?.[0]?.content?.parts?.length,
+                                    has_text: !!data.candidates?.[0]?.content?.parts?.[0]?.text
+                                },
+                                attempt: attempt
+                            });
+                            
+                            APILogger.log('error', 'gemini', 'invalid-response', {
+                                error: 'Structure de réponse invalide',
+                                data_preview: JSON.stringify(data).substring(0, 200),
+                                attempt: attempt,
+                                duration: Date.now() - startTime
+                            });
+                            
                             throw new Error('Réponse invalide de l\'API');
                         }
 
-                        return data.candidates[0].content.parts[0].text;
+                        const content = data.candidates[0].content.parts[0].text;
+                        const successDuration = Date.now() - startTime;
+                        
+                        console.log(`🎉 [GEMINI] Succès complet!`, {
+                            content_length: content.length,
+                            content_preview: content.substring(0, 100) + (content.length > 100 ? '...' : ''),
+                            attempt: attempt,
+                            total_duration: successDuration,
+                            fetch_duration: fetchDuration,
+                            parse_duration: responseParseTime
+                        });
+                        
+                        APILogger.log('success', 'gemini', 'api-call-success', {
+                            duration: successDuration,
+                            attempt: attempt,
+                            content_length: content.length,
+                            model: model,
+                            prompt_length: prompt.length
+                        });
+
+                        return content;
                     } catch (error) {
-                        console.error(`Tentative ${attempt} échouée:`, error);
+                        console.error(`❌ [GEMINI] Tentative ${attempt}/${retries} échouée`, {
+                            error_message: error.message,
+                            error_type: error.constructor.name,
+                            attempt: attempt,
+                            duration_so_far: Date.now() - startTime,
+                            stack: error.stack?.split('\n')[0]
+                        });
+                        
+                        APILogger.log('error', 'gemini', 'attempt-failed', {
+                            error: error.message,
+                            attempt: attempt,
+                            duration: Date.now() - startTime,
+                            error_type: error.constructor.name
+                        });
                         
                         // Si c'est une erreur de quota, ne pas retry
                         if (error.message === 'QUOTA_EXCEEDED') {
+                            console.error('🚫 [GEMINI] Quota exceeded - abandon immédiat', {
+                                error: error.originalError,
+                                retry_after: error.retryAfter
+                            });
                             throw error;
                         }
                         
                         if (attempt === retries) {
+                            console.error('🔴 [GEMINI] Toutes les tentatives épuisées', {
+                                total_attempts: retries,
+                                final_error: error.message,
+                                total_duration: Date.now() - startTime
+                            });
+                            
+                            APILogger.log('error', 'gemini', 'all-attempts-failed', {
+                                error: error.message,
+                                total_attempts: retries,
+                                duration: Date.now() - startTime
+                            });
+                            
                             throw error;
                         }
                         
                         // Attendre avant de réessayer (backoff exponentiel)
-                        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+                        const delayMs = 1000 * Math.pow(2, attempt - 1);
+                        console.log(`⏳ [GEMINI] Attente avant retry`, {
+                            delay_ms: delayMs,
+                            next_attempt: attempt + 1,
+                            remaining_attempts: retries - attempt
+                        });
+                        
+                        await new Promise(resolve => setTimeout(resolve, delayMs));
                     }
                 }
             }
@@ -3066,15 +3233,52 @@
 
             // Appel à l'API OpenAI
             async function callOpenAIAPI(prompt, options = {}) {
+                const startTime = Date.now();
+                console.log('🟢 [OPENAI] Début callOpenAIAPI', {
+                    timestamp: new Date().toISOString(),
+                    prompt_length: prompt.length,
+                    options: options,
+                    start_time: startTime
+                });
+                
+                APILogger.log('info', 'openai', 'api-call-start', {
+                    prompt_length: prompt.length,
+                    options: options
+                });
+                
                 const apiKey = localStorage.getItem('openai-api-key');
                 if (!apiKey) {
+                    console.error('❌ [OPENAI] Clé API manquante');
+                    APILogger.log('error', 'openai', 'no-api-key', {
+                        error: 'Clé API OpenAI non configurée'
+                    });
                     throw new Error('Clé API OpenAI non configurée');
                 }
+                
+                console.log('🔑 [OPENAI] Clé API trouvée', {
+                    key_length: apiKey.length,
+                    key_preview: apiKey.substring(0, 8) + '...'
+                });
                 
                 const model = options.model || controls.openaiModel?.value || 'gpt-4o';
                 const temperature = options.temperature || parseFloat(controls.aiTemperature?.value || '0.7');
                 const maxTokens = options.maxTokens || parseInt(controls.aiMaxTokens?.value || '1000');
                 const retries = options.retries || 3;
+                
+                console.log('⚙️ [OPENAI] Configuration', {
+                    model: model,
+                    mapped_model: OPENAI_CONFIG.models[model] || model,
+                    temperature: temperature,
+                    max_tokens: maxTokens,
+                    retries: retries
+                });
+                
+                APILogger.log('info', 'openai', 'configuration', {
+                    model: model,
+                    temperature: temperature,
+                    max_tokens: maxTokens,
+                    retries: retries
+                });
                 
                 const requestBody = {
                     model: OPENAI_CONFIG.models[model] || model,
@@ -3087,8 +3291,27 @@
                     top_p: 0.95
                 };
 
+                console.log('📦 [OPENAI] Corps de requête préparé', {
+                    body_size: JSON.stringify(requestBody).length,
+                    messages_count: requestBody.messages.length,
+                    model: requestBody.model
+                });
+
                 for (let attempt = 1; attempt <= retries; attempt++) {
+                    console.log(`🔄 [OPENAI] Tentative ${attempt}/${retries}`, {
+                        attempt: attempt,
+                        url: OPENAI_CONFIG.baseUrl,
+                        model: requestBody.model
+                    });
+                    
+                    APILogger.log('info', 'openai', `attempt-${attempt}`, {
+                        attempt: attempt,
+                        total_retries: retries,
+                        model: requestBody.model
+                    });
+                    
                     try {
+                        const fetchStart = Date.now();
                         const response = await fetch(OPENAI_CONFIG.baseUrl, {
                             method: 'POST',
                             headers: {
@@ -3097,43 +3320,170 @@
                             },
                             body: JSON.stringify(requestBody)
                         });
+                        
+                        const fetchDuration = Date.now() - fetchStart;
+                        console.log(`🌐 [OPENAI] Réponse HTTP reçue`, {
+                            status: response.status,
+                            ok: response.ok,
+                            fetch_duration: fetchDuration,
+                            attempt: attempt
+                        });
 
                         if (!response.ok) {
                             const errorData = await response.json().catch(() => ({}));
+                            
+                            console.error(`❌ [OPENAI] Erreur HTTP ${response.status}`, {
+                                status: response.status,
+                                attempt: attempt,
+                                error_data: errorData
+                            });
                             
                             if (response.status === 429) {
                                 const retryAfter = response.headers.get('retry-after');
                                 const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, attempt) * 1000;
                                 
+                                console.error('🚫 [OPENAI] Quota dépassé détecté', {
+                                    retry_after_header: retryAfter,
+                                    wait_time_ms: waitTime,
+                                    retry_time: new Date(Date.now() + waitTime).toISOString(),
+                                    attempt: attempt
+                                });
+                                
+                                APILogger.log('error', 'openai', 'quota-exceeded', {
+                                    error: 'Quota dépassé',
+                                    wait_time: waitTime,
+                                    attempt: attempt,
+                                    duration: Date.now() - startTime
+                                });
+                                
                                 if (attempt < retries) {
-                                    console.log(`Tentative ${attempt}/${retries} échouée (429). Nouvelle tentative dans ${waitTime/1000}s...`);
+                                    console.log(`⏳ [OPENAI] Attente quota ${waitTime/1000}s avant retry`, {
+                                        wait_seconds: waitTime/1000,
+                                        next_attempt: attempt + 1
+                                    });
                                     await new Promise(resolve => setTimeout(resolve, waitTime));
                                     continue;
                                 } else {
-                                    throw new Error(`QUOTA_EXCEEDED: Quota OpenAI dépassé. ${errorData.error?.message || ''}`);
+                                    const quotaError = new Error(`QUOTA_EXCEEDED: Quota OpenAI dépassé. ${errorData.error?.message || ''}`);
+                                    quotaError.originalError = errorData;
+                                    quotaError.retryAfter = waitTime;
+                                    throw quotaError;
                                 }
                             }
                             
-                            throw new Error(errorData.error?.message || `Erreur API OpenAI: ${response.status}`);
+                            const errorMsg = errorData.error?.message || `Erreur API OpenAI: ${response.status}`;
+                            APILogger.log('error', 'openai', 'http-error', {
+                                error: errorMsg,
+                                status: response.status,
+                                attempt: attempt,
+                                duration: Date.now() - startTime
+                            });
+                            
+                            throw new Error(errorMsg);
                         }
 
+                        const responseStart = Date.now();
                         const data = await response.json();
+                        const responseParseTime = Date.now() - responseStart;
+                        
+                        console.log(`📥 [OPENAI] Réponse JSON parsée`, {
+                            parse_duration: responseParseTime,
+                            has_choices: !!data.choices,
+                            choices_count: data.choices?.length || 0,
+                            attempt: attempt
+                        });
                         
                         if (!data.choices || !data.choices[0]?.message?.content) {
+                            console.error('❌ [OPENAI] Réponse invalide - structure manquante', {
+                                data_structure: {
+                                    has_choices: !!data.choices,
+                                    choices_length: data.choices?.length,
+                                    first_choice: data.choices?.[0],
+                                    has_message: !!data.choices?.[0]?.message,
+                                    has_content: !!data.choices?.[0]?.message?.content
+                                },
+                                attempt: attempt
+                            });
+                            
+                            APILogger.log('error', 'openai', 'invalid-response', {
+                                error: 'Structure de réponse invalide',
+                                data_preview: JSON.stringify(data).substring(0, 200),
+                                attempt: attempt,
+                                duration: Date.now() - startTime
+                            });
+                            
                             throw new Error('Réponse invalide de l\'API OpenAI');
                         }
 
-                        return data.choices[0].message.content.trim();
+                        const content = data.choices[0].message.content.trim();
+                        const successDuration = Date.now() - startTime;
+                        
+                        console.log(`🎉 [OPENAI] Succès complet!`, {
+                            content_length: content.length,
+                            content_preview: content.substring(0, 100) + (content.length > 100 ? '...' : ''),
+                            attempt: attempt,
+                            total_duration: successDuration,
+                            fetch_duration: fetchDuration,
+                            parse_duration: responseParseTime,
+                            usage: data.usage
+                        });
+                        
+                        APILogger.log('success', 'openai', 'api-call-success', {
+                            duration: successDuration,
+                            attempt: attempt,
+                            content_length: content.length,
+                            model: requestBody.model,
+                            prompt_length: prompt.length,
+                            usage: data.usage
+                        });
+
+                        return content;
                     } catch (error) {
+                        console.error(`❌ [OPENAI] Tentative ${attempt}/${retries} échouée`, {
+                            error_message: error.message,
+                            error_type: error.constructor.name,
+                            attempt: attempt,
+                            duration_so_far: Date.now() - startTime,
+                            stack: error.stack?.split('\n')[0]
+                        });
+                        
+                        APILogger.log('error', 'openai', 'attempt-failed', {
+                            error: error.message,
+                            attempt: attempt,
+                            duration: Date.now() - startTime,
+                            error_type: error.constructor.name
+                        });
+                        
                         if (attempt === retries) {
+                            console.error('🔴 [OPENAI] Toutes les tentatives épuisées', {
+                                total_attempts: retries,
+                                final_error: error.message,
+                                total_duration: Date.now() - startTime
+                            });
+                            
+                            APILogger.log('error', 'openai', 'all-attempts-failed', {
+                                error: error.message,
+                                total_attempts: retries,
+                                duration: Date.now() - startTime
+                            });
+                            
                             throw error;
                         }
                         
                         if (!error.message.includes('QUOTA_EXCEEDED')) {
                             const waitTime = Math.pow(2, attempt) * 1000;
-                            console.log(`Tentative ${attempt}/${retries} échouée. Nouvelle tentative dans ${waitTime/1000}s...`);
+                            console.log(`⏳ [OPENAI] Attente avant retry`, {
+                                delay_ms: waitTime,
+                                delay_seconds: waitTime/1000,
+                                next_attempt: attempt + 1,
+                                remaining_attempts: retries - attempt
+                            });
                             await new Promise(resolve => setTimeout(resolve, waitTime));
                         } else {
+                            console.error('🚫 [OPENAI] Quota exceeded - abandon immédiat', {
+                                error: error.originalError,
+                                retry_after: error.retryAfter
+                            });
                             throw error;
                         }
                     }
@@ -3142,15 +3492,63 @@
 
             // Système de priorité des APIs
             async function callAIWithPriority(prompt, options = {}) {
+                const startTime = Date.now();
                 const priority = localStorage.getItem('api-priority') || 'gemini-first';
                 
+                console.log('🎯 [PRIORITY] Début callAIWithPriority', {
+                    timestamp: new Date().toISOString(),
+                    priority: priority,
+                    prompt_length: prompt.length,
+                    options: options,
+                    start_time: startTime
+                });
+                
+                APILogger.log('info', 'priority', 'call-start', {
+                    priority: priority,
+                    prompt_length: prompt.length,
+                    options: options
+                });
+                
                 const tryGemini = async () => {
+                    console.log('🔵 [PRIORITY] Tentative Gemini', {
+                        priority: priority,
+                        action: 'try-gemini'
+                    });
+                    
                     try {
                         updateCombinedApiStatus('active', 'Gemini actif', 'gemini');
-                        return await callGeminiAPI(prompt, options);
+                        const geminiStartTime = Date.now();
+                        const result = await callGeminiAPI(prompt, options);
+                        const geminiDuration = Date.now() - geminiStartTime;
+                        
+                        console.log('✅ [PRIORITY] Gemini réussi', {
+                            duration: geminiDuration,
+                            result_length: result?.length || 0
+                        });
+                        
+                        APILogger.log('success', 'priority', 'gemini-success', {
+                            duration: geminiDuration,
+                            result_length: result?.length || 0
+                        });
+                        
+                        return result;
                     } catch (error) {
+                        console.error('❌ [PRIORITY] Gemini échoué', {
+                            error_message: error.message,
+                            error_type: error.constructor.name,
+                            is_quota_exceeded: error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')
+                        });
+                        
+                        APILogger.log('error', 'priority', 'gemini-failed', {
+                            error: error.message,
+                            error_type: error.constructor.name,
+                            is_quota_exceeded: error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')
+                        });
+                        
                         if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
-                            console.log('Gemini quota exceeded, trying OpenAI...');
+                            console.log('🚫 [PRIORITY] Quota Gemini dépassé, fallback possible', {
+                                error: error.message
+                            });
                             return null;
                         }
                         throw error;
@@ -3158,57 +3556,157 @@
                 };
                 
                 const tryOpenAI = async () => {
+                    console.log('🟢 [PRIORITY] Tentative OpenAI', {
+                        priority: priority,
+                        action: 'try-openai'
+                    });
+                    
                     try {
                         const currentModel = controls.openaiModel?.value || 'gpt-4o';
                         const modelDisplay = currentModel === 'gpt-5' ? '🚀 GPT-5 actif' : `OpenAI ${currentModel.toUpperCase()} actif`;
                         updateCombinedApiStatus('active', modelDisplay, 'openai');
-                        return await callOpenAIAPI(prompt, options);
+                        
+                        const openaiStartTime = Date.now();
+                        const result = await callOpenAIAPI(prompt, options);
+                        const openaiDuration = Date.now() - openaiStartTime;
+                        
+                        console.log('✅ [PRIORITY] OpenAI réussi', {
+                            model: currentModel,
+                            duration: openaiDuration,
+                            result_length: result?.length || 0
+                        });
+                        
+                        APILogger.log('success', 'priority', 'openai-success', {
+                            model: currentModel,
+                            duration: openaiDuration,
+                            result_length: result?.length || 0
+                        });
+                        
+                        return result;
                     } catch (error) {
+                        console.error('❌ [PRIORITY] OpenAI échoué', {
+                            error_message: error.message,
+                            error_type: error.constructor.name,
+                            is_quota_exceeded: error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')
+                        });
+                        
+                        APILogger.log('error', 'priority', 'openai-failed', {
+                            error: error.message,
+                            error_type: error.constructor.name,
+                            is_quota_exceeded: error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')
+                        });
+                        
                         if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
-                            console.log('OpenAI quota exceeded...');
+                            console.log('🚫 [PRIORITY] Quota OpenAI dépassé', {
+                                error: error.message
+                            });
                             return null;
                         }
                         throw error;
                     }
                 };
 
+                console.log('🎯 [PRIORITY] Stratégie sélectionnée', {
+                    priority: priority,
+                    strategy: `${priority} strategy`
+                });
+
                 switch (priority) {
                     case 'gemini-first':
+                        console.log('🔵 [PRIORITY] Stratégie Gemini-First', { priority });
                         let geminiResult = await tryGemini();
-                        if (geminiResult !== null) return geminiResult;
+                        if (geminiResult !== null) {
+                            console.log('🎉 [PRIORITY] Succès avec Gemini (premier choix)', {
+                                priority: priority,
+                                total_duration: Date.now() - startTime
+                            });
+                            return geminiResult;
+                        }
                         
                         // Fallback vers OpenAI
+                        console.log('🔄 [PRIORITY] Fallback vers OpenAI', { priority });
                         const openaiKey = localStorage.getItem('openai-api-key');
                         if (openaiKey) {
                             const currentModel = controls.openaiModel?.value || 'gpt-4o';
                             const modelName = currentModel === 'gpt-5' ? '🚀 GPT-5' : currentModel.toUpperCase();
                             showToast(`Basculement vers ${modelName} (quota Gemini dépassé)`, 'info');
                             let openaiResult = await tryOpenAI();
-                            if (openaiResult !== null) return openaiResult;
+                            if (openaiResult !== null) {
+                                console.log('🎉 [PRIORITY] Succès avec OpenAI (fallback)', {
+                                    priority: priority,
+                                    model: currentModel,
+                                    total_duration: Date.now() - startTime
+                                });
+                                return openaiResult;
+                            }
+                        } else {
+                            console.log('🚫 [PRIORITY] Pas de clé OpenAI pour fallback', { priority });
                         }
                         break;
                         
                     case 'openai-first':
+                        console.log('🟢 [PRIORITY] Stratégie OpenAI-First', { priority });
                         const openaiKey2 = localStorage.getItem('openai-api-key');
                         if (openaiKey2) {
                             let openaiResult = await tryOpenAI();
-                            if (openaiResult !== null) return openaiResult;
+                            if (openaiResult !== null) {
+                                console.log('🎉 [PRIORITY] Succès avec OpenAI (premier choix)', {
+                                    priority: priority,
+                                    total_duration: Date.now() - startTime
+                                });
+                                return openaiResult;
+                            }
+                        } else {
+                            console.log('🚫 [PRIORITY] Pas de clé OpenAI configurée', { priority });
                         }
                         
                         // Fallback vers Gemini
+                        console.log('🔄 [PRIORITY] Fallback vers Gemini', { priority });
                         const currentModel = controls.openaiModel?.value || 'gpt-4o';
                         const modelName = currentModel === 'gpt-5' ? 'GPT-5' : currentModel.toUpperCase();
                         showToast(`Basculement vers Gemini (quota ${modelName} dépassé)`, 'info');
                         let geminiResult2 = await tryGemini();
-                        if (geminiResult2 !== null) return geminiResult2;
+                        if (geminiResult2 !== null) {
+                            console.log('🎉 [PRIORITY] Succès avec Gemini (fallback)', {
+                                priority: priority,
+                                total_duration: Date.now() - startTime
+                            });
+                            return geminiResult2;
+                        }
                         break;
                         
                     case 'gemini-only':
-                        return await tryGemini();
+                        console.log('🔵 [PRIORITY] Stratégie Gemini-Only', { priority });
+                        const geminiOnlyResult = await tryGemini();
+                        console.log('🎉 [PRIORITY] Résultat Gemini-Only', {
+                            priority: priority,
+                            success: geminiOnlyResult !== null,
+                            total_duration: Date.now() - startTime
+                        });
+                        return geminiOnlyResult;
                         
                     case 'openai-only':
-                        return await tryOpenAI();
+                        console.log('🟢 [PRIORITY] Stratégie OpenAI-Only', { priority });
+                        const openaiOnlyResult = await tryOpenAI();
+                        console.log('🎉 [PRIORITY] Résultat OpenAI-Only', {
+                            priority: priority,
+                            success: openaiOnlyResult !== null,
+                            total_duration: Date.now() - startTime
+                        });
+                        return openaiOnlyResult;
                 }
+                
+                const finalDuration = Date.now() - startTime;
+                console.error('💥 [PRIORITY] Toutes les APIs ont échoué', {
+                    priority: priority,
+                    total_duration: finalDuration
+                });
+                
+                APILogger.log('error', 'priority', 'all-apis-failed', {
+                    priority: priority,
+                    duration: finalDuration,
+                    error: 'Toutes les APIs indisponibles'
+                });
                 
                 updateCombinedApiStatus('error', 'Toutes les APIs indisponibles', 'none');
                 throw new Error('Toutes les APIs ont atteint leur quota ou sont indisponibles');
@@ -4669,19 +5167,88 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
 
                 switch (action) {
                     case 'rewrite-profile':
+                        console.log('🎯 [AI-BUTTON] Début réécriture profil', {
+                            action: 'rewrite-profile',
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        APILogger.log('info', 'ai-button', 'rewrite-profile-start', {
+                            action: 'rewrite-profile'
+                        });
+                        
                         const profileText = controls.description.value;
-                        if (!profileText) { showNotification("Le profil est vide.", "error"); return; }
+                        if (!profileText) { 
+                            console.log('❌ [AI-BUTTON] Profil vide', { action: 'rewrite-profile' });
+                            APILogger.log('error', 'ai-button', 'empty-profile', { error: 'Profil vide' });
+                            showNotification("Le profil est vide.", "error"); 
+                            return; 
+                        }
+                        
+                        console.log('📝 [AI-BUTTON] Profil trouvé', {
+                            action: 'rewrite-profile',
+                            profile_length: profileText.length,
+                            profile_preview: profileText.substring(0, 50) + '...'
+                        });
+                        
                         prompt = `En tant qu'expert en recrutement, réécris ce profil de CV pour qu'il soit plus percutant et professionnel, en utilisant des verbes d'action forts. Garde une longueur similaire et un ton professionnel. Ne retourne que le paragraphe final réécrit, sans aucun commentaire. Le profil actuel est : "${profileText}"`;
                         targetControl = controls.description;
+                        
+                        console.log('🚀 [AI-BUTTON] Appel API pour réécriture profil', {
+                            prompt_length: prompt.length,
+                            target_control: 'description'
+                        });
+                        
                         try {
+                            const profileStartTime = Date.now();
                             const newProfile = await callAIWithPriority(prompt);
+                            const profileDuration = Date.now() - profileStartTime;
+                            
                             if (newProfile && targetControl) {
+                                console.log('✅ [AI-BUTTON] Profil réécrit avec succès', {
+                                    action: 'rewrite-profile',
+                                    old_length: profileText.length,
+                                    new_length: newProfile.length,
+                                    duration: profileDuration,
+                                    new_preview: newProfile.substring(0, 50) + '...'
+                                });
+                                
+                                APILogger.log('success', 'ai-button', 'rewrite-profile-success', {
+                                    old_length: profileText.length,
+                                    new_length: newProfile.length,
+                                    duration: profileDuration
+                                });
+                                
                                 targetControl.value = newProfile;
                                 showNotification("Profil amélioré par l'IA.", "success");
+                            } else {
+                                console.error('❌ [AI-BUTTON] Réponse vide ou contrôle manquant', {
+                                    action: 'rewrite-profile',
+                                    has_new_profile: !!newProfile,
+                                    has_target_control: !!targetControl
+                                });
+                                
+                                APILogger.log('error', 'ai-button', 'empty-response', {
+                                    error: 'Réponse vide ou contrôle manquant'
+                                });
                             }
                         } catch (error) {
-                            console.error("❌ Erreur lors de la réécriture du profil:", error);
+                            console.error("❌ [AI-BUTTON] Erreur lors de la réécriture du profil:", {
+                                action: 'rewrite-profile',
+                                error_message: error.message,
+                                error_type: error.constructor.name,
+                                stack: error.stack?.split('\n')[0]
+                            });
+                            
+                            APILogger.log('error', 'ai-button', 'rewrite-profile-error', {
+                                error: error.message,
+                                error_type: error.constructor.name
+                            });
+                            
                             if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                                console.log('⚠️ [AI-BUTTON] Quota dépassé détecté', {
+                                    action: 'rewrite-profile',
+                                    error: error.message
+                                });
                                 showNotification("⚠️ Quota dépassé. Configurez OpenAI dans l'onglet API pour continuer.", "warning");
                             } else {
                                 showNotification(`❌ Erreur: ${error.message}`, "error");
@@ -4689,6 +5256,15 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                         }
                         break;
                     case 'summarize-experience':
+                        console.log('🎯 [AI-BUTTON] Début synthèse expériences', {
+                            action: 'summarize-experience',
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        APILogger.log('info', 'ai-button', 'summarize-experience-start', {
+                            action: 'summarize-experience'
+                        });
+                        
                         await summarizeAllExperiencesAI();
                         break;
                     case 'rewrite-formation':
@@ -4723,6 +5299,15 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                         }
                         break;
                     case 'rewrite-skills':
+                        console.log('🎯 [AI-BUTTON] Début amélioration compétences', {
+                            action: 'rewrite-skills',
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        APILogger.log('info', 'ai-button', 'rewrite-skills-start', {
+                            action: 'rewrite-skills'
+                        });
+                        
                         await synthesizeSkillsWithAI();
                         break;
                     default:
@@ -4764,37 +5349,142 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
             }
 
             async function summarizeAllExperiencesAI() {
+                console.log('🎯 [AI-FUNCTION] Début summarizeAllExperiencesAI', {
+                    function: 'summarizeAllExperiencesAI',
+                    timestamp: new Date().toISOString()
+                });
+                
+                APILogger.log('info', 'ai-function', 'summarize-experiences-start', {
+                    function: 'summarizeAllExperiencesAI'
+                });
+                
                 const experienceItems = controls.experienceList.querySelectorAll('.data-desc');
+                console.log('📋 [AI-FUNCTION] Expériences trouvées', {
+                    count: experienceItems.length,
+                    function: 'summarizeAllExperiencesAI'
+                });
+                
                 if (experienceItems.length === 0) {
+                    console.log('❌ [AI-FUNCTION] Aucune expérience trouvée', {
+                        function: 'summarizeAllExperiencesAI'
+                    });
+                    APILogger.log('error', 'ai-function', 'no-experiences', {
+                        error: 'Aucune expérience à résumer'
+                    });
                     showNotification("Aucune expérience à résumer.", "error");
                     return;
                 }
 
                 showLoader("Synthèse des expériences...");
+                const startTime = Date.now();
+                
                 try {
                     for (let i = 0; i < experienceItems.length; i++) {
+                        console.log(`🔄 [AI-FUNCTION] Traitement expérience ${i+1}/${experienceItems.length}`, {
+                            index: i + 1,
+                            total: experienceItems.length,
+                            function: 'summarizeAllExperiencesAI'
+                        });
+                        
                         const textarea = experienceItems[i];
                         const originalText = textarea.value;
+                        
                         if (originalText) {
+                            console.log(`📝 [AI-FUNCTION] Texte original trouvé`, {
+                                experience_index: i + 1,
+                                original_length: originalText.length,
+                                original_preview: originalText.substring(0, 100) + '...'
+                            });
+                            
                             const prompt = `Résume la description de cette mission professionnelle en 5 lignes maximum. Utilise des verbes d'action et un format de liste à puces (chaque point commençant par '• '). Ne retourne que le texte final formaté en liste à puces, sans aucune phrase d'introduction, de conclusion ou de commentaire. Voici la description : "${originalText}"`;
+                            
                             try {
+                                const expStartTime = Date.now();
                                 const summary = await callAIWithPriority(prompt);
+                                const expDuration = Date.now() - expStartTime;
+                                
                                 if (summary) {
+                                    console.log(`✅ [AI-FUNCTION] Expérience ${i+1} résumée`, {
+                                        experience_index: i + 1,
+                                        original_length: originalText.length,
+                                        summary_length: summary.length,
+                                        duration: expDuration,
+                                        summary_preview: summary.substring(0, 100) + '...'
+                                    });
+                                    
+                                    APILogger.log('success', 'ai-function', 'experience-summarized', {
+                                        experience_index: i + 1,
+                                        original_length: originalText.length,
+                                        summary_length: summary.length,
+                                        duration: expDuration
+                                    });
+                                    
                                     textarea.value = summary;
+                                } else {
+                                    console.log(`⚠️ [AI-FUNCTION] Résumé vide pour expérience ${i+1}`, {
+                                        experience_index: i + 1
+                                    });
+                                    APILogger.log('warning', 'ai-function', 'empty-summary', {
+                                        experience_index: i + 1
+                                    });
                                 }
                             } catch (error) {
-                                console.error(`❌ Erreur lors du résumé de l'expérience ${i+1}:`, error);
+                                console.error(`❌ [AI-FUNCTION] Erreur expérience ${i+1}:`, {
+                                    experience_index: i + 1,
+                                    error_message: error.message,
+                                    error_type: error.constructor.name,
+                                    stack: error.stack?.split('\n')[0]
+                                });
+                                
+                                APILogger.log('error', 'ai-function', 'experience-error', {
+                                    experience_index: i + 1,
+                                    error: error.message,
+                                    error_type: error.constructor.name
+                                });
+                                
                                 if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                                    console.log(`🚫 [AI-FUNCTION] Quota dépassé à l'expérience ${i+1}`, {
+                                        experience_index: i + 1,
+                                        total_processed: i + 1,
+                                        remaining: experienceItems.length - (i + 1)
+                                    });
                                     showNotification(`⚠️ Quota dépassé à l'expérience ${i+1}. Configurez OpenAI pour continuer.`, "warning");
                                     break; // Arrêter le traitement des autres expériences
                                 }
                             }
+                        } else {
+                            console.log(`⚠️ [AI-FUNCTION] Expérience ${i+1} vide`, {
+                                experience_index: i + 1
+                            });
                         }
                     }
                 } catch (globalError) {
-                    console.error("❌ Erreur globale lors du résumé des expériences:", globalError);
+                    console.error("❌ [AI-FUNCTION] Erreur globale dans summarizeAllExperiencesAI:", {
+                        error_message: globalError.message,
+                        error_type: globalError.constructor.name,
+                        duration: Date.now() - startTime,
+                        stack: globalError.stack?.split('\n')[0]
+                    });
+                    
+                    APILogger.log('error', 'ai-function', 'global-error', {
+                        error: globalError.message,
+                        duration: Date.now() - startTime,
+                        error_type: globalError.constructor.name
+                    });
+                    
                     showNotification(`❌ Erreur: ${globalError.message}`, "error");
                 } finally {
+                    const totalDuration = Date.now() - startTime;
+                    console.log('🏁 [AI-FUNCTION] Fin summarizeAllExperiencesAI', {
+                        total_duration: totalDuration,
+                        experiences_count: experienceItems.length
+                    });
+                    
+                    APILogger.log('info', 'ai-function', 'summarize-experiences-end', {
+                        duration: totalDuration,
+                        experiences_count: experienceItems.length
+                    });
+                    
                     hideLoader();
                     updatePreview('form');
                 }
@@ -4802,23 +5492,89 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
             }
 
             async function synthesizeSkillsWithAI() {
+                console.log('🎯 [AI-FUNCTION] Début synthesizeSkillsWithAI', {
+                    function: 'synthesizeSkillsWithAI',
+                    timestamp: new Date().toISOString()
+                });
+                
+                APILogger.log('info', 'ai-function', 'synthesize-skills-start', {
+                    function: 'synthesizeSkillsWithAI'
+                });
+                
                 const currentSkills = controls.competences.value;
                 if (!currentSkills) {
+                    console.log('❌ [AI-FUNCTION] Compétences vides', {
+                        function: 'synthesizeSkillsWithAI'
+                    });
+                    APILogger.log('error', 'ai-function', 'empty-skills', {
+                        error: 'Liste de compétences vide'
+                    });
                     showNotification("La liste de compétences est vide.", "error");
                     return;
                 }
+                
+                console.log('📝 [AI-FUNCTION] Compétences trouvées', {
+                    skills_length: currentSkills.length,
+                    skills_preview: currentSkills.substring(0, 100) + '...',
+                    function: 'synthesizeSkillsWithAI'
+                });
+                
                 const prompt = `Analyse cette liste de compétences de CV: "${currentSkills}". Regroupe-les par catégories pertinentes (ex: Langages, Frameworks, Outils, Logiciels, Langues, etc.). Retourne le résultat sous la forme "Catégorie 1: compétence A, compétence B\nCatégorie 2: compétence C, compétence D". Ne retourne que le texte final formaté, sans aucune phrase d'introduction, de conclusion ou de commentaire.`;
 
+                console.log('🚀 [AI-FUNCTION] Appel API pour organisation compétences', {
+                    prompt_length: prompt.length,
+                    function: 'synthesizeSkillsWithAI'
+                });
+
                 try {
+                    const startTime = Date.now();
                     const organizedSkills = await callAIWithPriority(prompt);
+                    const duration = Date.now() - startTime;
+                    
                     if (organizedSkills) {
+                        console.log('✅ [AI-FUNCTION] Compétences organisées', {
+                            original_length: currentSkills.length,
+                            organized_length: organizedSkills.length,
+                            duration: duration,
+                            organized_preview: organizedSkills.substring(0, 100) + '...',
+                            function: 'synthesizeSkillsWithAI'
+                        });
+                        
+                        APILogger.log('success', 'ai-function', 'skills-organized', {
+                            original_length: currentSkills.length,
+                            organized_length: organizedSkills.length,
+                            duration: duration
+                        });
+                        
                         controls.competences.value = organizedSkills;
                         updatePreview('form');
                         showNotification("Compétences organisées par l'IA.", "success");
+                    } else {
+                        console.log('⚠️ [AI-FUNCTION] Réponse vide pour organisation compétences', {
+                            function: 'synthesizeSkillsWithAI'
+                        });
+                        APILogger.log('warning', 'ai-function', 'empty-organized-skills', {
+                            warning: 'Réponse vide pour organisation'
+                        });
                     }
                 } catch (error) {
-                    console.error("❌ Erreur lors de l'organisation des compétences:", error);
+                    console.error("❌ [AI-FUNCTION] Erreur organisation compétences:", {
+                        error_message: error.message,
+                        error_type: error.constructor.name,
+                        function: 'synthesizeSkillsWithAI',
+                        stack: error.stack?.split('\n')[0]
+                    });
+                    
+                    APILogger.log('error', 'ai-function', 'synthesize-skills-error', {
+                        error: error.message,
+                        error_type: error.constructor.name
+                    });
+                    
                     if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                        console.log('🚫 [AI-FUNCTION] Quota dépassé pour organisation compétences', {
+                            function: 'synthesizeSkillsWithAI',
+                            error: error.message
+                        });
                         showNotification("⚠️ Quota dépassé. Configurez OpenAI dans l'onglet API pour continuer.", "warning");
                     } else {
                         showNotification(`❌ Erreur: ${error.message}`, "error");
