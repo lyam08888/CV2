@@ -3168,9 +3168,16 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 document.querySelectorAll('.custom-module-preview').forEach(m => m.remove());
                 
                 setDefaultRecruiterInfo();
-                applyTheme('professional');
-                document.querySelector('.layout-btn[data-layout="layout-1-col"]').click();
-                document.querySelector('.skill-style-btn[data-skill-style="tags"]').click();
+                
+                // S'assurer que les contrôles de thème sont disponibles avant d'appliquer le thème
+                if (controls.primaryColorPicker && controls.secondaryColorPicker && controls.bodyTextColorPicker) {
+                    applyTheme('professional');
+                } else {
+                    console.warn('Contrôles de thème non disponibles, applyTheme reporté');
+                }
+                
+                document.querySelector('.layout-btn[data-layout="layout-1-col"]')?.click();
+                document.querySelector('.skill-style-btn[data-skill-style="tags"]')?.click();
                 
                 Object.values(sliders).forEach(config => {
                     if (config.el && config.valueEl) {
@@ -3201,12 +3208,13 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 const theme = themes[themeName];
                 if (!theme) return;
 
-                controls.primaryColorPicker.value = theme.primaryColor;
-                controls.secondaryColorPicker.value = theme.secondaryColor;
-                controls.bodyTextColorPicker.value = theme.bodyTextColor;
-                controls.fontFamilyH1Select.value = theme.fontH1;
-                controls.fontFamilyH2Select.value = theme.fontH2;
-                controls.fontFamilyBodySelect.value = theme.fontBody;
+                // Vérifications de null pour éviter les erreurs TypeError
+                if (controls.primaryColorPicker) controls.primaryColorPicker.value = theme.primaryColor;
+                if (controls.secondaryColorPicker) controls.secondaryColorPicker.value = theme.secondaryColor;
+                if (controls.bodyTextColorPicker) controls.bodyTextColorPicker.value = theme.bodyTextColor;
+                if (controls.fontFamilyH1Select) controls.fontFamilyH1Select.value = theme.fontH1;
+                if (controls.fontFamilyH2Select) controls.fontFamilyH2Select.value = theme.fontH2;
+                if (controls.fontFamilyBodySelect) controls.fontFamilyBodySelect.value = theme.fontBody;
 
                 document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
                 document.querySelector(`.theme-btn[data-theme="${themeName}"]`)?.classList.add('active');
@@ -4579,7 +4587,11 @@ Texte à analyser :
             
             // --- START THE APP ---
             initializeAll();
-            resetCVToDefault(); // Start with a clean slate
+            
+            // S'assurer que tous les éléments de contrôle sont disponibles avant de réinitialiser
+            setTimeout(() => {
+                resetCVToDefault(); // Start with a clean slate
+            }, 100);
         });
 
     </script>
