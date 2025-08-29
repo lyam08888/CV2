@@ -1176,7 +1176,49 @@
             async function generateAIContent(prompt, type = 'general') {
                 try {
                     showLoader(`Génération ${type} en cours...`);
-                    const result = await callGeminiAPI(prompt);
+                    
+                    const apiKey = localStorage.getItem('gemini-api-key');
+                    if (!apiKey) {
+                        throw new Error('Clé API non configurée');
+                    }
+                    
+                    const model = controls.aiModelSelect?.value || 'gemini-1.5-flash';
+                    const temperature = parseFloat(controls.aiTemperature?.value || '0.7');
+                    const maxTokens = parseInt(controls.aiMaxTokens?.value || '1000');
+                    
+                    const modelName = GEMINI_CONFIG.models[model] || model;
+                    const url = `${GEMINI_CONFIG.baseUrl}${modelName}:generateContent?key=${apiKey}`;
+                    
+                    const requestBody = {
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }],
+                        generationConfig: {
+                            temperature: temperature,
+                            maxOutputTokens: maxTokens
+                        }
+                    };
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.error?.message || `Erreur API: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                        throw new Error('Réponse invalide de l\'API');
+                    }
+                    
+                    const result = data.candidates[0].content.parts[0].text;
                     hideLoader();
                     return result;
                 } catch (error) {
@@ -1757,11 +1799,13 @@
             // === FONCTIONS DE NETTOYAGE JSON ===
             
             function cleanJsonResponse(text) {
-                // Supprimer les balises markdown si présentes
-                let cleaned = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+                if (!text || typeof text !== 'string') return '{}';
                 
-                // Supprimer les caractères de contrôle problématiques
-                cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, '');
+                // Supprimer les balises markdown si présentes
+                let cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
+                
+                // Supprimer les caractères de contrôle problématiques (sauf \n, \r, \t)
+                cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
                 
                 // Chercher le premier { et le dernier } pour extraire le JSON
                 const firstBrace = cleaned.indexOf('{');
@@ -1769,7 +1813,14 @@
                 
                 if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
                     cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+                } else {
+                    // Si pas de structure JSON trouvée, retourner un objet vide
+                    console.warn("⚠️ Pas de structure JSON valide trouvée");
+                    return '{}';
                 }
+                
+                // Nettoyer les retours à la ligne dans les valeurs JSON
+                cleaned = cleaned.replace(/"\s*\n\s*"/g, '" "');
                 
                 return cleaned.trim();
             }
@@ -1777,25 +1828,48 @@
             function repairJsonResponse(text) {
                 let repaired = cleanJsonResponse(text);
                 
+                if (repaired === '{}') return repaired;
+                
+                try {
+                    // Test si le JSON est déjà valide
+                    JSON.parse(repaired);
+                    return repaired;
+                } catch {
+                    // Continuer avec les réparations
+                }
+                
+                // Fermer les chaînes non terminées à la fin
+                repaired = repaired.replace(/: "([^"]*?)(\s*[,}\]])$/g, ': "$1"$2');
+                repaired = repaired.replace(/: "([^"]*?)$/g, ': "$1"');
+                
                 // Réparer les guillemets non échappés dans les valeurs
-                repaired = repaired.replace(/: "([^"]*)"([^,}\]]*)"([^,}\]]*)",?/g, (match, p1, p2, p3) => {
-                    if (p2 || p3) {
-                        // Il y a des guillemets non fermés, les échapper
-                        const escapedValue = (p1 + p2 + p3).replace(/"/g, '\\"');
-                        return `: "${escapedValue}",`;
+                repaired = repaired.replace(/: "([^"\\]*(?:\\.[^"\\]*)*)"([^",}\]]*)/g, (match, p1, p2) => {
+                    if (p2.includes('"')) {
+                        const escapedValue = (p1 + p2).replace(/([^\\])"/g, '$1\\"');
+                        return `: "${escapedValue}"`;
                     }
                     return match;
                 });
                 
-                // Fermer les chaînes non terminées
+                // Fermer les chaînes ouvertes avant virgules ou accolades
                 repaired = repaired.replace(/: "([^"]*?)(\s*[,}])/g, ': "$1"$2');
                 
-                // Réparer les virgules manquantes
+                // Réparer les virgules manquantes entre propriétés
                 repaired = repaired.replace(/}(\s*)"([^"]+)":/g, '},$1"$2":');
                 repaired = repaired.replace(/](\s*)"([^"]+)":/g, '],$1"$2":');
+                repaired = repaired.replace(/"(\s*)"([^"]+)":/g, '",$1"$2":');
                 
                 // Supprimer les virgules en trop
                 repaired = repaired.replace(/,(\s*[}\]])/g, '$1');
+                
+                // Vérification finale
+                try {
+                    JSON.parse(repaired);
+                    return repaired;
+                } catch {
+                    console.warn("⚠️ Impossible de réparer le JSON");
+                    return '{}';
+                }
                 
                 return repaired;
             }
@@ -1937,8 +2011,49 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                             }
                         }
                     } else {
-                        // Pour les prompts simples, utiliser notre nouvelle fonction
-                        result = await generateAIContent(prompt, 'content');
+                        // Pour les prompts simples, utiliser directement notre fonction API
+                        const apiKey = localStorage.getItem('gemini-api-key');
+                        if (!apiKey) {
+                            throw new Error('Clé API non configurée');
+                        }
+                        
+                        const model = controls.aiModelSelect?.value || 'gemini-1.5-flash';
+                        const temperature = parseFloat(controls.aiTemperature?.value || '0.7');
+                        const maxTokens = parseInt(controls.aiMaxTokens?.value || '1000');
+                        
+                        const modelName = GEMINI_CONFIG.models[model] || model;
+                        const url = `${GEMINI_CONFIG.baseUrl}${modelName}:generateContent?key=${apiKey}`;
+                        
+                        const requestBody = {
+                            contents: [{
+                                parts: [{ text: prompt }]
+                            }],
+                            generationConfig: {
+                                temperature: temperature,
+                                maxOutputTokens: maxTokens
+                            }
+                        };
+                        
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestBody)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.error?.message || `Erreur API: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                            throw new Error('Réponse invalide de l\'API');
+                        }
+                        
+                        result = data.candidates[0].content.parts[0].text;
                     }
                     
                     hideLoader();
