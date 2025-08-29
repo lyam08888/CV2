@@ -1671,67 +1671,6 @@
                         </div>
                     </details>
                     
-                    <!-- Tests -->
-                    <details class="control-group">
-                        <summary>
-                            <span class="flex items-center gap-2">
-                                <i class="fas fa-flask text-orange-600"></i>
-                                Test & Validation
-                            </span>
-                            <label class="completion-label">
-                                <input type="checkbox" id="completion-api-test" class="completion-checkbox">
-                                <span>Fait ✅</span>
-                            </label>
-                        </summary>
-                        <div class="control-group-content space-y-3">
-                            <div>
-                                <label for="test-prompt" class="block text-sm font-medium text-gray-700 mb-2">Test personnalisé (optionnel)</label>
-                                <textarea id="test-prompt" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="Écrivez un test personnalisé pour vérifier l'API..."></textarea>
-                                <button id="run-custom-test" class="mt-2 w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-play"></i> Exécuter le test
-                                </button>
-                            </div>
-                            
-                            <div id="test-results" class="hidden mt-3 p-3 border rounded-md bg-gray-50">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">Résultat du test :</h4>
-                                <div id="test-output" class="text-sm text-gray-600 whitespace-pre-wrap"></div>
-                            </div>
-                        </div>
-                    </details>
-                    
-                    <details class="control-group" open>
-                        <summary><span>Paramètres IA</span><label class="completion-label"><input type="checkbox" id="completion-api-settings" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-4">
-                            <div>
-                                <label for="ai-model-select" class="block text-sm font-medium text-gray-700 mb-2">Modèle Gemini</label>
-                                <select id="ai-model-select" class="w-full p-2 border rounded-md text-sm">
-                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Rapide)</option>
-                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Précis)</option>
-                                    <option value="gemini-pro">Gemini Pro (Standard)</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label for="ai-temperature" class="block text-sm font-medium text-gray-700 mb-2">Créativité: <span id="temperature-value">0.7</span></label>
-                                <input type="range" id="ai-temperature" min="0" max="1" step="0.1" value="0.7" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
-                                <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                    <span>Précis</span>
-                                    <span>Créatif</span>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label for="ai-max-tokens" class="block text-sm font-medium text-gray-700 mb-2">Longueur max: <span id="max-tokens-value">1000</span> tokens</label>
-                                <input type="range" id="ai-max-tokens" min="100" max="2000" step="100" value="1000" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
-                            </div>
-                            
-                            <div class="pt-3 border-t">
-                                <button id="reset-api-settings" class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-undo"></i> Réinitialiser les paramètres
-                                </button>
-                            </div>
-                        </div>
-                    </details>
                 </div>
 
                 <!-- TAB: Contenu -->
@@ -2408,20 +2347,10 @@
                 combinedStatusIcon: document.getElementById('combined-status-icon'),
                 combinedStatusText: document.getElementById('combined-status-text'),
                 activeApiIndicator: document.getElementById('active-api-indicator'),
-                // Test Controls
-                testPrompt: document.getElementById('test-prompt'),
-                runCustomTest: document.getElementById('run-custom-test'),
-                testResults: document.getElementById('test-results'),
-                testOutput: document.getElementById('test-output'),
+                // API Status
                 apiStatus: document.getElementById('api-status'),
                 apiStatusIcon: document.getElementById('api-status-icon'),
                 apiStatusText: document.getElementById('api-status-text'),
-                aiModelSelect: document.getElementById('ai-model-select'),
-                aiTemperature: document.getElementById('ai-temperature'),
-                temperatureValue: document.getElementById('temperature-value'),
-                aiMaxTokens: document.getElementById('ai-max-tokens'),
-                maxTokensValue: document.getElementById('max-tokens-value'),
-                resetApiSettings: document.getElementById('reset-api-settings'),
                 aiSummarizeBtn: document.getElementById('ai-summarize-btn'),
                 resetRecruiterBtn: document.getElementById('reset-recruiter-btn'),
                 aiLimitSkillsBtn: document.getElementById('ai-limit-skills-btn'),
@@ -8318,27 +8247,6 @@ Texte à analyser :
                 if (controls.testGeminiApi) {
                     controls.testGeminiApi.addEventListener('click', testGeminiApi);
                 }
-                
-                // Test personnalisé
-                if (controls.runCustomTest) {
-                    controls.runCustomTest.addEventListener('click', runCustomTest);
-                }
-                
-                // Réinitialiser paramètres
-                if (controls.resetApiSettings) {
-                    controls.resetApiSettings.addEventListener('click', resetApiSettings);
-                }
-                
-                // Mise à jour des valeurs de curseurs
-                if (controls.aiTemperature && controls.temperatureValue) {
-                    controls.aiTemperature.addEventListener('input', () => {
-                        controls.temperatureValue.textContent = controls.aiTemperature.value;
-                    });
-                }
-                
-                if (controls.aiMaxTokens && controls.maxTokensValue) {
-                    controls.aiMaxTokens.addEventListener('input', () => {
-                        controls.maxTokensValue.textContent = controls.aiMaxTokens.value;
                     });
                 }
                 
