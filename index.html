@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto+Mono:wght@400;700&family=Merriweather:wght@400;700&family=Oswald:wght@400;700&family=Cormorant+Garamond:wght@400;700&family=Open+Sans:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     
@@ -3171,82 +3172,124 @@ Texte à analyser :
                     }
                 });
 
-                controls.downloadPdfBtn.addEventListener('click', async () => {
-                    const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
-                    document.body.classList.add('presentation-mode');
-
-                    const bannerImg = preview.bannerImg;
-                    const bannerBg = preview.bannerBgImg;
-                    const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
-                    const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
-
-                    const processImage = async (imgElement, isCircle = false) => {
-                        if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
-
-                        const img = new Image();
-                        img.crossOrigin = "anonymous";
-                        
-                        const promise = new Promise((resolve) => {
-                            img.onload = () => {
-                                const canvas = document.createElement('canvas');
-                                const ctx = canvas.getContext('2d');
-                                const size = Math.min(img.naturalWidth, img.naturalHeight);
-                                canvas.width = isCircle ? size : img.naturalWidth;
-                                canvas.height = isCircle ? size : img.naturalHeight;
-
-                                if (isCircle) {
-                                    ctx.beginPath();
-                                    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-                                    ctx.clip();
-                                }
-                                
-                                const hRatio = canvas.width / img.naturalWidth;
-                                const vRatio = canvas.height / img.naturalHeight;
-                                const ratio = Math.max(hRatio, vRatio);
-                                const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-                                const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
-                                
-                                const opacity = imgElement.style.opacity || '1';
-                                const filter = imgElement.style.filter || 'none';
-                                ctx.globalAlpha = parseFloat(opacity);
-                                ctx.filter = filter;
-                                
-                                ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
-
-                                imgElement.src = canvas.toDataURL('image/png');
-                                imgElement.style.borderRadius = '0';
-                                imgElement.style.objectFit = 'contain';
-                                imgElement.style.filter = 'none';
-                                imgElement.style.opacity = '1';
-                                resolve();
-                            };
-                            img.onerror = () => {
-                                console.error("Could not load image for PDF processing:", imgElement.src);
-                                resolve(); // Resolve anyway to not block PDF generation
-                            };
-                        });
-                        img.src = imgElement.src;
-                        return promise;
-                    };
+                // Function to generate PDF with selectable text using jsPDF
+                function generateSelectablePDF() {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF();
                     
-                    await processImage(bannerImg, true);
-                    await processImage(bannerBg, false);
-
-                    const opt = {
-                        margin: 0,
-                        filename: filename,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, logging: false },
-                        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
-                    };
-
-                    html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
-                        bannerImg.src = originalBannerImg.src;
-                        bannerImg.style.cssText = originalBannerImg.style;
-                        bannerBg.src = originalBannerBg.src;
-                        bannerBg.style.cssText = originalBannerBg.style;
-                        document.body.classList.remove('presentation-mode');
+                    let yPosition = 20;
+                    const margin = 20;
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const contentWidth = pageWidth - (margin * 2);
+                    
+                    // Helper function to add text with line wrapping
+                    function addText(text, fontSize = 12, isBold = false, color = [0, 0, 0]) {
+                        if (!text) return;
+                        pdf.setFontSize(fontSize);
+                        pdf.setFont("helvetica", isBold ? "bold" : "normal");
+                        pdf.setTextColor(...color);
+                        
+                        const lines = pdf.splitTextToSize(text, contentWidth);
+                        
+                        // Check if we need a new page
+                        if (yPosition + (lines.length * fontSize * 0.4) > pdf.internal.pageSize.getHeight() - 20) {
+                            pdf.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        pdf.text(lines, margin, yPosition);
+                        yPosition += lines.length * fontSize * 0.4 + 5;
+                    }
+                    
+                    // Add header section
+                    const nom = controls.prenom.value + ' ' + controls.nom.value;
+                    const poste = controls.poste.value;
+                    
+                    addText(nom, 20, true, [0, 0, 139]); // Blue color for name
+                    addText(poste, 14, false, [100, 100, 100]); // Gray for position
+                    
+                    // Add contact info
+                    let contactInfo = [];
+                    if (controls.email.value) contactInfo.push(controls.email.value);
+                    if (controls.telephone.value) contactInfo.push(controls.telephone.value);
+                    if (controls.adresse.value) contactInfo.push(controls.adresse.value);
+                    if (contactInfo.length > 0) {
+                        addText(contactInfo.join(' | '), 10, false, [100, 100, 100]);
+                    }
+                    
+                    yPosition += 10; // Add space
+                    
+                    // Add description/profile
+                    if (controls.description.value) {
+                        addText('PROFIL', 14, true);
+                        addText(controls.description.value, 11);
+                        yPosition += 10;
+                    }
+                    
+                    // Add experiences
+                    const experiences = document.querySelectorAll('#cv-experience-preview .experience-item');
+                    if (experiences.length > 0) {
+                        addText('EXPÉRIENCE PROFESSIONNELLE', 14, true);
+                        experiences.forEach(exp => {
+                            const periode = exp.querySelector('.experience-period')?.textContent || '';
+                            const posteExp = exp.querySelector('.experience-poste')?.textContent || '';
+                            const entreprise = exp.querySelector('.experience-entreprise')?.textContent || '';
+                            const description = exp.querySelector('.experience-description')?.textContent || '';
+                            
+                            if (periode) addText(periode, 10, false, [100, 100, 100]);
+                            if (posteExp) addText(posteExp, 12, true);
+                            if (entreprise) addText(entreprise, 11, false, [0, 0, 139]);
+                            if (description) addText(description, 10);
+                            yPosition += 5;
+                        });
+                        yPosition += 10;
+                    }
+                    
+                    // Add formation
+                    const formations = document.querySelectorAll('#cv-formation-preview .formation-item');
+                    if (formations.length > 0) {
+                        addText('FORMATION', 14, true);
+                        formations.forEach(form => {
+                            const periode = form.querySelector('.formation-period')?.textContent || '';
+                            const diplome = form.querySelector('.formation-diplome')?.textContent || '';
+                            const etablissement = form.querySelector('.formation-etablissement')?.textContent || '';
+                            
+                            if (periode) addText(periode, 10, false, [100, 100, 100]);
+                            if (diplome) addText(diplome, 12, true);
+                            if (etablissement) addText(etablissement, 11, false, [0, 0, 139]);
+                            yPosition += 5;
+                        });
+                        yPosition += 10;
+                    }
+                    
+                    // Add competences
+                    const competences = document.querySelector('#cv-competences-preview')?.textContent;
+                    if (competences && competences.trim()) {
+                        addText('COMPÉTENCES', 14, true);
+                        addText(competences.trim(), 11);
+                        yPosition += 10;
+                    }
+                    
+                    // Add custom sections
+                    const customSections = document.querySelectorAll('.custom-section-preview');
+                    customSections.forEach(section => {
+                        const title = section.querySelector('.section-title')?.textContent || '';
+                        const content = section.querySelector('.section-content')?.textContent || '';
+                        
+                        if (title) addText(title.toUpperCase(), 14, true);
+                        if (content) addText(content, 11);
+                        yPosition += 10;
                     });
+                    
+                    // Save the PDF
+                    const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
+                    pdf.save(filename);
+                }
+
+                controls.downloadPdfBtn.addEventListener('click', async () => {
+                    // Use the new selectable text PDF generator
+                    generateSelectablePDF();
+                    showNotification("PDF avec texte sélectionnable généré !", "success");
                 });
 
                 controls.resetCvBtn.addEventListener('click', async () => {
