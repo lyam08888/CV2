@@ -3172,114 +3172,138 @@ Texte à analyser :
                     }
                 });
 
-                // Function to generate PDF with selectable text using jsPDF
+                // Function to generate PDF with selectable text using jsPDF - Single Page Version
                 function generateSelectablePDF() {
                     const { jsPDF } = window.jspdf;
                     const pdf = new jsPDF();
                     
-                    let yPosition = 20;
-                    const margin = 20;
+                    const margin = 15;
                     const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
                     const contentWidth = pageWidth - (margin * 2);
+                    const maxContentHeight = pageHeight - (margin * 2);
                     
-                    // Helper function to add text with line wrapping
-                    function addText(text, fontSize = 12, isBold = false, color = [0, 0, 0]) {
-                        if (!text) return;
-                        pdf.setFontSize(fontSize);
-                        pdf.setFont("helvetica", isBold ? "bold" : "normal");
-                        pdf.setTextColor(...color);
+                    // Collect all content first to calculate total height needed
+                    const contentSections = [];
+                    
+                    // Helper function to prepare content sections
+                    function addContentSection(text, fontSize, isBold = false, color = [0, 0, 0], spacing = 5) {
+                        if (!text || !text.trim()) return;
                         
-                        const lines = pdf.splitTextToSize(text, contentWidth);
-                        
-                        // Check if we need a new page
-                        if (yPosition + (lines.length * fontSize * 0.4) > pdf.internal.pageSize.getHeight() - 20) {
-                            pdf.addPage();
-                            yPosition = 20;
-                        }
-                        
-                        pdf.text(lines, margin, yPosition);
-                        yPosition += lines.length * fontSize * 0.4 + 5;
+                        contentSections.push({
+                            text: text.trim(),
+                            fontSize,
+                            isBold,
+                            color,
+                            spacing
+                        });
                     }
                     
-                    // Add header section
+                    // Collect all content
                     const nom = controls.prenom.value + ' ' + controls.nom.value;
                     const poste = controls.poste.value;
                     
-                    addText(nom, 20, true, [0, 0, 139]); // Blue color for name
-                    addText(poste, 14, false, [100, 100, 100]); // Gray for position
+                    // Header
+                    addContentSection(nom, 18, true, [0, 0, 139], 3);
+                    addContentSection(poste, 12, false, [100, 100, 100], 8);
                     
-                    // Add contact info
+                    // Contact info
                     let contactInfo = [];
                     if (controls.email.value) contactInfo.push(controls.email.value);
                     if (controls.telephone.value) contactInfo.push(controls.telephone.value);
                     if (controls.adresse.value) contactInfo.push(controls.adresse.value);
                     if (contactInfo.length > 0) {
-                        addText(contactInfo.join(' | '), 10, false, [100, 100, 100]);
+                        addContentSection(contactInfo.join(' | '), 9, false, [100, 100, 100], 8);
                     }
                     
-                    yPosition += 10; // Add space
-                    
-                    // Add description/profile
+                    // Profile/Description
                     if (controls.description.value) {
-                        addText('PROFIL', 14, true);
-                        addText(controls.description.value, 11);
-                        yPosition += 10;
+                        addContentSection('PROFIL', 12, true, [0, 0, 0], 3);
+                        addContentSection(controls.description.value, 9, false, [0, 0, 0], 8);
                     }
                     
-                    // Add experiences
+                    // Experiences
                     const experiences = document.querySelectorAll('#cv-experience-preview .experience-item');
                     if (experiences.length > 0) {
-                        addText('EXPÉRIENCE PROFESSIONNELLE', 14, true);
-                        experiences.forEach(exp => {
+                        addContentSection('EXPÉRIENCE PROFESSIONNELLE', 12, true, [0, 0, 0], 3);
+                        experiences.forEach((exp, index) => {
                             const periode = exp.querySelector('.experience-period')?.textContent || '';
                             const posteExp = exp.querySelector('.experience-poste')?.textContent || '';
                             const entreprise = exp.querySelector('.experience-entreprise')?.textContent || '';
                             const description = exp.querySelector('.experience-description')?.textContent || '';
                             
-                            if (periode) addText(periode, 10, false, [100, 100, 100]);
-                            if (posteExp) addText(posteExp, 12, true);
-                            if (entreprise) addText(entreprise, 11, false, [0, 0, 139]);
-                            if (description) addText(description, 10);
-                            yPosition += 5;
+                            if (periode) addContentSection(periode, 8, false, [100, 100, 100], 2);
+                            if (posteExp) addContentSection(posteExp, 10, true, [0, 0, 0], 1);
+                            if (entreprise) addContentSection(entreprise, 9, false, [0, 0, 139], 1);
+                            if (description) addContentSection(description, 8, false, [0, 0, 0], index < experiences.length - 1 ? 5 : 3);
                         });
-                        yPosition += 10;
                     }
                     
-                    // Add formation
+                    // Formation
                     const formations = document.querySelectorAll('#cv-formation-preview .formation-item');
                     if (formations.length > 0) {
-                        addText('FORMATION', 14, true);
-                        formations.forEach(form => {
+                        addContentSection('FORMATION', 12, true, [0, 0, 0], 3);
+                        formations.forEach((form, index) => {
                             const periode = form.querySelector('.formation-period')?.textContent || '';
                             const diplome = form.querySelector('.formation-diplome')?.textContent || '';
                             const etablissement = form.querySelector('.formation-etablissement')?.textContent || '';
                             
-                            if (periode) addText(periode, 10, false, [100, 100, 100]);
-                            if (diplome) addText(diplome, 12, true);
-                            if (etablissement) addText(etablissement, 11, false, [0, 0, 139]);
-                            yPosition += 5;
+                            if (periode) addContentSection(periode, 8, false, [100, 100, 100], 2);
+                            if (diplome) addContentSection(diplome, 10, true, [0, 0, 0], 1);
+                            if (etablissement) addContentSection(etablissement, 9, false, [0, 0, 139], index < formations.length - 1 ? 4 : 3);
                         });
-                        yPosition += 10;
                     }
                     
-                    // Add competences
+                    // Competences
                     const competences = document.querySelector('#cv-competences-preview')?.textContent;
                     if (competences && competences.trim()) {
-                        addText('COMPÉTENCES', 14, true);
-                        addText(competences.trim(), 11);
-                        yPosition += 10;
+                        addContentSection('COMPÉTENCES', 12, true, [0, 0, 0], 3);
+                        addContentSection(competences.trim(), 9, false, [0, 0, 0], 3);
                     }
                     
-                    // Add custom sections
+                    // Custom sections
                     const customSections = document.querySelectorAll('.custom-section-preview');
-                    customSections.forEach(section => {
+                    customSections.forEach((section, index) => {
                         const title = section.querySelector('.section-title')?.textContent || '';
                         const content = section.querySelector('.section-content')?.textContent || '';
                         
-                        if (title) addText(title.toUpperCase(), 14, true);
-                        if (content) addText(content, 11);
-                        yPosition += 10;
+                        if (title) addContentSection(title.toUpperCase(), 12, true, [0, 0, 0], 3);
+                        if (content) addContentSection(content, 9, false, [0, 0, 0], index < customSections.length - 1 ? 8 : 3);
                     });
+                    
+                    // Calculate total height needed and scale factor
+                    let totalHeight = 0;
+                    contentSections.forEach(section => {
+                        const tempPdf = new jsPDF(); // Temporary PDF for calculations
+                        tempPdf.setFontSize(section.fontSize);
+                        const lines = tempPdf.splitTextToSize(section.text, contentWidth);
+                        totalHeight += lines.length * section.fontSize * 0.4 + section.spacing;
+                    });
+                    
+                    // Calculate scale factor to fit everything on one page
+                    const scaleFactor = totalHeight > maxContentHeight ? maxContentHeight / totalHeight : 1;
+                    
+                    // Apply content with scaling
+                    let yPosition = margin;
+                    
+                    contentSections.forEach(section => {
+                        const adjustedFontSize = Math.max(6, section.fontSize * scaleFactor); // Minimum font size of 6
+                        const adjustedSpacing = section.spacing * scaleFactor;
+                        
+                        pdf.setFontSize(adjustedFontSize);
+                        pdf.setFont("helvetica", section.isBold ? "bold" : "normal");
+                        pdf.setTextColor(...section.color);
+                        
+                        const lines = pdf.splitTextToSize(section.text, contentWidth);
+                        pdf.text(lines, margin, yPosition);
+                        yPosition += lines.length * adjustedFontSize * 0.4 + adjustedSpacing;
+                    });
+                    
+                    // Ensure we only have one page by deleting any additional pages
+                    const totalPages = pdf.getNumberOfPages();
+                    for (let i = totalPages; i > 1; i--) {
+                        pdf.deletePage(i);
+                    }
                     
                     // Save the PDF
                     const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
