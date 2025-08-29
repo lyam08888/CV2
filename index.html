@@ -2385,18 +2385,83 @@
                 controls.analyzeBtn.addEventListener('click', async () => {
                     const text = controls.aiInput.value;
                     if (!text) { showNotification("Veuillez coller du texte à analyser.", "error"); return; }
+                    
+                    // Vérification de la clé API
+                    const apiKey = localStorage.getItem('gemini-api-key');
+                    if (!apiKey) {
+                        showNotification("⚠️ Clé API non configurée ! Allez dans l'onglet API pour configurer votre clé Gemini.", "error");
+                        return;
+                    }
+                    
                     const schema = {
                         type: "OBJECT",
                         properties: {
-                            nom: { type: "STRING" }, prenom: { type: "STRING" }, poste: { type: "STRING" }, description: { type: "STRING" },
-                            experiences: { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, meta: { type: "STRING" }, desc: { type: "STRING" } } } },
-                            formations: { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, meta: { type: "STRING" } } } },
+                            nom: { type: "STRING" }, 
+                            prenom: { type: "STRING" }, 
+                            poste: { type: "STRING" }, 
+                            description: { type: "STRING" },
+                            experiences: { 
+                                type: "ARRAY", 
+                                items: { 
+                                    type: "OBJECT", 
+                                    properties: { 
+                                        title: { type: "STRING" }, 
+                                        meta: { type: "STRING" }, 
+                                        desc: { type: "STRING" } 
+                                    } 
+                                } 
+                            },
+                            formations: { 
+                                type: "ARRAY", 
+                                items: { 
+                                    type: "OBJECT", 
+                                    properties: { 
+                                        title: { type: "STRING" }, 
+                                        meta: { type: "STRING" } 
+                                    } 
+                                } 
+                            },
                             competences: { type: "STRING" }
                         }
                     };
-                    const prompt = `Analyse le texte suivant et extrais les informations pour un CV. Formate la sortie en JSON respectant ce schéma. Sois concis. Texte : """${text}"""`;
                     
+                    const prompt = `Analyse attentivement le texte suivant qui contient un CV ou des informations professionnelles et extrais TOUTES les informations suivantes :
+
+1. INFORMATIONS PERSONNELLES :
+   - nom (nom de famille)
+   - prenom (prénom)
+   - poste (titre du poste ou profession actuelle)
+
+2. DESCRIPTION PROFESSIONNELLE :
+   - description (résumé professionnel, objectifs, profil personnel en 2-3 phrases)
+
+3. EXPERIENCES PROFESSIONNELLES (array) :
+   Pour chaque emploi trouvé, extrais :
+   - title: le titre du poste
+   - meta: le nom de l'entreprise et les dates (ex: "Google - 2020-2023")
+   - desc: description des missions et responsabilités
+
+4. FORMATIONS (array) :
+   Pour chaque formation/diplôme trouvé :
+   - title: nom du diplôme ou formation
+   - meta: établissement et année (ex: "Université Paris - 2020")
+
+5. COMPETENCES :
+   - competences: liste de toutes les compétences techniques et soft skills trouvées, séparées par des virgules
+
+IMPORTANT : 
+- Extrais toutes les expériences même courtes
+- Inclus toutes les formations même non universitaires
+- Liste toutes les compétences mentionnées
+- Si une information n'est pas présente, laisse le champ vide
+- Formate la sortie en JSON strict respectant le schéma fourni
+
+Texte à analyser :
+"""${text}"""`;
+                    
+                    console.log("🤖 Prompt envoyé à l'IA:", prompt);
                     const extractedData = await callGeminiAPI(prompt, schema);
+                    console.log("📥 Données extraites par l'IA:", extractedData);
                     
                     if (extractedData) {
                         controls.nom.value = extractedData.nom || '';
@@ -2405,14 +2470,39 @@
                         controls.description.value = extractedData.description || '';
                         controls.competences.value = extractedData.competences || '';
                         
+                        // Nettoyer et remplir les expériences
                         controls.experienceList.innerHTML = '';
-                        (extractedData.experiences || []).forEach(exp => createDynamicItem(controls.experienceList, [{ key: 'title', placeholder: 'Titre du poste' }, { key: 'meta', placeholder: 'Entreprise & Dates' }, { key: 'desc', placeholder: 'Description', type: 'textarea' }], exp));
+                        if (extractedData.experiences && extractedData.experiences.length > 0) {
+                            console.log("📋 Ajout de", extractedData.experiences.length, "expériences");
+                            extractedData.experiences.forEach(exp => {
+                                createDynamicItem(controls.experienceList, [
+                                    { key: 'title', placeholder: 'Titre du poste' }, 
+                                    { key: 'meta', placeholder: 'Entreprise & Dates' }, 
+                                    { key: 'desc', placeholder: 'Description', type: 'textarea' }
+                                ], exp);
+                            });
+                        } else {
+                            console.log("⚠️ Aucune expérience extraite");
+                        }
                         
+                        // Nettoyer et remplir les formations
                         controls.formationList.innerHTML = '';
-                        (extractedData.formations || []).forEach(form => createDynamicItem(controls.formationList, [{ key: 'title', placeholder: 'Nom du diplôme' }, { key: 'meta', placeholder: 'Établissement & Année' }], form));
+                        if (extractedData.formations && extractedData.formations.length > 0) {
+                            console.log("🎓 Ajout de", extractedData.formations.length, "formations");
+                            extractedData.formations.forEach(form => {
+                                createDynamicItem(controls.formationList, [
+                                    { key: 'title', placeholder: 'Nom du diplôme' }, 
+                                    { key: 'meta', placeholder: 'Établissement & Année' }
+                                ], form);
+                            });
+                        } else {
+                            console.log("⚠️ Aucune formation extraite");
+                        }
 
                         updatePreview('form');
                         showNotification("CV rempli par l'IA !", "success");
+                    } else {
+                        showNotification("Erreur : L'IA n'a pas pu extraire les données", "error");
                     }
                 });
                 
