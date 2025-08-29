@@ -35,6 +35,7 @@
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
+            z-index: 1 !important;
         }
         
         /* PANNEAU DE CONTRÔLES REDIMENSIONNABLE */
@@ -52,6 +53,7 @@
             display: flex !important;
             flex-direction: column !important;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
+            z-index: 10 !important;
         }
         
         /* POIGNÉE DE REDIMENSIONNEMENT */
@@ -563,6 +565,23 @@
             #cv-preview-wrapper {
                 gap: 0;
             }
+        }
+
+        /* Assurer que no-print est visible en mode normal */
+        @media screen {
+            .no-print {
+                display: block !important;
+            }
+            .controls-panel.no-print {
+                display: flex !important;
+            }
+        }
+
+        /* DEBUG: Forcer l'affichage du panneau de contrôles */
+        #controls {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         /* 🚀 STYLES POUR CLÉS MULTIPLES GEMINI */
