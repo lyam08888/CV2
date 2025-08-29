@@ -429,6 +429,23 @@
                                     <span id="api-status-text" class="text-sm font-medium"></span>
                                 </div>
                             </div>
+
+                            <!-- Indicateur de Quota -->
+                            <div class="bg-gray-50 p-3 rounded-md border">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Statut Quota API:</span>
+                                    <span id="quota-status" class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">Disponible</span>
+                                </div>
+                                <div id="quota-details" class="text-xs text-gray-500 hidden">
+                                    <div>Limite: 50 requêtes/jour (gratuit)</div>
+                                    <div id="quota-reset-info" class="mt-1 hidden">
+                                        Réinitialisation: <span id="quota-reset-time"></span>
+                                    </div>
+                                </div>
+                                <button id="check-quota-status" class="mt-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200">
+                                    <i class="fas fa-chart-line"></i> Vérifier Quota
+                                </button>
+                            </div>
                         </div>
                     </details>
                     
@@ -1502,28 +1519,63 @@
             }
 
             async function generateHarmoniousColors() {
+                const fallbackFunction = () => {
+                    // Palettes harmonieuses pré-définies
+                    const harmoniousPalettes = [
+                        { primaryColor: '#2563eb', secondaryColor: '#1e40af', accentColor: '#3b82f6', neutralColor: '#64748b', backgroundColor: '#f8fafc', textColor: '#1e293b' },
+                        { primaryColor: '#dc2626', secondaryColor: '#b91c1c', accentColor: '#ef4444', neutralColor: '#6b7280', backgroundColor: '#fef2f2', textColor: '#1f2937' },
+                        { primaryColor: '#059669', secondaryColor: '#047857', accentColor: '#10b981', neutralColor: '#6b7280', backgroundColor: '#f0fdf4', textColor: '#1f2937' },
+                        { primaryColor: '#7c3aed', secondaryColor: '#6d28d9', accentColor: '#8b5cf6', neutralColor: '#6b7280', backgroundColor: '#faf5ff', textColor: '#1f2937' }
+                    ];
+                    const randomPalette = harmoniousPalettes[Math.floor(Math.random() * harmoniousPalettes.length)];
+                    applyStyleSettings(randomPalette);
+                    return "Couleurs harmonieuses appliquées (mode fallback)";
+                };
+
                 try {
                     const prompt = "Génère une palette de 6 couleurs harmonieuses pour un CV professionnel. Réponds avec un objet JSON contenant: primaryColor, secondaryColor, accentColor, neutralColor, backgroundColor, textColor (toutes en hex).";
-                    const response = await callGeminiAPI(prompt);
-                    const colors = JSON.parse(response);
-                    applyStyleSettings(colors);
-                    showToast("Couleurs harmonieuses générées par IA 🎨", "success");
+                    const response = await callAIWithFallback(prompt, fallbackFunction);
+                    if (typeof response === 'string' && response.includes('fallback')) {
+                        showToast(response, "success");
+                    } else {
+                        const colors = JSON.parse(response);
+                        applyStyleSettings(colors);
+                        showToast("Couleurs harmonieuses générées par IA 🎨", "success");
+                    }
                 } catch (error) {
                     console.error('Erreur génération couleurs:', error);
-                    showToast("Erreur lors de la génération des couleurs", "error");
+                    fallbackFunction();
+                    showToast("Couleurs harmonieuses appliquées (fallback) 🎨", "success");
                 }
             }
 
             async function generateContrastColors() {
+                const fallbackFunction = () => {
+                    // Palettes à fort contraste pré-définies
+                    const contrastPalettes = [
+                        { primaryColor: '#000000', secondaryColor: '#ffffff', accentColor: '#ff0000', neutralColor: '#808080', backgroundColor: '#ffffff', textColor: '#000000' },
+                        { primaryColor: '#ffffff', secondaryColor: '#000000', accentColor: '#00ff00', neutralColor: '#808080', backgroundColor: '#000000', textColor: '#ffffff' },
+                        { primaryColor: '#ffff00', secondaryColor: '#000080', accentColor: '#ff00ff', neutralColor: '#808080', backgroundColor: '#ffffff', textColor: '#000000' }
+                    ];
+                    const randomPalette = contrastPalettes[Math.floor(Math.random() * contrastPalettes.length)];
+                    applyStyleSettings(randomPalette);
+                    return "Couleurs contrastées appliquées (mode fallback)";
+                };
+
                 try {
                     const prompt = "Génère une palette de 6 couleurs à fort contraste pour un CV moderne et impactant. Réponds avec un objet JSON contenant: primaryColor, secondaryColor, accentColor, neutralColor, backgroundColor, textColor (toutes en hex).";
-                    const response = await callGeminiAPI(prompt);
-                    const colors = JSON.parse(response);
-                    applyStyleSettings(colors);
-                    showToast("Couleurs contrastées générées par IA ⚡", "success");
+                    const response = await callAIWithFallback(prompt, fallbackFunction);
+                    if (typeof response === 'string' && response.includes('fallback')) {
+                        showToast(response, "success");
+                    } else {
+                        const colors = JSON.parse(response);
+                        applyStyleSettings(colors);
+                        showToast("Couleurs contrastées générées par IA ⚡", "success");
+                    }
                 } catch (error) {
                     console.error('Erreur génération couleurs:', error);
-                    showToast("Erreur lors de la génération des couleurs", "error");
+                    fallbackFunction();
+                    showToast("Couleurs contrastées appliquées (fallback) ⚡", "success");
                 }
             }
 
@@ -1542,16 +1594,34 @@
             }
 
             async function generateAIFontPairing() {
+                const fallbackFunction = () => {
+                    // Combinaisons de polices pré-définies harmonieuses
+                    const fontPairings = [
+                        { fontH1: 'Playfair Display', fontH2: 'Source Sans Pro', fontH3: 'Source Sans Pro', fontBody: 'Source Sans Pro', fontAccent: 'Playfair Display' },
+                        { fontH1: 'Merriweather', fontH2: 'Open Sans', fontH3: 'Open Sans', fontBody: 'Open Sans', fontAccent: 'Merriweather' },
+                        { fontH1: 'Cormorant Garamond', fontH2: 'Lato', fontH3: 'Lato', fontBody: 'Lato', fontAccent: 'Cormorant Garamond' },
+                        { fontH1: 'Crimson Text', fontH2: 'Nunito', fontH3: 'Nunito', fontBody: 'Nunito', fontAccent: 'Crimson Text' }
+                    ];
+                    const randomPairing = fontPairings[Math.floor(Math.random() * fontPairings.length)];
+                    applyStyleSettings(randomPairing);
+                    return "Pairing de polices appliqué (mode fallback)";
+                };
+
                 try {
                     const fontList = fonts.map(f => f.name).join(', ');
                     const prompt = `Choisir une combinaison harmonieuse de 5 polices pour un CV professionnel parmi: ${fontList}. Réponds avec un objet JSON contenant: fontH1, fontH2, fontH3, fontBody, fontAccent.`;
-                    const response = await callGeminiAPI(prompt);
-                    const fontPairing = JSON.parse(response);
-                    applyStyleSettings(fontPairing);
-                    showToast("Pairing de polices généré par IA 🤖", "success");
+                    const response = await callAIWithFallback(prompt, fallbackFunction);
+                    if (typeof response === 'string' && response.includes('fallback')) {
+                        showToast(response, "success");
+                    } else {
+                        const fontPairing = JSON.parse(response);
+                        applyStyleSettings(fontPairing);
+                        showToast("Pairing de polices généré par IA 🤖", "success");
+                    }
                 } catch (error) {
                     console.error('Erreur génération polices:', error);
-                    showToast("Erreur lors de la génération du pairing", "error");
+                    fallbackFunction();
+                    showToast("Pairing de polices appliqué (fallback) 🤖", "success");
                 }
             }
             
@@ -1586,18 +1656,96 @@
                 controls.apiStatus.className = `p-3 rounded-md border ${config.color}`;
                 controls.apiStatusIcon.className = `fas ${config.icon}`;
                 controls.apiStatusText.textContent = message;
+                
+                // Mettre à jour le quota en même temps
+                updateQuotaStatus();
+            }
+
+            // Mettre à jour le statut du quota
+            function updateQuotaStatus() {
+                const quotaStatusEl = document.getElementById('quota-status');
+                const quotaDetailsEl = document.getElementById('quota-details');
+                const quotaResetInfoEl = document.getElementById('quota-reset-info');
+                const quotaResetTimeEl = document.getElementById('quota-reset-time');
+                
+                if (!quotaStatusEl) return;
+
+                if (isQuotaExceeded()) {
+                    const retryAfter = localStorage.getItem('gemini-retry-after');
+                    if (retryAfter) {
+                        const retryTime = new Date(parseInt(retryAfter));
+                        const now = new Date();
+                        const diffHours = Math.ceil((retryTime - now) / (1000 * 60 * 60));
+                        
+                        quotaStatusEl.textContent = 'Quota Dépassé';
+                        quotaStatusEl.className = 'text-xs px-2 py-1 rounded-full bg-red-100 text-red-700';
+                        
+                        if (quotaDetailsEl) quotaDetailsEl.classList.remove('hidden');
+                        if (quotaResetInfoEl) {
+                            quotaResetInfoEl.classList.remove('hidden');
+                            if (quotaResetTimeEl) {
+                                quotaResetTimeEl.textContent = `${retryTime.toLocaleString()} (dans ${diffHours}h)`;
+                            }
+                        }
+                    }
+                } else {
+                    quotaStatusEl.textContent = 'Disponible';
+                    quotaStatusEl.className = 'text-xs px-2 py-1 rounded-full bg-green-100 text-green-700';
+                    
+                    if (quotaDetailsEl) quotaDetailsEl.classList.remove('hidden');
+                    if (quotaResetInfoEl) quotaResetInfoEl.classList.add('hidden');
+                }
+            }
+
+            // Vérifier le statut du quota
+            async function checkQuotaStatus() {
+                const checkBtn = document.getElementById('check-quota-status');
+                if (checkBtn) {
+                    checkBtn.disabled = true;
+                    checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+                }
+
+                try {
+                    if (isQuotaExceeded()) {
+                        showNotification('⚠️ Quota API encore dépassé. Mode fallback actif.', 'warning');
+                    } else {
+                        // Faire un test léger pour vérifier le quota
+                        await callGeminiAPI('Test quota', { maxTokens: 10 });
+                        showNotification('✅ Quota API disponible', 'success');
+                    }
+                } catch (error) {
+                    if (error.message === 'QUOTA_EXCEEDED' || error.message.includes('QUOTA_EXCEEDED')) {
+                        showNotification('❌ Quota API dépassé. Utilisation du mode fallback.', 'error');
+                    } else {
+                        showNotification(`❌ Erreur API: ${error.message}`, 'error');
+                    }
+                } finally {
+                    updateQuotaStatus();
+                    if (checkBtn) {
+                        checkBtn.disabled = false;
+                        checkBtn.innerHTML = '<i class="fas fa-chart-line"></i> Vérifier Quota';
+                    }
+                }
             }
             
-            // Appel à l'API Gemini
+            // Appel à l'API Gemini avec gestion avancée des erreurs
             async function callGeminiAPI(prompt, options = {}) {
                 const apiKey = localStorage.getItem('gemini-api-key');
                 if (!apiKey) {
                     throw new Error('Clé API non configurée');
                 }
+
+                // Vérifier si le quota est encore dépassé
+                if (isQuotaExceeded()) {
+                    const retryAfter = localStorage.getItem('gemini-retry-after');
+                    const retryTime = new Date(parseInt(retryAfter));
+                    throw new Error(`QUOTA_EXCEEDED: Quota dépassé. Prochaine tentative possible à ${retryTime.toLocaleString()}`);
+                }
                 
                 const model = options.model || controls.aiModelSelect?.value || 'gemini-1.5-flash';
                 const temperature = options.temperature || parseFloat(controls.aiTemperature?.value || '0.7');
                 const maxTokens = options.maxTokens || parseInt(controls.aiMaxTokens?.value || '1000');
+                const retries = options.retries || 3;
                 
                 const modelName = GEMINI_CONFIG.models[model] || model;
                 const url = `${GEMINI_CONFIG.baseUrl}${modelName}:generateContent?key=${apiKey}`;
@@ -1608,30 +1756,146 @@
                     }],
                     generationConfig: {
                         temperature: temperature,
-                        maxOutputTokens: maxTokens
-                    }
-                };
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+                        maxOutputTokens: maxTokens,
+                        topP: 0.95,
+                        topK: 64,
                     },
-                    body: JSON.stringify(requestBody)
-                });
+                    safetySettings: [
+                        {
+                            category: "HARM_CATEGORY_HARASSMENT",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_HATE_SPEECH",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        }
+                    ]
+                };
+
+                for (let attempt = 1; attempt <= retries; attempt++) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestBody)
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.text();
+                            let errorObj;
+                            try {
+                                errorObj = JSON.parse(errorData);
+                            } catch (e) {
+                                errorObj = { error: { message: errorData } };
+                            }
+
+                            // Gestion spécifique des erreurs de quota
+                            if (response.status === 429) {
+                                const retryAfter = extractRetryAfter(errorObj) || 86400000; // 24h par défaut
+                                localStorage.setItem('gemini-quota-exceeded', Date.now().toString());
+                                localStorage.setItem('gemini-retry-after', (Date.now() + retryAfter).toString());
+                                
+                                const quotaError = new Error('QUOTA_EXCEEDED');
+                                quotaError.originalError = errorObj;
+                                quotaError.retryAfter = retryAfter;
+                                throw quotaError;
+                            }
+
+                            throw new Error(`Erreur API: ${response.status} - ${errorObj.error?.message || errorData}`);
+                        }
+
+                        const data = await response.json();
+                        
+                        if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                            throw new Error('Réponse invalide de l\'API');
+                        }
+
+                        return data.candidates[0].content.parts[0].text;
+                    } catch (error) {
+                        console.error(`Tentative ${attempt} échouée:`, error);
+                        
+                        // Si c'est une erreur de quota, ne pas retry
+                        if (error.message === 'QUOTA_EXCEEDED') {
+                            throw error;
+                        }
+                        
+                        if (attempt === retries) {
+                            throw error;
+                        }
+                        
+                        // Attendre avant de réessayer (backoff exponentiel)
+                        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+                    }
+                }
+            }
+
+            // Fonction pour extraire le délai de retry des erreurs de quota
+            function extractRetryAfter(errorObj) {
+                if (errorObj?.error?.details) {
+                    for (const detail of errorObj.error.details) {
+                        if (detail['@type'] === 'type.googleapis.com/google.rpc.RetryInfo' && detail.retryDelay) {
+                            const delay = detail.retryDelay;
+                            if (delay.endsWith('s')) {
+                                return parseInt(delay.slice(0, -1)) * 1000; // Convertir en millisecondes
+                            }
+                        }
+                    }
+                }
+                return 86400000; // 24h par défaut
+            }
+
+            // Vérifier si le quota est encore dépassé
+            function isQuotaExceeded() {
+                const quotaExceeded = localStorage.getItem('gemini-quota-exceeded');
+                const retryAfter = localStorage.getItem('gemini-retry-after');
                 
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error?.message || `Erreur API: ${response.status}`);
+                if (!quotaExceeded || !retryAfter) return false;
+                
+                const now = Date.now();
+                const retryTime = parseInt(retryAfter);
+                
+                if (now >= retryTime) {
+                    // Le délai est écoulé, nettoyer le localStorage
+                    localStorage.removeItem('gemini-quota-exceeded');
+                    localStorage.removeItem('gemini-retry-after');
+                    return false;
                 }
                 
-                const data = await response.json();
-                
-                if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-                    throw new Error('Réponse invalide de l\'API');
+                return true;
+            }
+
+            // Fonction wrapper avec fallback automatique
+            async function callAIWithFallback(prompt, fallbackFunction = null, options = {}) {
+                try {
+                    return await callGeminiAPI(prompt, options);
+                } catch (error) {
+                    console.error('Erreur API Gemini:', error);
+                    
+                    if (error.message === 'QUOTA_EXCEEDED' || error.message.includes('QUOTA_EXCEEDED')) {
+                        const retryAfter = error.retryAfter ? Math.ceil(error.retryAfter / 1000 / 60) : 1440; // en minutes
+                        showNotification(`⚠️ Quota API dépassé. Prochaine tentative dans ${retryAfter} minutes. Mode fallback activé.`, 'warning');
+                    } else {
+                        showNotification(`❌ Erreur IA: ${error.message}. Mode fallback activé.`, 'error');
+                    }
+                    
+                    // Exécuter la fonction fallback si fournie
+                    if (fallbackFunction && typeof fallbackFunction === 'function') {
+                        showToast("Mode fallback activé - génération alternative", "info");
+                        return fallbackFunction();
+                    }
+                    
+                    throw error;
                 }
-                
-                return data.candidates[0].content.parts[0].text;
             }
             
             // Tester la connexion API
@@ -3650,6 +3914,9 @@ Texte à analyser :
                 // Charger la clé API au démarrage
                 loadGeminiApiKey();
                 
+                // Mettre à jour le statut du quota au démarrage
+                updateQuotaStatus();
+                
                 controls.generateMailBtn.addEventListener('click', async () => {
                     const nomCandidat = `${controls.prenom.value} ${controls.nom.value}`.trim();
                     const posteCandidat = controls.poste.value;
@@ -4049,26 +4316,8 @@ Texte à analyser :
             const aiLayoutRandom = document.getElementById('ai-layout-random');
             if (aiLayoutRandom) {
                 aiLayoutRandom.addEventListener('click', async () => {
-                    try {
-                        const prompt = `Génère un layout de CV unique et créatif avec ces paramètres:
-                        - Nombre de colonnes (1-4)
-                        - Espacement entre colonnes (10-50px)
-                        - Espacement entre sections (15-40px) 
-                        - Marges (10-40px)
-                        - Taille de police (small/medium/large/xlarge)
-                        - Hauteur de ligne (tight/normal/relaxed/loose)
-                        - Alignement (left/center/right/justify)
-                        - Indentation (0-20px)
-                        
-                        Réponds uniquement avec un objet JSON valide.`;
-                        
-                        const response = await callGeminiAPI(prompt);
-                        const layout = JSON.parse(response);
-                        applyLayoutSettings(layout);
-                        showToast("Layout aléatoire généré par IA ✨", "success");
-                    } catch (error) {
-                        console.error('Erreur génération layout IA:', error);
-                        // Fallback aléatoire
+                    const fallbackFunction = () => {
+                        // Fallback: layout aléatoire sans IA
                         const randomLayout = {
                             columns: Math.floor(Math.random() * 4) + 1,
                             columnGap: Math.floor(Math.random() * 40) + 10,
@@ -4083,7 +4332,34 @@ Texte à analyser :
                             indentation: Math.floor(Math.random() * 20)
                         };
                         applyLayoutSettings(randomLayout);
-                        showToast("Layout aléatoire appliqué ✨", "success");
+                        return "Layout aléatoire appliqué (mode fallback)";
+                    };
+
+                    try {
+                        const prompt = `Génère un layout de CV unique et créatif avec ces paramètres:
+                        - Nombre de colonnes (1-4)
+                        - Espacement entre colonnes (10-50px)
+                        - Espacement entre sections (15-40px) 
+                        - Marges (10-40px)
+                        - Taille de police (small/medium/large/xlarge)
+                        - Hauteur de ligne (tight/normal/relaxed/loose)
+                        - Alignement (left/center/right/justify)
+                        - Indentation (0-20px)
+                        
+                        Réponds uniquement avec un objet JSON valide.`;
+                        
+                        const response = await callAIWithFallback(prompt, fallbackFunction);
+                        if (typeof response === 'string' && response.includes('fallback')) {
+                            showToast(response, "success");
+                        } else {
+                            const layout = JSON.parse(response);
+                            applyLayoutSettings(layout);
+                            showToast("Layout aléatoire généré par IA ✨", "success");
+                        }
+                    } catch (error) {
+                        console.error('Erreur génération layout IA:', error);
+                        fallbackFunction();
+                        showToast("Layout aléatoire appliqué (fallback) ✨", "success");
                     }
                 });
             }
@@ -4184,24 +4460,9 @@ Texte à analyser :
             const aiStyleRandom = document.getElementById('ai-style-random');
             if (aiStyleRandom) {
                 aiStyleRandom.addEventListener('click', async () => {
-                    try {
-                        const fontList = fonts.map(f => f.name).join(', ');
-                        const prompt = `Génère un style de CV unique et harmonieux avec:
-                        - Palette de couleurs cohérente (6 couleurs en hex: primaryColor, secondaryColor, accentColor, neutralColor, backgroundColor, textColor)
-                        - Combinaison de polices professionnelles (fontH1, fontH2, fontH3, fontBody, fontAccent parmi: ${fontList})
-                        - Style de titre (titleStyle: style-underline/style-side-line/style-background/style-boxed/style-gradient/style-shadow/style-3d/style-neon)
-                        - Effets visuels (effects: {shadows: boolean, gradients: boolean, borders: boolean, rounded: boolean})
-                        
-                        Réponds avec un objet JSON valide uniquement.`;
-                        
-                        const response = await callGeminiAPI(prompt);
-                        const style = JSON.parse(response);
-                        applyStyleSettings(style);
-                        showToast("Style surprise généré par IA ✨", "success");
-                    } catch (error) {
-                        console.error('Erreur génération style IA:', error);
-                        // Fallback aléatoire
-                        const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
+                    const fallbackFunction = () => {
+                        // Fallback: style aléatoire sans IA
+                        const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#84cc16'];
                         const randomStyle = {
                             primaryColor: colors[Math.floor(Math.random() * colors.length)],
                             secondaryColor: colors[Math.floor(Math.random() * colors.length)],
@@ -4223,7 +4484,31 @@ Texte à analyser :
                             }
                         };
                         applyStyleSettings(randomStyle);
-                        showToast("Style surprise appliqué ✨", "success");
+                        return "Style surprise appliqué (mode fallback)";
+                    };
+
+                    try {
+                        const fontList = fonts.map(f => f.name).join(', ');
+                        const prompt = `Génère un style de CV unique et harmonieux avec:
+                        - Palette de couleurs cohérente (6 couleurs en hex: primaryColor, secondaryColor, accentColor, neutralColor, backgroundColor, textColor)
+                        - Combinaison de polices professionnelles (fontH1, fontH2, fontH3, fontBody, fontAccent parmi: ${fontList})
+                        - Style de titre (titleStyle: style-underline/style-side-line/style-background/style-boxed/style-gradient/style-shadow/style-3d/style-neon)
+                        - Effets visuels (effects: {shadows: boolean, gradients: boolean, borders: boolean, rounded: boolean})
+                        
+                        Réponds avec un objet JSON valide uniquement.`;
+                        
+                        const response = await callAIWithFallback(prompt, fallbackFunction);
+                        if (typeof response === 'string' && response.includes('fallback')) {
+                            showToast(response, "success");
+                        } else {
+                            const style = JSON.parse(response);
+                            applyStyleSettings(style);
+                            showToast("Style surprise généré par IA ✨", "success");
+                        }
+                    } catch (error) {
+                        console.error('Erreur génération style IA:', error);
+                        fallbackFunction();
+                        showToast("Style surprise appliqué (fallback) ✨", "success");
                     }
                 });
             }
@@ -4266,6 +4551,12 @@ Texte à analyser :
             const aiFontPairing = document.getElementById('ai-font-pairing');
             if (aiFontPairing) {
                 aiFontPairing.addEventListener('click', generateAIFontPairing);
+            }
+
+            // Quota status checker
+            const checkQuotaBtn = document.getElementById('check-quota-status');
+            if (checkQuotaBtn) {
+                checkQuotaBtn.addEventListener('click', checkQuotaStatus);
             }
 
             // ==============================================
