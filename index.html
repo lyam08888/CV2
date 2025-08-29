@@ -400,7 +400,7 @@
                 </button>
             </div>
 
-            <div id="tab-content" class="py-4 flex-grow overflow-y-auto">
+            <div id="tab-content" class="py-2 flex-grow overflow-y-auto">
                 <!-- TAB: IA -->
                 <div id="panel-ia" class="tab-panel space-y-4">
                     <details class="control-group" open>
@@ -4184,18 +4184,23 @@ Texte à analyser :
 
                 // Collapse all details/expand functionality
                 controls.collapseAllBtn.addEventListener('click', () => {
-                    // Sélectionner tous les détails dans tous les onglets (IA, API, Contenu, Layout, Styles, Recrutement, Paramètres)
+                    // Sélectionner tous les détails dans tous les onglets, même cachés
                     const allDetails = document.querySelectorAll('details.control-group');
                     const collapseIcon = document.getElementById('collapse-icon');
                     const collapseText = document.getElementById('collapse-text');
                     
                     console.log(`Trouvé ${allDetails.length} éléments details.control-group dans tous les onglets`);
                     
-                    // Check current state - if any detail is open, collapse all
-                    const hasOpenDetails = Array.from(allDetails).some(detail => detail.open);
+                    // Check current state - only consider visible details for state detection
+                    const visibleDetails = Array.from(allDetails).filter(detail => {
+                        const panel = detail.closest('.tab-panel');
+                        return !panel || !panel.classList.contains('hidden');
+                    });
+                    
+                    const hasOpenDetails = visibleDetails.some(detail => detail.open);
                     
                     if (hasOpenDetails) {
-                        // Collapse all
+                        // Collapse all (including hidden ones)
                         allDetails.forEach(detail => {
                             detail.open = false;
                         });
@@ -4205,7 +4210,7 @@ Texte à analyser :
                         controls.collapseAllBtn.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
                         console.log('Tous les volets repliés');
                     } else {
-                        // Expand all
+                        // Expand all (including hidden ones)
                         allDetails.forEach(detail => {
                             detail.open = true;
                         });
