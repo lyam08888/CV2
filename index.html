@@ -1827,6 +1827,27 @@
                 
                 if (!quotaStatusEl) return;
 
+                // Vérifier si le quota est marqué comme épuisé
+                const quotaData = JSON.parse(localStorage.getItem('gemini-quota') || '{}');
+                const today = new Date().toDateString();
+                
+                if (quotaData.exhausted && quotaData.date === today) {
+                    quotaStatusEl.textContent = 'Épuisé (50/50)';
+                    quotaStatusEl.className = 'text-xs px-2 py-1 rounded-full bg-red-100 text-red-700';
+                    
+                    if (quotaDetailsEl) quotaDetailsEl.classList.remove('hidden');
+                    if (quotaResetInfoEl) {
+                        quotaResetInfoEl.classList.remove('hidden');
+                        if (quotaResetTimeEl) {
+                            const tomorrow = new Date();
+                            tomorrow.setDate(tomorrow.getDate() + 1);
+                            tomorrow.setHours(0, 0, 0, 0);
+                            quotaResetTimeEl.textContent = `Demain à 00:00 (${tomorrow.toLocaleDateString()})`;
+                        }
+                    }
+                    return;
+                }
+
                 if (isQuotaExceeded()) {
                     const retryAfter = localStorage.getItem('gemini-retry-after');
                     if (retryAfter) {
@@ -1846,7 +1867,9 @@
                         }
                     }
                 } else {
-                    quotaStatusEl.textContent = 'Disponible';
+                    // Afficher le compte actuel si disponible
+                    const currentCount = quotaData.count || 0;
+                    quotaStatusEl.textContent = `Disponible (${currentCount}/50)`;
                     quotaStatusEl.className = 'text-xs px-2 py-1 rounded-full bg-green-100 text-green-700';
                     
                     if (quotaDetailsEl) quotaDetailsEl.classList.remove('hidden');
@@ -1863,15 +1886,26 @@
                 }
 
                 try {
+                    // Vérifier d'abord si on sait déjà que le quota est épuisé
+                    const quotaData = JSON.parse(localStorage.getItem('gemini-quota') || '{}');
+                    const today = new Date().toDateString();
+                    
+                    if (quotaData.exhausted && quotaData.date === today) {
+                        showNotification('🚫 Quota API épuisé (50/50 requêtes utilisées). Mode fallback actif jusqu\'à demain.', 'warning', 6000);
+                        return;
+                    }
+                    
                     if (isQuotaExceeded()) {
                         showNotification('⚠️ Quota API encore dépassé. Mode fallback actif.', 'warning');
                     } else {
                         // Faire un test léger pour vérifier le quota
-                        await callGeminiAPI('Test quota', { maxTokens: 10 });
-                        showNotification('✅ Quota API disponible', 'success');
+                        const testResult = await callGeminiAPI('Test quota', { maxTokens: 10 });
+                        if (testResult !== null) {
+                            showNotification('✅ Quota API disponible', 'success');
+                        }
                     }
                 } catch (error) {
-                    if (error.message === 'QUOTA_EXCEEDED' || error.message.includes('QUOTA_EXCEEDED')) {
+                    if (error.message === 'QUOTA_EXCEEDED' || error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
                         showNotification('❌ Quota API dépassé. Utilisation du mode fallback.', 'error');
                     } else {
                         showNotification(`❌ Erreur API: ${error.message}`, 'error');
@@ -3236,9 +3270,94 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 } catch (error) {
                     hideLoader();
                     console.error("Erreur détaillée de l'IA:", error);
+                    
+                    // Gestion spéciale pour les erreurs de quota
+                    if (error.message.includes('429') || error.message.includes('quota') || error.message.includes('RESOURCE_EXHAUSTED')) {
+                        console.warn("🚫 Quota API épuisé, activation du mode fallback");
+                        
+                        // Marquer le quota comme épuisé
+                        const today = new Date().toDateString();
+                        const quotaData = {
+                            date: today,
+                            count: 50, // Limite atteinte
+                            exhausted: true
+                        };
+                        localStorage.setItem('gemini-quota', JSON.stringify(quotaData));
+                        
+                        // Afficher une notification explicative
+                        showNotification(
+                            '⚠️ Quota API Gemini épuisé (50 requêtes/jour). Les générateurs utilisent maintenant les fallbacks prédéfinis. Le quota se réinitialise demain.',
+                            'warning',
+                            8000
+                        );
+                        
+                        // Retourner un texte de fallback au lieu de null
+                        return generateFallbackContent(prompt);
+                    }
+                    
+                    // Autres erreurs
                     showNotification(`Erreur de l'IA : ${error.message}`, 'error', 5000);
                     return null;
                 }
+            }
+            
+            // Générateur de contenu de fallback quand le quota est épuisé
+            function generateFallbackContent(prompt) {
+                console.log("🔄 Génération de contenu fallback pour:", prompt.substring(0, 100));
+                
+                // Fallbacks basés sur des mots-clés dans le prompt
+                if (prompt.toLowerCase().includes('couleur') || prompt.toLowerCase().includes('color')) {
+                    return {
+                        primary: '#2563eb',
+                        secondary: '#64748b',
+                        accent: '#3b82f6'
+                    };
+                }
+                
+                if (prompt.toLowerCase().includes('formation') || prompt.toLowerCase().includes('education')) {
+                    return {
+                        diplome: "Diplôme universitaire",
+                        etablissement: "Université/École",
+                        annee: new Date().getFullYear() - 2,
+                        lieu: "Ville, Pays"
+                    };
+                }
+                
+                if (prompt.toLowerCase().includes('expérience') || prompt.toLowerCase().includes('experience')) {
+                    return {
+                        poste: "Poste professionnel",
+                        entreprise: "Nom de l'entreprise",
+                        debut: new Date().getFullYear() - 3,
+                        fin: new Date().getFullYear() - 1,
+                        description: "Description de l'expérience professionnelle et des responsabilités principales."
+                    };
+                }
+                
+                if (prompt.toLowerCase().includes('compétence') || prompt.toLowerCase().includes('skill')) {
+                    return {
+                        competences: [
+                            "Compétence technique 1",
+                            "Compétence technique 2", 
+                            "Compétence professionnelle 1",
+                            "Compétence professionnelle 2"
+                        ]
+                    };
+                }
+                
+                if (prompt.toLowerCase().includes('layout') || prompt.toLowerCase().includes('mise en page')) {
+                    return {
+                        colonnes: 2,
+                        espacement: "normal",
+                        style: "professionnel"
+                    };
+                }
+                
+                // Fallback générique pour analyse de texte
+                return {
+                    message: "Contenu généré automatiquement",
+                    suggestion: "Quota API épuisé - Contenu par défaut utilisé",
+                    conseil: "Le quota se réinitialise chaque jour"
+                };
             }
             
             function updateAllStyles() {
@@ -4854,10 +4973,36 @@ Texte à analyser :
             }
 
             // ==============================================
+            // RESET AUTOMATIQUE DU QUOTA
+            // ==============================================
+            
+            function resetQuotaIfNewDay() {
+                const quotaData = JSON.parse(localStorage.getItem('gemini-quota') || '{}');
+                const today = new Date().toDateString();
+                
+                // Si on a changé de jour, reset le quota
+                if (quotaData.date && quotaData.date !== today) {
+                    console.log("🔄 Nouveau jour détecté, reset du quota");
+                    localStorage.setItem('gemini-quota', JSON.stringify({
+                        date: today,
+                        count: 0,
+                        exhausted: false
+                    }));
+                    
+                    // Supprimer aussi l'ancien retry-after
+                    localStorage.removeItem('gemini-retry-after');
+                    
+                    showNotification('🎉 Nouveau jour ! Quota API réinitialisé (0/50)', 'success', 3000);
+                    updateQuotaStatus();
+                }
+            }
+
+            // ==============================================
             // END AI GENERATORS EVENT LISTENERS
             // ==============================================
             
             // --- START THE APP ---
+            resetQuotaIfNewDay(); // Vérifier et reset le quota si nouveau jour
             initializeAll();
             
             // S'assurer que tous les éléments de contrôle sont disponibles avant de réinitialiser
