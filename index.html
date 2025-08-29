@@ -150,49 +150,116 @@
             max-width: 100% !important;
         }
 
-        /* Onglets - STRICT: pas de débordement */
+        /* === SYSTÈME D'ONGLETS ENTIÈREMENT REFAIT === */
+        
+        /* Navigation des onglets - ULTRA COMPACT */
         #tab-navigation {
-            display: flex !important;
-            flex-wrap: nowrap !important;
-            max-width: 260px !important;
-            width: 100% !important;
+            display: grid !important;
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 1px !important;
+            background: #e5e7eb !important;
+            border-radius: 6px !important;
+            padding: 2px !important;
+            margin: 8px !important;
+            width: calc(100% - 16px) !important;
+            max-width: 264px !important;
             overflow: hidden !important;
-            box-sizing: border-box !important;
-            border-bottom: 1px solid #e5e7eb !important;
         }
 
-        /* Boutons d'onglets - largeur égale et très compacts */
-        #tab-navigation .tab-button {
-            font-size: 0.5rem !important;
-            padding: 0.3rem 0.1rem !important;
-            white-space: nowrap !important;
-            flex: 1 !important;
-            max-width: 52px !important;
-            min-width: 40px !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            border: none !important;
+        /* Boutons d'onglets - GRILLE ÉGALE */
+        .tab-button {
             background: #f9fafb !important;
+            border: none !important;
+            padding: 6px 2px !important;
+            font-size: 10px !important;
+            font-weight: 500 !important;
             color: #6b7280 !important;
             cursor: pointer !important;
-            transition: all 0.2s !important;
-            text-align: center !important;
-            box-sizing: border-box !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
+            transition: all 0.15s ease !important;
+            border-radius: 4px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 32px !important;
+            overflow: hidden !important;
+            word-break: break-all !important;
+            line-height: 1.1 !important;
         }
 
         /* Onglet actif */
-        #tab-navigation .tab-button.active {
+        .tab-button.active {
             background: #3b82f6 !important;
             color: white !important;
             font-weight: 600 !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
         }
 
-        /* Hover sur onglets */
-        #tab-navigation .tab-button:hover:not(.active) {
+        /* Hover sur onglets inactifs */
+        .tab-button:not(.active):hover {
             background: #e5e7eb !important;
             color: #374151 !important;
+        }
+
+        /* === CONTENU DES ONGLETS === */
+        
+        /* Conteneur principal des onglets */
+        #tab-content {
+            padding: 4px 8px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            max-width: 280px !important;
+            height: calc(100vh - 120px) !important;
+        }
+
+        /* Panneaux d'onglets */
+        .tab-panel {
+            display: none !important;
+            width: 100% !important;
+            max-width: 264px !important;
+            overflow-x: hidden !important;
+        }
+
+        .tab-panel.active {
+            display: block !important;
+        }
+
+        /* === BOUTON REPLIER === */
+        
+        /* Conteneur du bouton collapse */
+        .collapse-container {
+            padding: 4px 8px !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+
+        /* Bouton collapse compact */
+        #collapse-all-btn {
+            width: 100% !important;
+            background: #f3f4f6 !important;
+            border: 1px solid #d1d5db !important;
+            color: #6b7280 !important;
+            padding: 4px 8px !important;
+            border-radius: 4px !important;
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 4px !important;
+            cursor: pointer !important;
+            transition: all 0.15s ease !important;
+            max-width: 264px !important;
+        }
+
+        #collapse-all-btn:hover {
+            background: #e5e7eb !important;
+            border-color: #9ca3af !important;
+        }
+
+        #collapse-all-btn.active {
+            background: #dbeafe !important;
+            border-color: #3b82f6 !important;
+            color: #1d4ed8 !important;
         }
 
         /* Groupes de contrôles - espacement réduit */
@@ -953,24 +1020,25 @@
             </div>
 
 
-            <!-- TABS - COMPACTS SANS DÉBORDEMENT -->
-            <div id="tab-navigation" class="border-b border-gray-200">
-                <button class="tab-button active" data-target="#panel-ia">API</button>
-                <button class="tab-button" data-target="#panel-content">✏️</button>
-                <button class="tab-button" data-target="#panel-layout">📐</button>
-                <button class="tab-button" data-target="#panel-styles">🎨</button>
-                <button class="tab-button" data-target="#panel-settings">⚙️</button>
+            <!-- === NAVIGATION ONGLETS REFAITE === -->
+            <div id="tab-navigation">
+                <button class="tab-button active" data-target="panel-ia">API</button>
+                <button class="tab-button" data-target="panel-content">EDIT</button>
+                <button class="tab-button" data-target="panel-layout">PAGE</button>
+                <button class="tab-button" data-target="panel-styles">STYLE</button>
+                <button class="tab-button" data-target="panel-settings">CONF</button>
             </div>
 
-            <!-- COLLAPSE ALL BUTTON -->
-            <div class="px-2 pt-2 pb-1">
-                <button id="collapse-all-btn" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded-md text-xs font-medium flex items-center justify-center gap-1 transition-colors">
+            <!-- === BOUTON REPLIER === -->
+            <div class="collapse-container">
+                <button id="collapse-all-btn">
                     <i class="fa-solid fa-compress" id="collapse-icon"></i>
                     <span id="collapse-text">Replier</span>
                 </button>
             </div>
 
-            <div id="tab-content" class="px-2 flex-grow overflow-y-auto overflow-x-hidden">
+            <!-- === CONTENU ONGLETS === -->
+            <div id="tab-content">
                 <!-- TAB: IA -->
                 <div id="panel-ia" class="tab-panel space-y-4 pt-3">
                     <details class="control-group" open>
@@ -1708,7 +1776,7 @@
                 </div>
 
                 <!-- TAB: Contenu -->
-                <div id="panel-content" class="tab-panel hidden space-y-4 pt-3">
+                <div id="panel-content" class="tab-panel space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Informations Principales</span><label class="completion-label"><input type="checkbox" id="completion-content-infos" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -1791,7 +1859,7 @@
                 <!-- TAB: Compétences -->
                 
                 <!-- TAB: Mise en Page -->
-                <div id="panel-layout" class="tab-panel hidden space-y-4 pt-3">
+                <div id="panel-layout" class="tab-panel space-y-4 pt-3">
                     <!-- IA LAYOUT GENERATOR -->
                     <details class="control-group" open>
                         <summary><span>🤖 Générateur IA de Mise en Page</span><label class="completion-label"><input type="checkbox" id="completion-layout-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -1912,7 +1980,7 @@
                 </div>
                 
                 <!-- TAB: Styles Globaux -->
-                <div id="panel-styles" class="tab-panel hidden space-y-4 pt-3">
+                <div id="panel-styles" class="tab-panel space-y-4 pt-3">
                     <!-- IA STYLE GENERATOR -->
                     <details class="control-group" open>
                         <summary><span>🎨 Générateur IA de Styles</span><label class="completion-label"><input type="checkbox" id="completion-styles-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -2222,7 +2290,7 @@
                 </div>
                 
                 <!-- TAB: Paramètres -->
-                <div id="panel-settings" class="tab-panel hidden space-y-4 pt-3">
+                <div id="panel-settings" class="tab-panel space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Actions CV</span><label class="completion-label"><input type="checkbox" id="completion-actions" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -7464,20 +7532,48 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
 
                 // --- EVENT LISTENERS ---
 
-                const tabNavigation = document.getElementById('tab-navigation');
-                const tabPanels = document.querySelectorAll('.tab-panel');
-                const tabButtons = document.querySelectorAll('.tab-button');
+                // === NOUVEAU SYSTÈME D'ONGLETS ===
                 
-                tabNavigation.addEventListener('click', (e) => {
-                    const tabBtn = e.target.closest('.tab-button');
-                    if (!tabBtn) return;
-                    tabPanels.forEach(panel => panel.classList.add('hidden'));
-                    tabButtons.forEach(btn => {
-                        btn.classList.remove('active');
+                // Initialisation des onglets
+                function initTabs() {
+                    const tabButtons = document.querySelectorAll('.tab-button');
+                    const tabPanels = document.querySelectorAll('.tab-panel');
+                    
+                    // Fonction pour activer un onglet
+                    function activateTab(targetId) {
+                        // Désactiver tous les onglets et panneaux
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        tabPanels.forEach(panel => panel.classList.remove('active'));
+                        
+                        // Activer l'onglet cliqué
+                        const activeButton = document.querySelector(`[data-target="${targetId}"]`);
+                        const activePanel = document.getElementById(targetId);
+                        
+                        if (activeButton) activeButton.classList.add('active');
+                        if (activePanel) activePanel.classList.add('active');
+                        
+                        console.log(`📑 Onglet activé: ${targetId}`);
+                    }
+                    
+                    // Gestionnaire de clic sur les onglets
+                    tabButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            const targetId = button.getAttribute('data-target');
+                            activateTab(targetId);
+                        });
                     });
-                    const targetPanelId = tabBtn.dataset.target;
-                    document.querySelector(targetPanelId).classList.remove('hidden');
-                    tabBtn.classList.add('active');
+                    
+                    // Activer le premier onglet par défaut
+                    if (tabButtons.length > 0) {
+                        const firstTarget = tabButtons[0].getAttribute('data-target');
+                        activateTab(firstTarget);
+                    }
+                    
+                    console.log(`✅ Système d'onglets initialisé avec ${tabButtons.length} onglets`);
+                }
+                
+                // Lancer l'initialisation des onglets
+                initTabs();
                     tabBtn.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                 });
                 tabButtons[0].click();
