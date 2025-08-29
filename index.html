@@ -3086,18 +3086,35 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
             }
             
             function updateAllStyles() {
-                root.style.setProperty('--primary-color', controls.primaryColorPicker.value);
-                root.style.setProperty('--secondary-color', controls.secondaryColorPicker.value);
-                root.style.setProperty('--body-text-color', controls.bodyTextColorPicker.value);
-                root.style.setProperty('--font-family-h1', controls.fontFamilyH1Select.value);
-                root.style.setProperty('--font-family-h2', controls.fontFamilyH2Select.value);
-                root.style.setProperty('--font-family-body', controls.fontFamilyBodySelect.value);
+                // Vérifications de null pour éviter les erreurs TypeError
+                try {
+                    if (controls.primaryColorPicker && controls.primaryColorPicker.value) {
+                        root.style.setProperty('--primary-color', controls.primaryColorPicker.value);
+                    }
+                    if (controls.secondaryColorPicker && controls.secondaryColorPicker.value) {
+                        root.style.setProperty('--secondary-color', controls.secondaryColorPicker.value);
+                    }
+                    if (controls.bodyTextColorPicker && controls.bodyTextColorPicker.value) {
+                        root.style.setProperty('--body-text-color', controls.bodyTextColorPicker.value);
+                    }
+                    if (controls.fontFamilyH1Select && controls.fontFamilyH1Select.value) {
+                        root.style.setProperty('--font-family-h1', controls.fontFamilyH1Select.value);
+                    }
+                    if (controls.fontFamilyH2Select && controls.fontFamilyH2Select.value) {
+                        root.style.setProperty('--font-family-h2', controls.fontFamilyH2Select.value);
+                    }
+                    if (controls.fontFamilyBodySelect && controls.fontFamilyBodySelect.value) {
+                        root.style.setProperty('--font-family-body', controls.fontFamilyBodySelect.value);
+                    }
 
-                const activeStyle = document.querySelector('.section-title-style-btn.active')?.dataset.titleStyle || 'style-underline';
-                document.querySelectorAll('.section-title').forEach(title => {
-                    title.classList.remove('style-underline', 'style-side-line', 'style-background', 'style-boxed');
-                    title.classList.add(activeStyle);
-                });
+                    const activeStyle = document.querySelector('.section-title-style-btn.active')?.dataset.titleStyle || 'style-underline';
+                    document.querySelectorAll('.section-title').forEach(title => {
+                        title.classList.remove('style-underline', 'style-side-line', 'style-background', 'style-boxed');
+                        title.classList.add(activeStyle);
+                    });
+                } catch (error) {
+                    console.warn('Erreur dans updateAllStyles:', error);
+                }
                 
                 const banner = preview.banner;
                 const newBannerStyle = controls.bannerStyleSelect.value;
