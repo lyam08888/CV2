@@ -2863,6 +2863,31 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                     }
                 });
 
+                // Fonction de nettoyage du texte d'entrée
+                function cleanInputText(rawText) {
+                    let cleaned = rawText;
+                    
+                    // Nettoyer les caractères d'échappement
+                    cleaned = cleaned.replace(/\\r\\n/g, ' ');
+                    cleaned = cleaned.replace(/\\n/g, ' ');
+                    cleaned = cleaned.replace(/\\r/g, ' ');
+                    cleaned = cleaned.replace(/\r\n/g, ' ');
+                    cleaned = cleaned.replace(/\n/g, ' ');
+                    cleaned = cleaned.replace(/\r/g, ' ');
+                    
+                    // Nettoyer les espaces multiples
+                    cleaned = cleaned.replace(/\s+/g, ' ');
+                    
+                    // Nettoyer les caractères spéciaux problématiques
+                    cleaned = cleaned.replace(/[""]/g, '"');
+                    cleaned = cleaned.replace(/['']/g, "'");
+                    
+                    // Ajouter des points pour séparer les phrases qui se suivent
+                    cleaned = cleaned.replace(/([a-z])([A-Z])/g, '$1. $2');
+                    
+                    return cleaned.trim();
+                }
+
                 Object.values(sliders).forEach(config => {
                     config.el.addEventListener('input', () => {
                         config.valueEl.textContent = config.el.value;
@@ -2871,9 +2896,69 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                     });
                 });
                 
+                // Fonction de post-traitement des données extraites
+                function postProcessExtractedData(data) {
+                    const cleaned = { ...data };
+                    
+                    // Nettoyer les champs texte
+                    if (cleaned.nom) cleaned.nom = cleanTextValue(cleaned.nom);
+                    if (cleaned.prenom) cleaned.prenom = cleanTextValue(cleaned.prenom);
+                    if (cleaned.poste) cleaned.poste = cleanTextValue(cleaned.poste);
+                    if (cleaned.description) cleaned.description = cleanTextValue(cleaned.description);
+                    if (cleaned.competences) cleaned.competences = cleanTextValue(cleaned.competences);
+                    
+                    // Nettoyer les expériences
+                    if (cleaned.experiences && Array.isArray(cleaned.experiences)) {
+                        cleaned.experiences = cleaned.experiences.map(exp => ({
+                            title: cleanTextValue(exp.title || ''),
+                            meta: cleanTextValue(exp.meta || ''),
+                            desc: cleanTextValue(exp.desc || '')
+                        })).filter(exp => exp.title || exp.meta || exp.desc);
+                    }
+                    
+                    // Nettoyer les formations
+                    if (cleaned.formations && Array.isArray(cleaned.formations)) {
+                        cleaned.formations = cleaned.formations.map(form => ({
+                            title: cleanTextValue(form.title || ''),
+                            meta: cleanTextValue(form.meta || '')
+                        })).filter(form => form.title || form.meta);
+                    }
+                    
+                    // Si pas de nom/prénom mais du contenu, suggérer un placeholder
+                    if (!cleaned.nom && !cleaned.prenom && (cleaned.experiences?.length > 0 || cleaned.description)) {
+                        console.log("💡 Suggestion: Ajoutez manuellement nom et prénom");
+                        showNotification("✅ CV analysé ! N'oubliez pas d'ajouter votre nom et prénom.", "info");
+                    }
+                    
+                    return cleaned;
+                }
+                
+                function cleanTextValue(text) {
+                    if (!text) return '';
+                    
+                    let cleaned = text.toString();
+                    
+                    // Supprimer les caractères d'échappement restants
+                    cleaned = cleaned.replace(/\\r\\n/g, ' ');
+                    cleaned = cleaned.replace(/\\n/g, ' ');
+                    cleaned = cleaned.replace(/\\"/g, '"');
+                    
+                    // Nettoyer les espaces multiples
+                    cleaned = cleaned.replace(/\s+/g, ' ');
+                    
+                    // Première lettre en majuscule pour les noms
+                    cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+                    
+                    return cleaned.trim();
+                }
+                
                 controls.analyzeBtn.addEventListener('click', async () => {
-                    const text = controls.aiInput.value;
+                    let text = controls.aiInput.value;
                     if (!text) { showNotification("Veuillez coller du texte à analyser.", "error"); return; }
+                    
+                    // Nettoyage préalable du texte
+                    text = cleanInputText(text);
+                    console.log("🧹 Texte nettoyé:", text);
                     
                     // Vérification de la clé API
                     const apiKey = localStorage.getItem('gemini-api-key');
@@ -2914,39 +2999,48 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                         }
                     };
                     
-                    const prompt = `Analyse attentivement le texte suivant qui contient un CV ou des informations professionnelles et extrais TOUTES les informations suivantes :
+                    const prompt = `Tu es un expert en analyse de CV et de textes professionnels. Analyse le texte suivant et extrais INTELLIGEMMENT toutes les informations disponibles :
+
+RÈGLES D'EXTRACTION :
 
 1. INFORMATIONS PERSONNELLES :
-   - nom (nom de famille)
-   - prenom (prénom)
-   - poste (titre du poste ou profession actuelle)
+   - nom : nom de famille (si absent, laisse vide)
+   - prenom : prénom (si absent, laisse vide)  
+   - poste : déduis le poste principal à partir du contexte professionnel (ex: "Directeur Régional", "Manager", "Responsable")
 
 2. DESCRIPTION PROFESSIONNELLE :
-   - description (résumé professionnel, objectifs, profil personnel en 2-3 phrases)
+   - description : résume en 2-3 phrases le profil professionnel basé sur les expériences décrites
 
-3. EXPERIENCES PROFESSIONNELLES (array) :
-   Pour chaque emploi trouvé, extrais :
-   - title: le titre du poste
-   - meta: le nom de l'entreprise et les dates (ex: "Google - 2020-2023")
-   - desc: description des missions et responsabilités
+3. EXPERIENCES PROFESSIONNELLES :
+   ANALYSE INTELLIGENTE du texte pour identifier et structurer les expériences :
+   - Divise le texte en blocs logiques d'expériences professionnelles
+   - Pour chaque expérience identifiée :
+     * title : titre du poste ou fonction principale
+     * meta : entreprise + période (si trouvée) ou "Période non précisée"
+     * desc : missions et responsabilités (nettoie et structure le texte)
 
-4. FORMATIONS (array) :
-   Pour chaque formation/diplôme trouvé :
-   - title: nom du diplôme ou formation
-   - meta: établissement et année (ex: "Université Paris - 2020")
+4. FORMATIONS : 
+   - Cherche toute mention de diplômes, formations, études
+   - Si aucune formation explicite, laisse le tableau vide
 
 5. COMPETENCES :
-   - competences: liste de toutes les compétences techniques et soft skills trouvées, séparées par des virgules
+   - Extrais TOUTES les compétences mentionnées : techniques, managériales, sectorielles
+   - Déduis les compétences implicites à partir des missions décrites
 
-IMPORTANT : 
-- Extrais toutes les expériences même courtes
-- Inclus toutes les formations même non universitaires
-- Liste toutes les compétences mentionnées
-- Si une information n'est pas présente, laisse le champ vide
-- Formate la sortie en JSON STRICT respectant le schéma fourni
-- RETOURNE UNIQUEMENT DU JSON VALIDE, sans texte avant ou après
-- Échappe correctement tous les guillemets dans les valeurs avec \"
-- N'utilise pas de retours à la ligne dans les valeurs string
+TRAITEMENT DU TEXTE :
+- Nettoie les caractères d'échappement (\\r\\n, \\n)
+- Structure les phrases qui se suivent
+- Identifie les activités principales même si mal formatées
+- Groupe les activités similaires
+
+GESTION DES CAS PARTICULIERS :
+- Si nom/prénom absents : laisse vides mais remplis le reste
+- Si le texte est une liste d'activités : structure en expériences logiques
+- Si entreprises multiples : crée une expérience par entreprise
+- Si période continue : groupe les activités sous une même expérience
+
+FORMAT DE SORTIE :
+JSON STRICT sans texte supplémentaire. Nettoie tous les \\r\\n et caractères spéciaux.
 
 Texte à analyser :
 """${text}"""`;
@@ -2956,17 +3050,20 @@ Texte à analyser :
                     console.log("📥 Données extraites par l'IA:", extractedData);
                     
                     if (extractedData) {
-                        controls.nom.value = extractedData.nom || '';
-                        controls.prenom.value = extractedData.prenom || '';
-                        controls.poste.value = extractedData.poste || '';
-                        controls.description.value = extractedData.description || '';
-                        controls.competences.value = extractedData.competences || '';
+                        // Post-traitement des données extraites
+                        const cleanedData = postProcessExtractedData(extractedData);
+                        
+                        controls.nom.value = cleanedData.nom || '';
+                        controls.prenom.value = cleanedData.prenom || '';
+                        controls.poste.value = cleanedData.poste || '';
+                        controls.description.value = cleanedData.description || '';
+                        controls.competences.value = cleanedData.competences || '';
                         
                         // Nettoyer et remplir les expériences
                         controls.experienceList.innerHTML = '';
-                        if (extractedData.experiences && extractedData.experiences.length > 0) {
-                            console.log("📋 Ajout de", extractedData.experiences.length, "expériences");
-                            extractedData.experiences.forEach(exp => {
+                        if (cleanedData.experiences && cleanedData.experiences.length > 0) {
+                            console.log("📋 Ajout de", cleanedData.experiences.length, "expériences");
+                            cleanedData.experiences.forEach(exp => {
                                 createDynamicItem(controls.experienceList, [
                                     { key: 'title', placeholder: 'Titre du poste' }, 
                                     { key: 'meta', placeholder: 'Entreprise & Dates' }, 
@@ -2979,9 +3076,9 @@ Texte à analyser :
                         
                         // Nettoyer et remplir les formations
                         controls.formationList.innerHTML = '';
-                        if (extractedData.formations && extractedData.formations.length > 0) {
-                            console.log("🎓 Ajout de", extractedData.formations.length, "formations");
-                            extractedData.formations.forEach(form => {
+                        if (cleanedData.formations && cleanedData.formations.length > 0) {
+                            console.log("🎓 Ajout de", cleanedData.formations.length, "formations");
+                            cleanedData.formations.forEach(form => {
                                 createDynamicItem(controls.formationList, [
                                     { key: 'title', placeholder: 'Nom du diplôme' }, 
                                     { key: 'meta', placeholder: 'Établissement & Année' }
