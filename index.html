@@ -41,7 +41,7 @@
         /* PANNEAU DE CONTRÔLES REDIMENSIONNABLE */
         .controls-panel {
             min-width: 300px !important;
-            max-width: 800px !important;
+            max-width: 600px !important;
             width: 400px !important;
             height: 100vh !important;
             background: white !important;
@@ -54,6 +54,96 @@
             flex-direction: column !important;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
             z-index: 10 !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Contenu du panneau de contrôles */
+        .controls-panel > div {
+            padding: 1rem !important;
+            flex: 1 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Assurer que tous les éléments restent dans le panneau */
+        .controls-panel * {
+            box-sizing: border-box !important;
+            max-width: 100% !important;
+        }
+
+        /* Empêcher le débordement horizontal sur tous les éléments de contenu */
+        .controls-panel .control-group-content *,
+        .controls-panel details *,
+        .controls-panel .bg-gray-50 *,
+        .controls-panel .bg-orange-50 *,
+        .controls-panel .bg-purple-50 *,
+        .controls-panel .bg-red-50 *,
+        .controls-panel .bg-green-50 * {
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Forcer les grilles à se comporter en colonnes sur les petits écrans */
+        .controls-panel .grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.5rem !important;
+        }
+
+        /* Boutons et inputs - largeur complète dans le panneau */
+        .controls-panel input,
+        .controls-panel select,
+        .controls-panel button,
+        .controls-panel textarea {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Onglets - ajustement pour éviter le débordement */
+        #tab-navigation {
+            flex-wrap: wrap !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+
+        .tab-btn {
+            flex-shrink: 1 !important;
+            min-width: 0 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            max-width: 120px !important;
+        }
+
+        /* Groupes de contrôles */
+        .control-group {
+            margin-bottom: 1rem !important;
+            max-width: 100% !important;
+        }
+
+        .control-group-content {
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+
+        /* Inputs et éléments de formulaire */
+        .cv-input, .banner-input, .custom-section-input {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Grilles et flexbox */
+        .grid {
+            max-width: 100% !important;
+        }
+
+        .flex {
+            max-width: 100% !important;
+            flex-wrap: wrap !important;
         }
         
         /* POIGNÉE DE REDIMENSIONNEMENT */
@@ -976,8 +1066,8 @@
                         </summary>
                         <div class="control-group-content space-y-4">
                             
-                            <!-- Configuration 3 colonnes -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Configuration responsive simplifiée -->
+                            <div class="space-y-4">
                                 
                                 <!-- Hugging Face -->
                                 <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
@@ -1035,16 +1125,26 @@
                             <div class="bg-gray-50 rounded-lg p-3">
                                 <div class="flex items-center justify-between mb-2">
                                     <h5 class="font-medium text-gray-800 text-sm">Tests & Statut</h5>
-                                    <div class="flex gap-1">
-                                        <button id="test-huggingface" class="bg-orange-600 text-white py-1 px-2 rounded text-xs hover:bg-orange-700">HF</button>
-                                        <button id="test-mistral" class="bg-purple-600 text-white py-1 px-2 rounded text-xs hover:bg-purple-700">Mistral</button>
-                                        <button id="test-groq" class="bg-red-600 text-white py-1 px-2 rounded text-xs hover:bg-red-700">Groq</button>
-                                    </div>
                                 </div>
-                                <div class="grid grid-cols-3 gap-2 text-xs">
-                                    <div id="huggingface-status" class="text-gray-500">HF: Non testé</div>
-                                    <div id="mistral-status" class="text-gray-500">Mistral: Non testé</div>
-                                    <div id="groq-status" class="text-gray-500">Groq: Non testé</div>
+                                
+                                <!-- Boutons de test en colonne -->
+                                <div class="space-y-2 mb-3">
+                                    <button id="test-huggingface" class="w-full bg-orange-600 text-white py-2 px-3 rounded text-xs hover:bg-orange-700">
+                                        <i class="fas fa-flask mr-1"></i> Test Hugging Face
+                                    </button>
+                                    <button id="test-mistral" class="w-full bg-purple-600 text-white py-2 px-3 rounded text-xs hover:bg-purple-700">
+                                        <i class="fas fa-flask mr-1"></i> Test Mistral
+                                    </button>
+                                    <button id="test-groq" class="w-full bg-red-600 text-white py-2 px-3 rounded text-xs hover:bg-red-700">
+                                        <i class="fas fa-flask mr-1"></i> Test Groq
+                                    </button>
+                                </div>
+                                
+                                <!-- Statuts en colonne -->
+                                <div class="space-y-1 text-xs">
+                                    <div id="huggingface-status" class="text-gray-500 p-1 bg-white rounded">HF: Non testé</div>
+                                    <div id="mistral-status" class="text-gray-500 p-1 bg-white rounded">Mistral: Non testé</div>
+                                    <div id="groq-status" class="text-gray-500 p-1 bg-white rounded">Groq: Non testé</div>
                                 </div>
                             </div>
                         </div>
@@ -1303,14 +1403,14 @@
                             </div>
 
                             <!-- Test toutes les APIs gratuites -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <button id="test-huggingface" class="bg-orange-600 text-white py-2 px-3 rounded text-sm hover:bg-orange-700">
-                                    <i class="fas fa-flask mr-1"></i> Test HF
+                            <div class="space-y-2">
+                                <button id="test-huggingface" class="w-full bg-orange-600 text-white py-2 px-3 rounded text-sm hover:bg-orange-700">
+                                    <i class="fas fa-flask mr-1"></i> Test Hugging Face
                                 </button>
-                                <button id="test-mistral" class="bg-purple-600 text-white py-2 px-3 rounded text-sm hover:bg-purple-700">
+                                <button id="test-mistral" class="w-full bg-purple-600 text-white py-2 px-3 rounded text-sm hover:bg-purple-700">
                                     <i class="fas fa-flask mr-1"></i> Test Mistral
                                 </button>
-                                <button id="test-groq" class="bg-red-600 text-white py-2 px-3 rounded text-sm hover:bg-red-700">
+                                <button id="test-groq" class="w-full bg-red-600 text-white py-2 px-3 rounded text-sm hover:bg-red-700">
                                     <i class="fas fa-flask mr-1"></i> Test Groq
                                 </button>
                             </div>
