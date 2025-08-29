@@ -164,7 +164,8 @@
             cursor: pointer;
         }
         .completion-checkbox:focus {
-            ring: #4f46e5;
+            outline: 2px solid #4f46e5;
+            outline-offset: 2px;
         }
         
         #ai-summarize-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background-color: #2563eb; color: white; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 24px; z-index: 999; transition: transform 0.2s ease-in-out; }
@@ -2596,29 +2597,56 @@
                     checkAllPagesOverflow();
                 });
 
-                controls.aiSummarizeBtn.addEventListener('click', summarizeAllExperiencesAI);
-                controls.aiSynthesizeSkillsBtn.addEventListener('click', synthesizeSkillsWithAI);
-                controls.aiLimitSkillsBtn.addEventListener('click', limitSkillsWithAI);
-                controls.anonymizeBtn.addEventListener('click', anonymizeCV);
-                controls.resetRecruiterBtn.addEventListener('click', () => { setDefaultRecruiterInfo(); updatePreview('form'); });
-                controls.addPageBtn.addEventListener('click', () => addNewPage());
-                controls.removeBannerBgBtn.addEventListener('click', () => removeBannerBackground());
-                controls.addSectionBtn.addEventListener('click', () => {
-                    const title = controls.newSectionTitleInput.value.trim();
-                    if(title) {
-                        addCustomSection(title);
-                        controls.newSectionTitleInput.value = '';
-                    } else {
-                        showNotification("Veuillez entrer un titre pour la nouvelle section.", "error");
-                    }
-                });
-                controls.sectionSuggestionSelect.addEventListener('change', (e) => {
-                    if(e.target.value) controls.newSectionTitleInput.value = e.target.value;
-                });
-                controls.fixBannerTopBtn.addEventListener('click', () => moveBannerTo('top'));
-                controls.fixBannerBottomBtn.addEventListener('click', () => moveBannerTo('bottom'));
-                controls.modularBannerBtn.addEventListener('click', () => moveBannerTo('modular'));
-                controls.addSkillLevelBtn.addEventListener('click', () => createSkillLevelItem());
+                // Gestionnaires d'événements avec vérification d'existence
+                if (controls.aiSummarizeBtn) {
+                    controls.aiSummarizeBtn.addEventListener('click', summarizeAllExperiencesAI);
+                }
+                if (controls.aiSynthesizeSkillsBtn) {
+                    controls.aiSynthesizeSkillsBtn.addEventListener('click', synthesizeSkillsWithAI);
+                }
+                if (controls.aiLimitSkillsBtn) {
+                    controls.aiLimitSkillsBtn.addEventListener('click', limitSkillsWithAI);
+                }
+                if (controls.anonymizeBtn) {
+                    controls.anonymizeBtn.addEventListener('click', anonymizeCV);
+                }
+                if (controls.resetRecruiterBtn) {
+                    controls.resetRecruiterBtn.addEventListener('click', () => { setDefaultRecruiterInfo(); updatePreview('form'); });
+                }
+                if (controls.addPageBtn) {
+                    controls.addPageBtn.addEventListener('click', () => addNewPage());
+                }
+                if (controls.removeBannerBgBtn) {
+                    controls.removeBannerBgBtn.addEventListener('click', () => removeBannerBackground());
+                }
+                if (controls.addSectionBtn && controls.newSectionTitleInput) {
+                    controls.addSectionBtn.addEventListener('click', () => {
+                        const title = controls.newSectionTitleInput.value.trim();
+                        if(title) {
+                            addCustomSection(title);
+                            controls.newSectionTitleInput.value = '';
+                        } else {
+                            showNotification("Veuillez entrer un titre pour la nouvelle section.", "error");
+                        }
+                    });
+                }
+                if (controls.sectionSuggestionSelect && controls.newSectionTitleInput) {
+                    controls.sectionSuggestionSelect.addEventListener('change', (e) => {
+                        if(e.target.value) controls.newSectionTitleInput.value = e.target.value;
+                    });
+                }
+                if (controls.fixBannerTopBtn) {
+                    controls.fixBannerTopBtn.addEventListener('click', () => moveBannerTo('top'));
+                }
+                if (controls.fixBannerBottomBtn) {
+                    controls.fixBannerBottomBtn.addEventListener('click', () => moveBannerTo('bottom'));
+                }
+                if (controls.modularBannerBtn) {
+                    controls.modularBannerBtn.addEventListener('click', () => moveBannerTo('modular'));
+                }
+                if (controls.addSkillLevelBtn) {
+                    controls.addSkillLevelBtn.addEventListener('click', () => createSkillLevelItem());
+                }
 
                 document.querySelectorAll('.a4-page').forEach(setupOverflowObserver);
                 
