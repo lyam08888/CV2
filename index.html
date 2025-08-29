@@ -35,8 +35,6 @@
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            /* DEBUG */
-            border: 5px solid green !important;
         }
         
         /* PANNEAU DE CONTRÔLES REDIMENSIONNABLE */
@@ -54,8 +52,6 @@
             display: flex !important;
             flex-direction: column !important;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
-            /* DEBUG */
-            border: 3px solid red !important;
         }
         
         /* POIGNÉE DE REDIMENSIONNEMENT */
@@ -85,8 +81,6 @@
             position: relative !important;
             display: flex !important;
             flex-direction: column !important;
-            /* DEBUG */
-            border: 3px solid blue !important;
         }
         
         /* CONTRÔLES DE ZOOM */
@@ -485,11 +479,6 @@
         <!-- PANNEAU DE CONTRÔLES REDIMENSIONNABLE -->
         <div class="controls-panel no-print" id="controls">
             <div class="resize-handle" id="resize-handle"></div>
-            
-            <!-- CONTENU VISIBLE POUR DEBUG -->
-            <div style="padding: 20px; background: yellow; font-size: 20px; font-weight: bold;">
-                🔥 PANNEAU DE CONTRÔLES 🔥
-            </div>
             
             <div style="padding: 1.5rem; flex: 1; overflow-y: auto;">
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
@@ -1132,11 +1121,6 @@
 
         <!-- PANNEAU D'APERÇU AVEC ZOOM -->
         <div class="preview-panel" id="preview-area">
-            <!-- CONTENU VISIBLE POUR DEBUG -->
-            <div style="padding: 20px; background: orange; font-size: 20px; font-weight: bold;">
-                🎯 PANNEAU D'APERÇU 🎯
-            </div>
-            
             <!-- CONTRÔLES DE ZOOM -->
             <div class="zoom-controls">
                 <button class="zoom-btn" id="zoom-out" title="Zoom arrière">−</button>
