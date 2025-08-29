@@ -1391,6 +1391,17 @@
                 skillsLevelControls: document.getElementById('skills-level-controls'),
                 skillsLevelList: document.getElementById('skills-level-list'),
                 addSkillLevelBtn: document.getElementById('add-skill-level-btn'),
+                // AI Layout Buttons
+                aiLayoutProfessional: document.getElementById('ai-layout-professional'),
+                aiLayoutCreative: document.getElementById('ai-layout-creative'),
+                aiLayoutModern: document.getElementById('ai-layout-modern'),
+                aiLayoutRandom: document.getElementById('ai-layout-random'),
+                // AI Style Buttons
+                aiStyleProfessional: document.getElementById('ai-style-professional'),
+                aiStyleCreative: document.getElementById('ai-style-creative'),
+                aiStyleMinimalist: document.getElementById('ai-style-minimalist'),
+                aiStyleLuxury: document.getElementById('ai-style-luxury'),
+                aiStyleRandom: document.getElementById('ai-style-random'),
                 confirmModal: {
                     overlay: document.getElementById('confirm-modal'),
                     title: document.getElementById('confirm-modal-title'),
@@ -1557,43 +1568,80 @@
                     controls.columns = layout.columns;
                 }
                 if (layout.columnGap) {
-                    const slider = document.getElementById('column-gap-slider');
+                    const slider = document.getElementById('column-gap');
                     if (slider) {
                         slider.value = layout.columnGap;
-                        document.getElementById('column-gap-value').textContent = layout.columnGap;
+                        const valueDisplay = document.getElementById('column-gap-value');
+                        if (valueDisplay) valueDisplay.textContent = layout.columnGap;
                     }
                 }
                 if (layout.sectionSpacing) {
-                    const slider = document.getElementById('section-spacing-slider');
+                    const slider = document.getElementById('section-spacing');
                     if (slider) {
                         slider.value = layout.sectionSpacing;
-                        document.getElementById('section-spacing-value').textContent = layout.sectionSpacing;
+                        const valueDisplay = document.getElementById('section-spacing-value');
+                        if (valueDisplay) valueDisplay.textContent = layout.sectionSpacing;
                     }
                 }
-                ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'].forEach(margin => {
-                    if (layout[margin]) {
-                        const slider = document.getElementById(`${margin.toLowerCase().replace('margin', 'margin-')}-slider`);
+                
+                // Appliquer les marges de page
+                const pageMargins = [
+                    { key: 'marginTop', id: 'page-margin-top' },
+                    { key: 'marginBottom', id: 'page-margin-bottom' },
+                    { key: 'marginLeft', id: 'page-margin-left' },
+                    { key: 'marginRight', id: 'page-margin-right' }
+                ];
+                
+                pageMargins.forEach(margin => {
+                    if (layout[margin.key]) {
+                        const slider = document.getElementById(margin.id);
                         if (slider) {
-                            slider.value = layout[margin];
-                            document.getElementById(`${margin.toLowerCase().replace('margin', 'margin-')}-value`).textContent = layout[margin];
+                            slider.value = layout[margin.key];
+                            const valueDisplay = document.getElementById(`${margin.id}-value`);
+                            if (valueDisplay) valueDisplay.textContent = layout[margin.key];
                         }
                     }
                 });
-                if (layout.fontSize) {
-                    document.querySelectorAll('.font-size-btn').forEach(btn => btn.classList.remove('active'));
-                    const sizeBtn = document.querySelector(`[data-font-size="${layout.fontSize}"]`);
-                    if (sizeBtn) sizeBtn.classList.add('active');
+                
+                // Appliquer les tailles de police
+                if (layout.fontSizeH1) {
+                    const slider = document.getElementById('font-size-h1');
+                    if (slider) {
+                        slider.value = layout.fontSizeH1;
+                        const valueDisplay = document.getElementById('font-size-h1-value');
+                        if (valueDisplay) valueDisplay.textContent = layout.fontSizeH1;
+                    }
                 }
+                
+                if (layout.fontSizeH2) {
+                    const slider = document.getElementById('font-size-h2');
+                    if (slider) {
+                        slider.value = layout.fontSizeH2;
+                        const valueDisplay = document.getElementById('font-size-h2-value');
+                        if (valueDisplay) valueDisplay.textContent = layout.fontSizeH2;
+                    }
+                }
+                
+                if (layout.fontSizeP) {
+                    const slider = document.getElementById('font-size-p');
+                    if (slider) {
+                        slider.value = layout.fontSizeP;
+                        const valueDisplay = document.getElementById('font-size-p-value');
+                        if (valueDisplay) valueDisplay.textContent = layout.fontSizeP;
+                    }
+                }
+                
+                // Appliquer l'interligne
                 if (layout.lineHeight) {
-                    document.querySelectorAll('.line-height-btn').forEach(btn => btn.classList.remove('active'));
-                    const heightBtn = document.querySelector(`[data-line-height="${layout.lineHeight}"]`);
-                    if (heightBtn) heightBtn.classList.add('active');
+                    const slider = document.getElementById('line-height-body');
+                    if (slider) {
+                        slider.value = layout.lineHeight;
+                        const valueDisplay = document.getElementById('line-height-body-value');
+                        if (valueDisplay) valueDisplay.textContent = layout.lineHeight;
+                    }
                 }
-                if (layout.alignment) {
-                    document.querySelectorAll('.alignment-btn').forEach(btn => btn.classList.remove('active'));
-                    const alignBtn = document.querySelector(`[data-alignment="${layout.alignment}"]`);
-                    if (alignBtn) alignBtn.classList.add('active');
-                }
+                
+                // Déclencher la mise à jour du preview
                 updateLayoutInPreview();
             }
 
@@ -5004,16 +5052,16 @@ Texte à analyser :
                 aiLayoutProfessional.addEventListener('click', () => {
                     const professionalLayout = {
                         columns: 2,
-                        columnGap: 30,
-                        sectionSpacing: 25,
-                        marginTop: 30,
-                        marginBottom: 30,
-                        marginLeft: 25,
-                        marginRight: 25,
-                        fontSize: 'medium',
-                        lineHeight: 'normal',
-                        alignment: 'left',
-                        indentation: 0
+                        columnGap: 2.0,
+                        sectionSpacing: 1.5,
+                        marginTop: 2.0,
+                        marginBottom: 2.0,
+                        marginLeft: 2.0,
+                        marginRight: 2.0,
+                        fontSizeH1: 28,
+                        fontSizeH2: 18,
+                        fontSizeP: 10,
+                        lineHeight: 1.4
                     };
                     applyLayoutSettings(professionalLayout);
                     showToast("Layout professionnel appliqué par IA 🤖", "success");
@@ -5025,16 +5073,16 @@ Texte à analyser :
                 aiLayoutCreative.addEventListener('click', () => {
                     const creativeLayout = {
                         columns: 1,
-                        columnGap: 40,
-                        sectionSpacing: 35,
-                        marginTop: 20,
-                        marginBottom: 20,
-                        marginLeft: 30,
-                        marginRight: 30,
-                        fontSize: 'large',
-                        lineHeight: 'relaxed',
-                        alignment: 'center',
-                        indentation: 10
+                        columnGap: 3.0,
+                        sectionSpacing: 2.0,
+                        marginTop: 1.5,
+                        marginBottom: 1.5,
+                        marginLeft: 2.5,
+                        marginRight: 2.5,
+                        fontSizeH1: 36,
+                        fontSizeH2: 22,
+                        fontSizeP: 11,
+                        lineHeight: 1.6
                     };
                     applyLayoutSettings(creativeLayout);
                     showToast("Layout créatif appliqué par IA 🎨", "success");
@@ -5046,16 +5094,16 @@ Texte à analyser :
                 aiLayoutModern.addEventListener('click', () => {
                     const modernLayout = {
                         columns: 3,
-                        columnGap: 20,
-                        sectionSpacing: 30,
-                        marginTop: 15,
-                        marginBottom: 15,
-                        marginLeft: 20,
-                        marginRight: 20,
-                        fontSize: 'small',
-                        lineHeight: 'tight',
-                        alignment: 'justify',
-                        indentation: 5
+                        columnGap: 1.5,
+                        sectionSpacing: 1.8,
+                        marginTop: 1.0,
+                        marginBottom: 1.0,
+                        marginLeft: 1.5,
+                        marginRight: 1.5,
+                        fontSizeH1: 24,
+                        fontSizeH2: 16,
+                        fontSizeP: 9,
+                        lineHeight: 1.2
                     };
                     applyLayoutSettings(modernLayout);
                     showToast("Layout moderne appliqué par IA 🚀", "success");
@@ -5068,17 +5116,17 @@ Texte à analyser :
                     const fallbackFunction = () => {
                         // Fallback: layout aléatoire sans IA
                         const randomLayout = {
-                            columns: Math.floor(Math.random() * 4) + 1,
-                            columnGap: Math.floor(Math.random() * 40) + 10,
-                            sectionSpacing: Math.floor(Math.random() * 25) + 15,
-                            marginTop: Math.floor(Math.random() * 30) + 10,
-                            marginBottom: Math.floor(Math.random() * 30) + 10,
-                            marginLeft: Math.floor(Math.random() * 30) + 10,
-                            marginRight: Math.floor(Math.random() * 30) + 10,
-                            fontSize: ['small', 'medium', 'large', 'xlarge'][Math.floor(Math.random() * 4)],
-                            lineHeight: ['tight', 'normal', 'relaxed', 'loose'][Math.floor(Math.random() * 4)],
-                            alignment: ['left', 'center', 'right', 'justify'][Math.floor(Math.random() * 4)],
-                            indentation: Math.floor(Math.random() * 20)
+                            columns: Math.floor(Math.random() * 3) + 1, // 1-3 colonnes
+                            columnGap: (Math.random() * 3 + 1).toFixed(1), // 1.0-4.0 rem
+                            sectionSpacing: (Math.random() * 2 + 1).toFixed(1), // 1.0-3.0 rem
+                            marginTop: (Math.random() * 3 + 1).toFixed(1), // 1.0-4.0 cm
+                            marginBottom: (Math.random() * 3 + 1).toFixed(1),
+                            marginLeft: (Math.random() * 3 + 1).toFixed(1),
+                            marginRight: (Math.random() * 3 + 1).toFixed(1),
+                            fontSizeH1: Math.floor(Math.random() * 20) + 20, // 20-40pt
+                            fontSizeH2: Math.floor(Math.random() * 12) + 14, // 14-26pt
+                            fontSizeP: Math.floor(Math.random() * 4) + 8, // 8-12pt
+                            lineHeight: (Math.random() * 1 + 1.2).toFixed(1) // 1.2-2.2
                         };
                         applyLayoutSettings(randomLayout);
                         return "Layout aléatoire appliqué (mode fallback)";
