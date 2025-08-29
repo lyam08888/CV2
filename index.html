@@ -831,139 +831,203 @@
                         </div>
                     </div>
 
-                    <!-- Configuration Google Gemini -->
+                    <!-- 🤖 CONFIGURATION GEMINI -->
                     <details id="gemini-config" class="control-group" open>
                         <summary>
                             <span class="flex items-center gap-2">
-                                <i class="fab fa-google text-blue-600"></i>
-                                Configuration Google Gemini
-                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full ml-auto">GRATUIT</span>
+                                <i class="fas fa-brain text-blue-600"></i>
+                                🤖 Clés Gemini
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full ml-auto">GRATUIT</span>
                             </span>
-                            <label class="completion-label">
-                                <input type="checkbox" id="completion-gemini-config" class="completion-checkbox">
-                                <span>Fait ✅</span>
-                            </label>
                         </summary>
                         <div class="control-group-content space-y-4">
-                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-                                <div class="flex items-start gap-3">
-                                    <i class="fab fa-google text-blue-600 text-xl mt-1"></i>
-                                    <div class="text-sm text-blue-800">
-                                        <p class="font-bold mb-1">Google AI Studio - API Gratuite</p>
-                                        <p class="mb-2">Obtenez votre clé API gratuitement sur <a href="https://makersuite.google.com/app/apikey" target="_blank" class="underline hover:text-blue-900 font-medium">Google AI Studio</a></p>
-                                        <div class="text-xs bg-blue-100 p-2 rounded">
-                                            ✅ <strong>50 requêtes/jour gratuites</strong> • Pas de carte bancaire requise
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+                                <p class="text-sm text-blue-800">
+                                    <strong>Créez autant de clés que vous voulez</strong> sur <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline font-medium">aistudio.google.com</a>
+                                </p>
+                                <div class="text-xs bg-blue-100 p-2 rounded mt-2">
+                                    💡 Ajoutez 5+ clés pour usage illimité !
+                                </div>
+                            </div>
+
+                            <!-- Interface multi-clés simplifiée -->
+                            <div>
+                                <div class="flex gap-2 mb-3">
+                                    <input 
+                                        type="password" 
+                                        id="new-gemini-key" 
+                                        placeholder="AIza..." 
+                                        class="flex-1 p-3 border-2 border-gray-300 rounded-lg text-sm font-mono focus:border-blue-500"
+                                    >
+                                    <button 
+                                        id="add-gemini-key" 
+                                        type="button" 
+                                        class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700"
+                                    >
+                                        <i class="fa-solid fa-plus mr-1"></i> Ajouter
+                                    </button>
+                                </div>
+                                
+                                <!-- Liste des clés -->
+                                <div id="gemini-keys-list" class="space-y-2 mb-4"></div>
+                                
+                                <!-- Statut compact -->
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <div class="grid grid-cols-3 gap-4 text-sm">
+                                        <div class="text-center">
+                                            <div id="active-gemini-keys-count" class="font-bold text-blue-600">0</div>
+                                            <div class="text-xs text-gray-500">Clés actives</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div id="total-gemini-requests" class="font-bold text-green-600">0</div>
+                                            <div class="text-xs text-gray-500">Aujourd'hui</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="font-bold text-purple-600" id="theoretical-limit">∞</div>
+                                            <div class="text-xs text-gray-500">Limite</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div>
-                                <label for="gemini-api-key" class="block text-sm font-bold text-gray-700 mb-2">
-                                    <i class="fas fa-key text-blue-600 mr-1"></i>
-                                    Clé API Google Gemini
-                                </label>
-                                <div class="flex gap-2">
-                                    <input type="password" id="gemini-api-key" placeholder="AIza..." class="flex-1 p-3 border-2 border-gray-300 rounded-lg text-sm font-mono focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-                                    <button id="toggle-api-key-visibility" class="bg-gray-500 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition-colors">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <button id="save-gemini-api-key" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
-                                        <i class="fa-solid fa-save mr-1"></i> Sauver
-                                    </button>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2">🔒 Stockage sécurisé local uniquement (jamais envoyé ailleurs)</p>
-                            </div>
-
-                            <!-- Modèle Gemini -->
-                            <div>
-                                <label for="ai-model-select" class="block text-sm font-bold text-gray-700 mb-2">
-                                    <i class="fas fa-microchip text-blue-600 mr-1"></i>
-                                    Modèle Gemini
-                                </label>
-                                <select id="ai-model-select" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Rapide & Efficace - Recommandé)</option>
-                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Maximum de Qualité)</option>
-                                    <option value="gemini-1.0-pro">Gemini 1.0 Pro (Stable)</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Statut Gemini -->
-                            <div id="api-status" class="hidden p-4 rounded-lg border-2">
-                                <div class="flex items-center gap-3">
-                                    <i id="api-status-icon" class="text-xl"></i>
-                                    <span id="api-status-text" class="font-medium"></span>
+                        </div>
+                                    <div class="text-sm text-blue-800">
+                                        <p class="font-bold mb-1">Google AI Studio - API Gratuite</p>
                                 </div>
                             </div>
+                        </div>
+                    </details>
 
-                            <!-- 🚀 CLÉS GEMINI MULTIPLES POUR DÉPASSER LES LIMITES -->
-                            <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                                <h4 class="font-bold text-blue-800 mb-3 flex items-center">
-                                    <i class="fas fa-infinity text-blue-600 mr-2"></i>
-                                    Clés Gemini Multiples (Illimité)
-                                </h4>
-                                <p class="text-xs text-blue-700 mb-3">
-                                    🔄 Ajoutez plusieurs clés Gemini pour rotation automatique et contournement des limites de 50 requêtes/jour
+                    <!-- 🟢 CONFIGURATION OPENAI -->
+                    <details class="control-group">
+                        <summary>
+                            <span class="flex items-center gap-2">
+                                <i class="fas fa-brain text-green-600"></i>
+                                🟢 OpenAI
+                                <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full ml-auto">PAYANT</span>
+                            </span>
+                        </summary>
+                        <div class="control-group-content space-y-4">
+                            <div class="bg-green-50 border border-green-200 rounded-md p-3">
+                                <p class="text-sm text-green-800">
+                                    <strong>Créez votre compte</strong> sur <a href="https://platform.openai.com/api-keys" target="_blank" class="underline font-medium">platform.openai.com</a>
                                 </p>
-                                
-                                <!-- Conseils d'optimisation -->
-                                <div class="bg-blue-100 rounded-lg p-3 mb-3">
-                                    <h5 class="font-semibold text-blue-800 mb-2">💡 Stratégies pour maximiser l'usage gratuit :</h5>
-                                    <ul class="text-xs text-blue-700 space-y-1">
-                                        <li>• Créez plusieurs comptes Google avec des emails différents</li>
-                                        <li>• Obtenez une clé API Gemini gratuite pour chaque compte</li>
-                                        <li>• Le système fera la rotation automatiquement (50×N requêtes/jour)</li>
-                                        <li>• Utilisez le fallback OpenAI pour une sécurité maximale</li>
-                                        <li>• Surveillez le compteur de requêtes en temps réel</li>
-                                    </ul>
-                                    <div class="mt-2 p-2 bg-blue-200 rounded text-xs">
-                                        <strong>Exemple :</strong> 3 clés = 150 requêtes gratuites par jour ! 🚀
-                                    </div>
-                                </div>
-                                
-                                <div id="gemini-keys-container">
-                                    <!-- Les clés supplémentaires apparaîtront ici -->
-                                </div>
-                                
-                                <div class="flex gap-2 mt-3">
-                                    <button 
-                                        id="add-gemini-key" 
-                                        type="button" 
-                                        class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                                    >
-                                        <i class="fas fa-plus mr-1"></i>
-                                        Ajouter une clé Gemini
-                                    </button>
-                                    <button 
-                                        id="test-all-gemini-keys" 
-                                        type="button" 
-                                        class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                                    >
-                                        <i class="fas fa-check-double mr-1"></i>
-                                        Tester toutes les clés
-                                    </button>
-                                </div>
-                                
-                                <div id="gemini-keys-status" class="mt-3 text-sm">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-gray-600">Clés actives:</span>
-                                        <span id="active-gemini-keys-count" class="font-bold text-blue-600">1</span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-gray-600">Requêtes aujourd'hui:</span>
-                                        <span id="total-gemini-requests" class="font-bold text-green-600">0</span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-gray-600">Limite théorique:</span>
-                                        <span class="font-bold text-purple-600" id="theoretical-limit">50</span>
-                                    </div>
+                                <div class="text-xs bg-green-100 p-2 rounded mt-2">
+                                    💳 Facturation à l'usage • $5 gratuit au début
                                 </div>
                             </div>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Clé API OpenAI</label>
+                                    <div class="flex gap-2">
+                                        <input 
+                                            type="password" 
+                                            id="openai-api-key" 
+                                            placeholder="sk-..." 
+                                            class="flex-1 p-3 border-2 border-gray-300 rounded-lg text-sm font-mono focus:border-green-500"
+                                        >
+                                        <button id="save-openai-api-key" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700">
+                                            Sauver
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Modèle</label>
+                                    <select id="openai-model" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-green-500">
+                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Économique)</option>
+                                        <option value="gpt-4o">GPT-4o (Recommandé)</option>
+                                        <option value="gpt-4o-mini">GPT-4o Mini (Rapide)</option>
+                                        <option value="gpt-4">GPT-4 (Premium)</option>
+                                        <option value="gpt-5">🚀 GPT-5 (Nouveau)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
 
-                            <!-- Test Gemini -->
-                            <button id="test-gemini-api" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 font-medium transition-colors">
-                                <i class="fa-solid fa-flask"></i> Tester la Connexion Gemini
-                            </button>
+                    <!-- 🇫🇷 APIS FRANÇAISES -->
+                    <details class="control-group">
+                        <summary>
+                            <span class="flex items-center gap-2">
+                                <i class="fas fa-flag text-blue-600"></i>
+                                🇫🇷 APIs Françaises
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full ml-auto">GRATUIT</span>
+                            </span>
+                        </summary>
+                        <div class="control-group-content space-y-4">
+                            
+                            <!-- Configuration 3 colonnes -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                
+                                <!-- Hugging Face -->
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                    <h4 class="font-bold text-orange-800 mb-2 text-sm">🤗 Hugging Face</h4>
+                                    <input 
+                                        type="password" 
+                                        id="huggingface-token" 
+                                        placeholder="hf_..." 
+                                        class="w-full p-2 border border-gray-300 rounded text-sm font-mono mb-2"
+                                    >
+                                    <select id="huggingface-model" class="w-full p-2 border border-gray-300 rounded text-xs">
+                                        <option value="microsoft/DialoGPT-large">DialoGPT Large</option>
+                                        <option value="bigscience/bloom-560m">BLOOM (Français)</option>
+                                        <option value="EleutherAI/gpt-j-6B">GPT-J 6B</option>
+                                    </select>
+                                    <a href="https://huggingface.co/settings/tokens" target="_blank" class="text-xs text-orange-600 underline block mt-1">Créer compte</a>
+                                </div>
+                                
+                                <!-- Mistral AI -->
+                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                    <h4 class="font-bold text-purple-800 mb-2 text-sm">🇫🇷 Mistral AI</h4>
+                                    <input 
+                                        type="password" 
+                                        id="mistral-api-key" 
+                                        placeholder="..." 
+                                        class="w-full p-2 border border-gray-300 rounded text-sm font-mono mb-2"
+                                    >
+                                    <select id="mistral-model" class="w-full p-2 border border-gray-300 rounded text-xs">
+                                        <option value="mistral-tiny">Mistral Tiny</option>
+                                        <option value="mistral-small">Mistral Small</option>
+                                        <option value="mistral-medium">Mistral Medium</option>
+                                    </select>
+                                    <a href="https://console.mistral.ai/" target="_blank" class="text-xs text-purple-600 underline block mt-1">Créer compte</a>
+                                </div>
+                                
+                                <!-- Groq -->
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <h4 class="font-bold text-red-800 mb-2 text-sm">⚡ Groq</h4>
+                                    <input 
+                                        type="password" 
+                                        id="groq-api-key" 
+                                        placeholder="gsk_..." 
+                                        class="w-full p-2 border border-gray-300 rounded text-sm font-mono mb-2"
+                                    >
+                                    <select id="groq-model" class="w-full p-2 border border-gray-300 rounded text-xs">
+                                        <option value="llama3-70b-8192">Llama 3 70B</option>
+                                        <option value="llama3-8b-8192">Llama 3 8B</option>
+                                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                                    </select>
+                                    <a href="https://console.groq.com/keys" target="_blank" class="text-xs text-red-600 underline block mt-1">Créer compte</a>
+                                </div>
+                            </div>
+                            
+                            <!-- Test et statut français -->
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-medium text-gray-800 text-sm">Tests & Statut</h5>
+                                    <div class="flex gap-1">
+                                        <button id="test-huggingface" class="bg-orange-600 text-white py-1 px-2 rounded text-xs hover:bg-orange-700">HF</button>
+                                        <button id="test-mistral" class="bg-purple-600 text-white py-1 px-2 rounded text-xs hover:bg-purple-700">Mistral</button>
+                                        <button id="test-groq" class="bg-red-600 text-white py-1 px-2 rounded text-xs hover:bg-red-700">Groq</button>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 text-xs">
+                                    <div id="huggingface-status" class="text-gray-500">HF: Non testé</div>
+                                    <div id="mistral-status" class="text-gray-500">Mistral: Non testé</div>
+                                    <div id="groq-status" class="text-gray-500">Groq: Non testé</div>
+                                </div>
+                            </div>
                         </div>
                     </details>
 
@@ -1253,25 +1317,25 @@
                         </div>
                     </details>
 
-                    <!-- Configuration Avancée -->
+                    <!-- 🚀 SÉLECTEUR D'API UNIFIÉ ET SIMPLIFIÉ -->
                     <details class="control-group" open>
                         <summary>
                             <span class="flex items-center gap-2">
                                 <i class="fas fa-rocket text-purple-600"></i>
-                                🚀 Sélecteur d'API Principal
+                                🚀 Sélection d'API
                             </span>
                         </summary>
                         <div class="control-group-content space-y-4">
                             
-                            <!-- SÉLECTEUR API PRINCIPAL -->
+                            <!-- SÉLECTEUR PRINCIPAL COMPACT -->
                             <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border-2 border-blue-200">
                                 <label class="block text-sm font-bold text-gray-700 mb-3">
                                     <i class="fas fa-brain text-blue-600 mr-1"></i>
-                                    🎯 API Active Actuellement
+                                    🎯 API Active
                                 </label>
-                                <div class="grid grid-cols-1 gap-3">
+                                <div class="grid grid-cols-1 gap-2">
                                     
-                                    <!-- Gemini Multi-Clés -->
+                                    <!-- Gemini -->
                                     <label class="api-selector-card cursor-pointer">
                                         <input type="radio" name="primary-api" value="gemini-multi" id="select-gemini-multi" class="sr-only api-radio">
                                         <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-blue-400 transition-all">
@@ -1279,8 +1343,8 @@
                                                 <div class="flex items-center gap-3">
                                                     <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
                                                     <div>
-                                                        <div class="font-semibold text-gray-800">🤖 Gemini Multi-Clés</div>
-                                                        <div class="text-xs text-gray-500" id="gemini-multi-info">Rotation automatique • Unlimited</div>
+                                                        <div class="font-semibold text-gray-800">🤖 Gemini (Gratuit)</div>
+                                                        <div class="text-xs text-gray-500">Multi-clés • Unlimited</div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
@@ -1298,8 +1362,8 @@
                                                 <div class="flex items-center gap-3">
                                                     <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
                                                     <div>
-                                                        <div class="font-semibold text-gray-800">🟢 OpenAI</div>
-                                                        <div class="text-xs text-gray-500" id="openai-model-info">Payant • Haute qualité</div>
+                                                        <div class="font-semibold text-gray-800">🟢 OpenAI (Payant)</div>
+                                                        <div class="text-xs text-gray-500">Haute qualité</div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
@@ -1309,58 +1373,20 @@
                                         </div>
                                     </label>
                                     
-                                    <!-- Hugging Face -->
+                                    <!-- APIs Françaises -->
                                     <label class="api-selector-card cursor-pointer">
-                                        <input type="radio" name="primary-api" value="huggingface" id="select-huggingface" class="sr-only api-radio">
-                                        <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-yellow-400 transition-all">
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
-                                                    <div>
-                                                        <div class="font-semibold text-gray-800">🤗 Hugging Face</div>
-                                                        <div class="text-xs text-gray-500" id="hf-model-info">Gratuit • 1000+ modèles</div>
-                                                    </div>
-                                                </div>
-                                                <div class="text-right">
-                                                    <div class="text-xs font-mono bg-yellow-100 text-yellow-700 px-2 py-1 rounded" id="hf-model-display">DialoGPT</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Mistral AI -->
-                                    <label class="api-selector-card cursor-pointer">
-                                        <input type="radio" name="primary-api" value="mistral" id="select-mistral" class="sr-only api-radio">
+                                        <input type="radio" name="primary-api" value="french-apis" id="select-french-apis" class="sr-only api-radio">
                                         <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-red-400 transition-all">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center gap-3">
                                                     <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
                                                     <div>
-                                                        <div class="font-semibold text-gray-800">🇫🇷 Mistral AI</div>
-                                                        <div class="text-xs text-gray-500" id="mistral-model-info">Français • Quota généreux</div>
+                                                        <div class="font-semibold text-gray-800">🇫🇷 APIs Françaises</div>
+                                                        <div class="text-xs text-gray-500">HF • Mistral • Groq • Gratuit</div>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <div class="text-xs font-mono bg-red-100 text-red-700 px-2 py-1 rounded" id="mistral-model-display">mistral-tiny</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                    
-                                    <!-- Groq -->
-                                    <label class="api-selector-card cursor-pointer">
-                                        <input type="radio" name="primary-api" value="groq" id="select-groq" class="sr-only api-radio">
-                                        <div class="api-card p-3 border-2 border-gray-200 rounded-lg hover:border-purple-400 transition-all">
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="api-status-dot w-3 h-3 bg-gray-400 rounded-full"></div>
-                                                    <div>
-                                                        <div class="font-semibold text-gray-800">⚡ Groq</div>
-                                                        <div class="text-xs text-gray-500" id="groq-model-info">Ultra-rapide • Gratuit</div>
-                                                    </div>
-                                                </div>
-                                                <div class="text-right">
-                                                    <div class="text-xs font-mono bg-purple-100 text-purple-700 px-2 py-1 rounded" id="groq-model-display">llama2-70b</div>
+                                                    <div class="text-xs font-mono bg-green-100 text-green-700 px-2 py-1 rounded">FREE</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1386,35 +1412,25 @@
                                     </label>
                                 </div>
                                 
-                                <!-- Test de l'API sélectionnée -->
-                                <div class="mt-4 pt-3 border-t border-gray-200">
+                                <!-- Test et ordre -->
+                                <div class="mt-4 pt-3 border-t border-gray-200 space-y-3">
                                     <button id="test-selected-api" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
                                         <i class="fas fa-play-circle mr-1"></i> Tester l'API Sélectionnée
                                     </button>
-                                    <div id="selected-api-test-result" class="mt-2 text-sm hidden"></div>
+                                    <div id="selected-api-test-result" class="text-sm hidden"></div>
+                                    
+                                    <!-- Ordre de priorité -->
+                                    <div id="fallback-settings" class="bg-gray-50 p-3 rounded-lg">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Ordre de Priorité (Auto-Fallback)</label>
+                                        <select id="api-priority" class="w-full p-2 border border-gray-300 rounded text-sm">
+                                            <option value="gemini-first">🤖 Gemini → 🟢 OpenAI → 🇫🇷 Français</option>
+                                            <option value="openai-first">🟢 OpenAI → 🤖 Gemini → 🇫🇷 Français</option>
+                                            <option value="french-first">🇫🇷 Français → 🤖 Gemini → 🟢 OpenAI</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-
-                            <!-- Mode de Basculement (seulement pour auto-fallback) -->
-                            <div id="fallback-settings" class="bg-gray-50 p-4 rounded-lg">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">
-                                    <i class="fas fa-sort-amount-down text-purple-600 mr-1"></i>
-                                    Ordre de Priorité (Auto-Fallback)
-                                </label>
-                                <select 
-                                    id="api-priority" 
-                                    class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
-                                >
-                                    <option value="gemini-first">🤖 Gemini → 🟢 OpenAI → 🇫🇷 APIs Françaises</option>
-                                    <option value="openai-first">🟢 OpenAI → 🤖 Gemini → 🇫🇷 APIs Françaises</option>
-                                    <option value="french-first">🇫🇷 APIs Françaises → 🤖 Gemini → 🟢 OpenAI</option>
-                                </select>
-                                <p class="text-xs text-gray-500 mt-2">
-                                    🔄 En mode auto-fallback, si l'API principale échoue, le système bascule automatiquement vers la suivante.
-                                </p>
-                            </div>
-
-                            <!-- Paramètres IA -->
+                        </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="ai-temperature" class="block text-sm font-medium text-gray-700 mb-1">Créativité</label>
