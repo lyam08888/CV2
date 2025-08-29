@@ -575,6 +575,95 @@
                                 </div>
                             </div>
 
+                            <!-- Configuration OpenAI -->
+                            <div class="bg-blue-50 p-4 rounded-md border border-blue-200 mb-4">
+                                <h4 class="font-medium text-blue-900 mb-3 flex items-center gap-2">
+                                    <i class="fas fa-robot text-blue-600"></i>
+                                    Configuration OpenAI (Alternative)
+                                </h4>
+                                
+                                <div class="space-y-3">
+                                    <!-- Clé API OpenAI -->
+                                    <div>
+                                        <label for="openai-api-key" class="block text-sm font-medium text-gray-700 mb-1">
+                                            Clé API OpenAI
+                                        </label>
+                                        <div class="flex gap-2">
+                                            <input 
+                                                type="password" 
+                                                id="openai-api-key" 
+                                                placeholder="sk-..." 
+                                                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            >
+                                            <button 
+                                                id="toggle-openai-key" 
+                                                type="button" 
+                                                class="px-3 py-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md"
+                                                title="Afficher/Masquer la clé"
+                                            >
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Obtenez votre clé API sur <a href="https://platform.openai.com/api-keys" target="_blank" class="text-blue-600 hover:underline">platform.openai.com</a>
+                                        </p>
+                                    </div>
+
+                                    <!-- Modèle OpenAI -->
+                                    <div>
+                                        <label for="openai-model" class="block text-sm font-medium text-gray-700 mb-1">
+                                            Modèle OpenAI
+                                        </label>
+                                        <select 
+                                            id="openai-model" 
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        >
+                                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Rapide & Économique)</option>
+                                            <option value="gpt-4">GPT-4 (Plus Précis)</option>
+                                            <option value="gpt-4-turbo">GPT-4 Turbo (Équilibré)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Priorité API -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Priorité des APIs
+                                        </label>
+                                        <div class="flex gap-2">
+                                            <select 
+                                                id="api-priority" 
+                                                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            >
+                                                <option value="gemini-first">Gemini en priorité (par défaut)</option>
+                                                <option value="openai-first">OpenAI en priorité</option>
+                                                <option value="gemini-only">Gemini uniquement</option>
+                                                <option value="openai-only">OpenAI uniquement</option>
+                                            </select>
+                                            <button 
+                                                id="test-openai-connection" 
+                                                type="button" 
+                                                class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+                                            >
+                                                <i class="fas fa-plug mr-1"></i> Tester
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Statut combiné des APIs -->
+                                    <div id="combined-api-status" class="hidden">
+                                        <div class="flex items-center justify-between p-2 rounded border">
+                                            <div class="flex items-center gap-2">
+                                                <i id="combined-status-icon" class=""></i>
+                                                <span id="combined-status-text" class="text-sm font-medium"></span>
+                                            </div>
+                                            <div class="text-xs text-gray-500">
+                                                <span id="active-api-indicator"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Indicateur de Quota -->
                             <div class="bg-gray-50 p-3 rounded-md border">
                                 <div class="flex items-center justify-between mb-2">
@@ -1238,6 +1327,17 @@
                 toggleApiKeyVisibility: document.getElementById('toggle-api-key-visibility'),
                 saveGeminiApiKey: document.getElementById('save-gemini-api-key'),
                 testGeminiApi: document.getElementById('test-gemini-api'),
+                // OpenAI Controls
+                openaiApiKey: document.getElementById('openai-api-key'),
+                toggleOpenaiKey: document.getElementById('toggle-openai-key'),
+                openaiModel: document.getElementById('openai-model'),
+                apiPriority: document.getElementById('api-priority'),
+                testOpenaiConnection: document.getElementById('test-openai-connection'),
+                combinedApiStatus: document.getElementById('combined-api-status'),
+                combinedStatusIcon: document.getElementById('combined-status-icon'),
+                combinedStatusText: document.getElementById('combined-status-text'),
+                activeApiIndicator: document.getElementById('active-api-indicator'),
+                // Test Controls
                 testPrompt: document.getElementById('test-prompt'),
                 runCustomTest: document.getElementById('run-custom-test'),
                 testResults: document.getElementById('test-results'),
@@ -2065,16 +2165,15 @@
                 return true;
             }
 
-            // Fonction wrapper avec fallback automatique
+            // Fonction wrapper avec fallback automatique (utilise maintenant le système de priorité)
             async function callAIWithFallback(prompt, fallbackFunction = null, options = {}) {
                 try {
-                    return await callGeminiAPI(prompt, options);
+                    return await callAIWithPriority(prompt, options);
                 } catch (error) {
-                    console.error('Erreur API Gemini:', error);
+                    console.error('Erreur API:', error);
                     
-                    if (error.message === 'QUOTA_EXCEEDED' || error.message.includes('QUOTA_EXCEEDED')) {
-                        const retryAfter = error.retryAfter ? Math.ceil(error.retryAfter / 1000 / 60) : 1440; // en minutes
-                        showNotification(`⚠️ Quota API dépassé. Prochaine tentative dans ${retryAfter} minutes. Mode fallback activé.`, 'warning');
+                    if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                        showNotification(`⚠️ Quotas API dépassés. Mode fallback activé.`, 'warning');
                     } else {
                         showNotification(`❌ Erreur IA: ${error.message}. Mode fallback activé.`, 'error');
                     }
@@ -2221,6 +2320,286 @@
                     controls.confirmModal.okBtn.onclick = () => cleanup(true);
                     controls.confirmModal.cancelBtn.onclick = () => cleanup(false);
                 });
+            }
+
+            // === FONCTIONS OPENAI ===
+            
+            // Configuration OpenAI
+            const OPENAI_CONFIG = {
+                baseUrl: 'https://api.openai.com/v1/chat/completions',
+                models: {
+                    'gpt-3.5-turbo': 'gpt-3.5-turbo',
+                    'gpt-4': 'gpt-4',
+                    'gpt-4-turbo': 'gpt-4-1106-preview'
+                }
+            };
+
+            // Appel à l'API OpenAI
+            async function callOpenAIAPI(prompt, options = {}) {
+                const apiKey = localStorage.getItem('openai-api-key');
+                if (!apiKey) {
+                    throw new Error('Clé API OpenAI non configurée');
+                }
+                
+                const model = options.model || controls.openaiModel?.value || 'gpt-3.5-turbo';
+                const temperature = options.temperature || parseFloat(controls.aiTemperature?.value || '0.7');
+                const maxTokens = options.maxTokens || parseInt(controls.aiMaxTokens?.value || '1000');
+                const retries = options.retries || 3;
+                
+                const requestBody = {
+                    model: OPENAI_CONFIG.models[model] || model,
+                    messages: [{
+                        role: 'user',
+                        content: prompt
+                    }],
+                    temperature: temperature,
+                    max_tokens: maxTokens,
+                    top_p: 0.95
+                };
+
+                for (let attempt = 1; attempt <= retries; attempt++) {
+                    try {
+                        const response = await fetch(OPENAI_CONFIG.baseUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${apiKey}`
+                            },
+                            body: JSON.stringify(requestBody)
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            
+                            if (response.status === 429) {
+                                const retryAfter = response.headers.get('retry-after');
+                                const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, attempt) * 1000;
+                                
+                                if (attempt < retries) {
+                                    console.log(`Tentative ${attempt}/${retries} échouée (429). Nouvelle tentative dans ${waitTime/1000}s...`);
+                                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                                    continue;
+                                } else {
+                                    throw new Error(`QUOTA_EXCEEDED: Quota OpenAI dépassé. ${errorData.error?.message || ''}`);
+                                }
+                            }
+                            
+                            throw new Error(errorData.error?.message || `Erreur API OpenAI: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        
+                        if (!data.choices || !data.choices[0]?.message?.content) {
+                            throw new Error('Réponse invalide de l\'API OpenAI');
+                        }
+
+                        return data.choices[0].message.content.trim();
+                    } catch (error) {
+                        if (attempt === retries) {
+                            throw error;
+                        }
+                        
+                        if (!error.message.includes('QUOTA_EXCEEDED')) {
+                            const waitTime = Math.pow(2, attempt) * 1000;
+                            console.log(`Tentative ${attempt}/${retries} échouée. Nouvelle tentative dans ${waitTime/1000}s...`);
+                            await new Promise(resolve => setTimeout(resolve, waitTime));
+                        } else {
+                            throw error;
+                        }
+                    }
+                }
+            }
+
+            // Système de priorité des APIs
+            async function callAIWithPriority(prompt, options = {}) {
+                const priority = localStorage.getItem('api-priority') || 'gemini-first';
+                
+                const tryGemini = async () => {
+                    try {
+                        updateCombinedApiStatus('active', 'Gemini actif', 'gemini');
+                        return await callGeminiAPI(prompt, options);
+                    } catch (error) {
+                        if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                            console.log('Gemini quota exceeded, trying OpenAI...');
+                            return null;
+                        }
+                        throw error;
+                    }
+                };
+                
+                const tryOpenAI = async () => {
+                    try {
+                        updateCombinedApiStatus('active', 'OpenAI actif', 'openai');
+                        return await callOpenAIAPI(prompt, options);
+                    } catch (error) {
+                        if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                            console.log('OpenAI quota exceeded...');
+                            return null;
+                        }
+                        throw error;
+                    }
+                };
+
+                switch (priority) {
+                    case 'gemini-first':
+                        let geminiResult = await tryGemini();
+                        if (geminiResult !== null) return geminiResult;
+                        
+                        // Fallback vers OpenAI
+                        const openaiKey = localStorage.getItem('openai-api-key');
+                        if (openaiKey) {
+                            showToast('Basculement vers OpenAI (quota Gemini dépassé)', 'info');
+                            let openaiResult = await tryOpenAI();
+                            if (openaiResult !== null) return openaiResult;
+                        }
+                        break;
+                        
+                    case 'openai-first':
+                        const openaiKey2 = localStorage.getItem('openai-api-key');
+                        if (openaiKey2) {
+                            let openaiResult = await tryOpenAI();
+                            if (openaiResult !== null) return openaiResult;
+                        }
+                        
+                        // Fallback vers Gemini
+                        showToast('Basculement vers Gemini (quota OpenAI dépassé)', 'info');
+                        let geminiResult2 = await tryGemini();
+                        if (geminiResult2 !== null) return geminiResult2;
+                        break;
+                        
+                    case 'gemini-only':
+                        return await tryGemini();
+                        
+                    case 'openai-only':
+                        return await tryOpenAI();
+                }
+                
+                updateCombinedApiStatus('error', 'Toutes les APIs indisponibles', 'none');
+                throw new Error('Toutes les APIs ont atteint leur quota ou sont indisponibles');
+            }
+
+            // Tester la connexion OpenAI
+            async function testOpenAIConnection() {
+                if (!controls.testOpenaiConnection) return;
+                
+                const button = controls.testOpenaiConnection;
+                const originalText = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test...';
+                
+                updateCombinedApiStatus('testing', 'Test OpenAI en cours...', 'openai');
+                
+                try {
+                    const testPrompt = "Réponds simplement 'Test OpenAI réussi' si tu reçois ce message.";
+                    const result = await callOpenAIAPI(testPrompt, { maxTokens: 20 });
+                    
+                    updateCombinedApiStatus('success', 'OpenAI opérationnel', 'openai');
+                    showNotification('✅ Test OpenAI réussi: ' + result, 'success');
+                } catch (error) {
+                    updateCombinedApiStatus('error', `Erreur OpenAI: ${error.message}`, 'openai');
+                    showNotification(`❌ Erreur OpenAI: ${error.message}`, 'error');
+                } finally {
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            }
+
+            // Mettre à jour le statut combiné des APIs
+            function updateCombinedApiStatus(status, message, activeApi = '') {
+                if (!controls.combinedApiStatus) return;
+                
+                const statusElement = controls.combinedApiStatus;
+                const iconElement = controls.combinedStatusIcon;
+                const textElement = controls.combinedStatusText;
+                const activeApiElement = controls.activeApiIndicator;
+                
+                // Réinitialiser les classes
+                statusElement.className = 'p-2 rounded border';
+                iconElement.className = '';
+                
+                switch (status) {
+                    case 'testing':
+                        statusElement.classList.add('bg-blue-50', 'border-blue-200');
+                        iconElement.className = 'fas fa-spinner fa-spin text-blue-600';
+                        break;
+                    case 'success':
+                        statusElement.classList.add('bg-green-50', 'border-green-200');
+                        iconElement.className = 'fas fa-check-circle text-green-600';
+                        break;
+                    case 'active':
+                        statusElement.classList.add('bg-green-50', 'border-green-200');
+                        iconElement.className = 'fas fa-circle text-green-500';
+                        break;
+                    case 'error':
+                        statusElement.classList.add('bg-red-50', 'border-red-200');
+                        iconElement.className = 'fas fa-exclamation-circle text-red-600';
+                        break;
+                    case 'warning':
+                        statusElement.classList.add('bg-yellow-50', 'border-yellow-200');
+                        iconElement.className = 'fas fa-exclamation-triangle text-yellow-600';
+                        break;
+                }
+                
+                if (textElement) textElement.textContent = message;
+                
+                if (activeApiElement) {
+                    switch (activeApi) {
+                        case 'gemini':
+                            activeApiElement.textContent = '🤖 Gemini';
+                            break;
+                        case 'openai':
+                            activeApiElement.textContent = '🤖 OpenAI';
+                            break;
+                        case 'none':
+                            activeApiElement.textContent = '❌ Aucune API';
+                            break;
+                        default:
+                            activeApiElement.textContent = '';
+                    }
+                }
+                
+                statusElement.classList.remove('hidden');
+            }
+
+            // Sauvegarder les configurations OpenAI
+            function saveOpenAIConfig() {
+                const apiKey = controls.openaiApiKey?.value?.trim();
+                const model = controls.openaiModel?.value;
+                const priority = controls.apiPriority?.value;
+                
+                if (apiKey) {
+                    localStorage.setItem('openai-api-key', apiKey);
+                    showNotification('Clé API OpenAI sauvegardée', 'success');
+                }
+                
+                if (model) {
+                    localStorage.setItem('openai-model', model);
+                }
+                
+                if (priority) {
+                    localStorage.setItem('api-priority', priority);
+                }
+                
+                updateCombinedApiStatus('success', 'Configuration OpenAI sauvegardée', 'openai');
+            }
+
+            // Charger les configurations OpenAI
+            function loadOpenAIConfig() {
+                const apiKey = localStorage.getItem('openai-api-key');
+                const model = localStorage.getItem('openai-model') || 'gpt-3.5-turbo';
+                const priority = localStorage.getItem('api-priority') || 'gemini-first';
+                
+                if (controls.openaiApiKey && apiKey) {
+                    controls.openaiApiKey.value = apiKey;
+                }
+                
+                if (controls.openaiModel) {
+                    controls.openaiModel.value = model;
+                }
+                
+                if (controls.apiPriority) {
+                    controls.apiPriority.value = priority;
+                }
             }
 
 
@@ -4220,6 +4599,42 @@ Texte à analyser :
                     });
                 }
                 
+                // === GESTIONNAIRES D'ÉVÉNEMENTS OPENAI ===
+                
+                // Basculer visibilité clé OpenAI
+                if (controls.toggleOpenaiKey) {
+                    controls.toggleOpenaiKey.addEventListener('click', () => {
+                        const input = controls.openaiApiKey;
+                        const icon = controls.toggleOpenaiKey.querySelector('i');
+                        
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.className = 'fas fa-eye-slash';
+                        } else {
+                            input.type = 'password';
+                            icon.className = 'fas fa-eye';
+                        }
+                    });
+                }
+                
+                // Sauvegarder configuration OpenAI
+                if (controls.openaiApiKey) {
+                    controls.openaiApiKey.addEventListener('blur', saveOpenAIConfig);
+                }
+                
+                if (controls.openaiModel) {
+                    controls.openaiModel.addEventListener('change', saveOpenAIConfig);
+                }
+                
+                if (controls.apiPriority) {
+                    controls.apiPriority.addEventListener('change', saveOpenAIConfig);
+                }
+                
+                // Test de connexion OpenAI
+                if (controls.testOpenaiConnection) {
+                    controls.testOpenaiConnection.addEventListener('click', testOpenAIConnection);
+                }
+                
                 // Charger la clé API au démarrage
                 loadGeminiApiKey();
                 
@@ -4544,6 +4959,9 @@ Texte à analyser :
             function initializeApiTab() {
                 // Charger la clé API sauvegardée
                 loadGeminiApiKey();
+                
+                // Charger la configuration OpenAI
+                loadOpenAIConfig();
                 
                 // Afficher un message d'information si aucune clé n'est configurée
                 const savedKey = localStorage.getItem('gemini-api-key');
