@@ -1754,6 +1754,106 @@
                 updateAllStyles();
             }
 
+            // === FONCTIONS DE NETTOYAGE JSON ===
+            
+            function cleanJsonResponse(text) {
+                // Supprimer les balises markdown si présentes
+                let cleaned = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+                
+                // Supprimer les caractères de contrôle problématiques
+                cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, '');
+                
+                // Chercher le premier { et le dernier } pour extraire le JSON
+                const firstBrace = cleaned.indexOf('{');
+                const lastBrace = cleaned.lastIndexOf('}');
+                
+                if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+                    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+                }
+                
+                return cleaned.trim();
+            }
+            
+            function repairJsonResponse(text) {
+                let repaired = cleanJsonResponse(text);
+                
+                // Réparer les guillemets non échappés dans les valeurs
+                repaired = repaired.replace(/: "([^"]*)"([^,}\]]*)"([^,}\]]*)",?/g, (match, p1, p2, p3) => {
+                    if (p2 || p3) {
+                        // Il y a des guillemets non fermés, les échapper
+                        const escapedValue = (p1 + p2 + p3).replace(/"/g, '\\"');
+                        return `: "${escapedValue}",`;
+                    }
+                    return match;
+                });
+                
+                // Fermer les chaînes non terminées
+                repaired = repaired.replace(/: "([^"]*?)(\s*[,}])/g, ': "$1"$2');
+                
+                // Réparer les virgules manquantes
+                repaired = repaired.replace(/}(\s*)"([^"]+)":/g, '},$1"$2":');
+                repaired = repaired.replace(/](\s*)"([^"]+)":/g, '],$1"$2":');
+                
+                // Supprimer les virgules en trop
+                repaired = repaired.replace(/,(\s*[}\]])/g, '$1');
+                
+                return repaired;
+            }
+            
+            // Fonction fallback sans schema JSON
+            async function callGeminiFallback(originalPrompt) {
+                const apiKey = localStorage.getItem('gemini-api-key');
+                if (!apiKey) return null;
+                
+                const simplePrompt = `${originalPrompt}
+
+RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
+{
+  "nom": "nom de famille",
+  "prenom": "prénom",
+  "poste": "titre du poste",
+  "description": "description professionnelle courte",
+  "experiences": [
+    {"title": "poste", "meta": "entreprise - dates", "desc": "description courte"}
+  ],
+  "formations": [
+    {"title": "diplôme", "meta": "école - année"}
+  ],
+  "competences": "competence1, competence2, competence3"
+}`;
+
+                const model = controls.aiModelSelect?.value || 'gemini-1.5-flash';
+                const modelName = GEMINI_CONFIG.models[model] || model;
+                const url = `${GEMINI_CONFIG.baseUrl}${modelName}:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{ parts: [{ text: simplePrompt }] }],
+                    generationConfig: {
+                        temperature: 0.3, // Plus déterministe pour le JSON
+                        maxOutputTokens: parseInt(controls.aiMaxTokens?.value || '1000')
+                    }
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) return null;
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates.length > 0 && 
+                    data.candidates[0].content && data.candidates[0].content.parts) {
+                    const text = data.candidates[0].content.parts[0].text;
+                    const cleaned = cleanJsonResponse(text);
+                    return JSON.parse(cleaned);
+                }
+                
+                return null;
+            }
+
             // Fonction legacy mise à jour pour utiliser la nouvelle API
             async function callGeminiAPI(prompt, schema) {
                 try {
@@ -1799,8 +1899,41 @@
                                 throw new Error(`L'IA a été bloquée (raison: ${data.candidates[0].finishReason}). Veuillez reformuler votre demande.`);
                             }
                             if (data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) {
-                                const text = data.candidates[0].content.parts[0].text;
-                                result = JSON.parse(text);
+                                const rawText = data.candidates[0].content.parts[0].text;
+                                console.log("🔍 Réponse brute de l'IA:", rawText);
+                                
+                                // Nettoyer et valider le JSON
+                                try {
+                                    const cleanedJson = cleanJsonResponse(rawText);
+                                    result = JSON.parse(cleanedJson);
+                                    console.log("✅ JSON parsé avec succès:", result);
+                                } catch (parseError) {
+                                    console.error("❌ Erreur de parsing JSON:", parseError);
+                                    console.log("🔧 Tentative de réparation automatique...");
+                                    
+                                    // Tentative de réparation automatique
+                                    const repairedJson = repairJsonResponse(rawText);
+                                    try {
+                                        result = JSON.parse(repairedJson);
+                                        console.log("🔧✅ JSON réparé et parsé:", result);
+                                    } catch (repairError) {
+                                        console.error("❌ Impossible de réparer le JSON:", repairError);
+                                        console.log("🔄 Tentative avec mode fallback...");
+                                        
+                                        // Mode fallback : utiliser l'API sans schema
+                                        try {
+                                            const fallbackResult = await callGeminiFallback(prompt);
+                                            if (fallbackResult) {
+                                                result = fallbackResult;
+                                                console.log("🔄✅ Mode fallback réussi:", result);
+                                            } else {
+                                                throw new Error(`JSON invalide reçu de l'IA: ${parseError.message}`);
+                                            }
+                                        } catch (fallbackError) {
+                                            throw new Error(`Échec complet de l'analyse: ${fallbackError.message}`);
+                                        }
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -2454,7 +2587,10 @@ IMPORTANT :
 - Inclus toutes les formations même non universitaires
 - Liste toutes les compétences mentionnées
 - Si une information n'est pas présente, laisse le champ vide
-- Formate la sortie en JSON strict respectant le schéma fourni
+- Formate la sortie en JSON STRICT respectant le schéma fourni
+- RETOURNE UNIQUEMENT DU JSON VALIDE, sans texte avant ou après
+- Échappe correctement tous les guillemets dans les valeurs avec \"
+- N'utilise pas de retours à la ligne dans les valeurs string
 
 Texte à analyser :
 """${text}"""`;
