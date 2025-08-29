@@ -1171,16 +1171,17 @@
             
             // --- CONFIGURATION OBJECTS ---
             const sliders = {
-                pageMargin: { el: controls.pageMargin, valueEl: controls.pageMarginValue, property: '--page-margin', unit: 'cm' },
-                moduleSpacing: { el: controls.moduleSpacing, valueEl: controls.moduleSpacingValue, property: '--module-spacing', unit: 'rem' },
-                itemSpacing: { el: controls.itemSpacing, valueEl: controls.itemSpacingValue, property: '--item-spacing', unit: 'rem' },
-                fontSizeH1: { el: controls.fontSizeH1, valueEl: controls.fontSizeH1Value, property: '--font-size-h1', unit: 'pt' },
-                fontSizeH2: { el: controls.fontSizeH2, valueEl: controls.fontSizeH2Value, property: '--font-size-h2', unit: 'pt' },
-                fontSizeP: { el: controls.fontSizeP, valueEl: controls.fontSizePValue, property: '--font-size-p', unit: 'pt' },
-                fontSizeBanner: { el: controls.fontSizeBanner, valueEl: controls.fontSizeBannerValue, property: '--font-size-banner', unit: 'pt' },
-                lineHeight: { el: controls.lineHeight, valueEl: controls.lineHeightValue, property: '--line-height', unit: '' },
-                paragraphSpacing: { el: controls.paragraphSpacing, valueEl: controls.paragraphSpacingValue, property: '--paragraph-spacing', unit: 'rem' },
                 bannerElementSpacing: { el: controls.bannerElementSpacing, valueEl: controls.bannerElementSpacingValue, property: '--banner-element-spacing', unit: 'rem' },
+                // Commenté temporairement les sliders qui n'existent plus dans l'interface actuelle
+                // pageMargin: { el: controls.pageMargin, valueEl: controls.pageMarginValue, property: '--page-margin', unit: 'cm' },
+                // moduleSpacing: { el: controls.moduleSpacing, valueEl: controls.moduleSpacingValue, property: '--module-spacing', unit: 'rem' },
+                // itemSpacing: { el: controls.itemSpacing, valueEl: controls.itemSpacingValue, property: '--item-spacing', unit: 'rem' },
+                // fontSizeH1: { el: controls.fontSizeH1, valueEl: controls.fontSizeH1Value, property: '--font-size-h1', unit: 'pt' },
+                // fontSizeH2: { el: controls.fontSizeH2, valueEl: controls.fontSizeH2Value, property: '--font-size-h2', unit: 'pt' },
+                // fontSizeP: { el: controls.fontSizeP, valueEl: controls.fontSizePValue, property: '--font-size-p', unit: 'pt' },
+                // fontSizeBanner: { el: controls.fontSizeBanner, valueEl: controls.fontSizeBannerValue, property: '--font-size-banner', unit: 'pt' },
+                // lineHeight: { el: controls.lineHeight, valueEl: controls.lineHeightValue, property: '--line-height', unit: '' },
+                // paragraphSpacing: { el: controls.paragraphSpacing, valueEl: controls.paragraphSpacingValue, property: '--paragraph-spacing', unit: 'rem' },
             };
 
             const bannerStyleControls = {
@@ -3172,10 +3173,14 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 document.querySelector('.skill-style-btn[data-skill-style="tags"]').click();
                 
                 Object.values(sliders).forEach(config => {
-                    const defaultValue = config.el.defaultValue;
-                    config.el.value = defaultValue;
-                    config.valueEl.textContent = defaultValue;
-                    root.style.setProperty(config.property, `${defaultValue}${config.unit}`);
+                    if (config.el && config.valueEl) {
+                        const defaultValue = config.el.defaultValue;
+                        config.el.value = defaultValue;
+                        config.valueEl.textContent = defaultValue;
+                        root.style.setProperty(config.property, `${defaultValue}${config.unit}`);
+                    } else {
+                        console.warn('Slider element not found in resetCVToDefault:', config);
+                    }
                 });
                 
                 moveBannerTo('modular');
@@ -3665,11 +3670,15 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 }
 
                 Object.values(sliders).forEach(config => {
-                    config.el.addEventListener('input', () => {
-                        config.valueEl.textContent = config.el.value;
-                        root.style.setProperty(config.property, `${config.el.value}${config.unit}`);
-                        checkAllPagesOverflow();
-                    });
+                    if (config.el && config.valueEl) {
+                        config.el.addEventListener('input', () => {
+                            config.valueEl.textContent = config.el.value;
+                            root.style.setProperty(config.property, `${config.el.value}${config.unit}`);
+                            checkAllPagesOverflow();
+                        });
+                    } else {
+                        console.warn('Slider element not found:', config);
+                    }
                 });
                 
                 // Fonction de post-traitement des données extraites
