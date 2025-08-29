@@ -3208,25 +3208,24 @@ Texte à analyser :
                         });
                     }
                     
-                    // Collect all content
-                    const nom = controls.prenom.value + ' ' + controls.nom.value;
-                    const poste = controls.poste.value;
+                    // Collect all content with safety checks
+                    const nom = (controls.prenom?.value || '') + ' ' + (controls.nom?.value || '');
+                    const poste = controls.poste?.value || '';
                     
                     // Header
-                    addContentSection(nom, 18, true, [0, 0, 139], 3);
-                    addContentSection(poste, 12, false, [100, 100, 100], 8);
+                    if (nom.trim()) addContentSection(nom.trim(), 18, true, [0, 0, 139], 3);
+                    if (poste.trim()) addContentSection(poste, 12, false, [100, 100, 100], 8);
                     
                     // Contact info
                     let contactInfo = [];
-                    if (controls.email.value) contactInfo.push(controls.email.value);
-                    if (controls.telephone.value) contactInfo.push(controls.telephone.value);
-                    if (controls.adresse.value) contactInfo.push(controls.adresse.value);
+                    if (controls.bannerEmail?.value) contactInfo.push(controls.bannerEmail.value);
+                    if (controls.bannerTel?.value) contactInfo.push(controls.bannerTel.value);
                     if (contactInfo.length > 0) {
                         addContentSection(contactInfo.join(' | '), 9, false, [100, 100, 100], 8);
                     }
                     
                     // Profile/Description
-                    if (controls.description.value) {
+                    if (controls.description?.value) {
                         addContentSection('PROFIL', 12, true, [0, 0, 0], 3);
                         addContentSection(controls.description.value, 9, false, [0, 0, 0], 8);
                     }
@@ -3315,7 +3314,9 @@ Texte à analyser :
                     }
                     
                     // Save the PDF
-                    const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
+                    const prenomValue = controls.prenom?.value || 'Prenom';
+                    const nomValue = controls.nom?.value || 'Nom';
+                    const filename = `CV_${prenomValue}_${nomValue}.pdf`.replace(/ /g, '_');
                     pdf.save(filename);
                 }
 
