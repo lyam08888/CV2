@@ -1796,6 +1796,111 @@
                 updateAllStyles();
             }
 
+            // === PARSER JSON ROBUSTE ===
+            
+            function forceParseJson(rawText) {
+                console.log("🔥 Parser JSON robuste activé...");
+                
+                try {
+                    // D'abord essayer le parsing standard
+                    return JSON.parse(rawText);
+                } catch {
+                    console.log("🔧 Parsing standard échoué, extraction manuelle...");
+                }
+                
+                // Extraire manuellement chaque champ nécessaire
+                const result = {
+                    nom: extractFieldValue(rawText, 'nom'),
+                    prenom: extractFieldValue(rawText, 'prenom'),
+                    poste: extractFieldValue(rawText, 'poste'),
+                    description: extractFieldValue(rawText, 'description'),
+                    experiences: extractExperiencesRobust(rawText),
+                    formations: extractFormationsRobust(rawText),
+                    competences: extractFieldValue(rawText, 'competences')
+                };
+                
+                console.log("🔥 Données extraites manuellement:", result);
+                return result;
+            }
+            
+            function extractFieldValue(text, fieldName) {
+                // Plusieurs patterns pour capturer les valeurs
+                const patterns = [
+                    new RegExp(`"${fieldName}"\\s*:\\s*"([^"]*)"`, 'i'),
+                    new RegExp(`${fieldName}\\s*:\\s*"([^"]*)"`, 'i'),
+                    new RegExp(`"${fieldName}"\\s*:\\s*'([^']*)'`, 'i'),
+                    new RegExp(`${fieldName}\\s*:\\s*'([^']*)'`, 'i')
+                ];
+                
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        return match[1].trim();
+                    }
+                }
+                
+                return '';
+            }
+            
+            function extractExperiencesRobust(text) {
+                const experiences = [];
+                
+                // Chercher le début de l'array experiences
+                const expMatch = text.match(/"experiences"\s*:\s*\[(.*?)(?:\]|$)/is);
+                if (!expMatch) return experiences;
+                
+                const expContent = expMatch[1];
+                
+                // Diviser par les accolades fermantes suivies d'accolades ouvrantes ou fin
+                const expItems = expContent.split(/}\s*(?:{|,\s*{|$)/);
+                
+                for (let item of expItems) {
+                    if (item.trim() && item.includes('title')) {
+                        const exp = {
+                            title: extractFieldValue(item + '}', 'title'),
+                            meta: extractFieldValue(item + '}', 'meta'),
+                            desc: extractFieldValue(item + '}', 'desc')
+                        };
+                        
+                        if (exp.title || exp.meta || exp.desc) {
+                            experiences.push(exp);
+                        }
+                    }
+                }
+                
+                console.log(`🔥 Expériences extraites: ${experiences.length}`);
+                return experiences;
+            }
+            
+            function extractFormationsRobust(text) {
+                const formations = [];
+                
+                // Chercher le début de l'array formations
+                const formMatch = text.match(/"formations"\s*:\s*\[(.*?)(?:\]|$)/is);
+                if (!formMatch) return formations;
+                
+                const formContent = formMatch[1];
+                
+                // Diviser par les accolades fermantes suivies d'accolades ouvrantes ou fin
+                const formItems = formContent.split(/}\s*(?:{|,\s*{|$)/);
+                
+                for (let item of formItems) {
+                    if (item.trim() && item.includes('title')) {
+                        const form = {
+                            title: extractFieldValue(item + '}', 'title'),
+                            meta: extractFieldValue(item + '}', 'meta')
+                        };
+                        
+                        if (form.title || form.meta) {
+                            formations.push(form);
+                        }
+                    }
+                }
+                
+                console.log(`🔥 Formations extraites: ${formations.length}`);
+                return formations;
+            }
+
             // === FONCTIONS DE NETTOYAGE JSON ===
             
             function cleanJsonResponse(text) {
@@ -2110,29 +2215,37 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                                     console.log("✅ JSON parsé avec succès:", result);
                                 } catch (parseError) {
                                     console.error("❌ Erreur de parsing JSON:", parseError);
-                                    console.log("🔧 Tentative de réparation automatique...");
+                                    console.log("� Activation du parser robuste...");
                                     
-                                    // Tentative de réparation automatique
-                                    const repairedJson = repairJsonResponse(rawText);
-                                    console.log("🔧 JSON après réparation:", repairedJson);
+                                    // Utiliser le parser robuste en premier
                                     try {
-                                        result = JSON.parse(repairedJson);
-                                        console.log("🔧✅ JSON réparé et parsé:", result);
-                                    } catch (repairError) {
-                                        console.error("❌ Impossible de réparer le JSON:", repairError);
-                                        console.log("🔄 Tentative avec mode fallback...");
+                                        result = forceParseJson(rawText);
+                                        console.log("🔥✅ Parser robuste réussi:", result);
+                                    } catch (robustError) {
+                                        console.log("🔧 Parser robuste échoué, tentative de réparation...");
                                         
-                                        // Mode fallback : utiliser l'API sans schema
+                                        // Tentative de réparation automatique en dernier recours
+                                        const repairedJson = repairJsonResponse(rawText);
+                                        console.log("🔧 JSON après réparation:", repairedJson);
                                         try {
-                                            const fallbackResult = await callGeminiFallback(prompt);
-                                            if (fallbackResult) {
-                                                result = fallbackResult;
-                                                console.log("🔄✅ Mode fallback réussi:", result);
-                                            } else {
-                                                throw new Error(`JSON invalide reçu de l'IA: ${parseError.message}`);
+                                            result = JSON.parse(repairedJson);
+                                            console.log("🔧✅ JSON réparé et parsé:", result);
+                                        } catch (repairError) {
+                                            console.error("❌ Impossible de réparer le JSON:", repairError);
+                                            console.log("🔄 Tentative avec mode fallback...");
+                                            
+                                            // Mode fallback : utiliser l'API sans schema
+                                            try {
+                                                const fallbackResult = await callGeminiFallback(prompt);
+                                                if (fallbackResult) {
+                                                    result = fallbackResult;
+                                                    console.log("🔄✅ Mode fallback réussi:", result);
+                                                } else {
+                                                    throw new Error(`JSON invalide reçu de l'IA: ${parseError.message}`);
+                                                }
+                                            } catch (fallbackError) {
+                                                throw new Error(`Échec complet de l'analyse: ${fallbackError.message}`);
                                             }
-                                        } catch (fallbackError) {
-                                            throw new Error(`Échec complet de l'analyse: ${fallbackError.message}`);
                                         }
                                     }
                                 }
