@@ -14,41 +14,60 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     
     <style>
-        /* CSS personnalisé pour forcer le layout côte à côte */
+        /* Reset et base */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Layout principal FORCÉ */
         .main-layout {
-            display: flex !important;
-            flex-direction: column !important;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
+            width: 100%;
         }
         
         @media (min-width: 768px) {
             .main-layout {
                 flex-direction: row !important;
+                height: 100vh;
+                overflow: hidden;
             }
+            
             .controls-panel {
-                width: 400px !important;
-                min-width: 400px !important;
-                max-width: 400px !important;
-                flex-shrink: 0 !important;
-                height: 100vh !important;
-                overflow-y: auto !important;
+                width: 400px;
+                min-width: 400px;
+                max-width: 400px;
+                flex: 0 0 400px;
+                height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                border-right: 1px solid #e5e7eb;
             }
+            
             .preview-panel {
-                flex: 1 !important;
-                width: calc(100% - 400px) !important;
-                height: 100vh !important;
-                overflow-y: auto !important;
+                flex: 1;
+                height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                width: calc(100vw - 400px);
             }
         }
         
         @media (min-width: 1200px) {
             .controls-panel {
-                width: 500px !important;
-                min-width: 500px !important;
-                max-width: 500px !important;
+                width: 450px;
+                min-width: 450px;
+                max-width: 450px;
+                flex: 0 0 450px;
             }
             .preview-panel {
-                width: calc(100% - 500px) !important;
+                width: calc(100vw - 450px);
             }
         }
         
@@ -4201,7 +4220,15 @@ Texte à analyser :
                     const collapseIcon = document.getElementById('collapse-icon');
                     const collapseText = document.getElementById('collapse-text');
                     
-                    console.log(`Trouvé ${allDetails.length} éléments details.control-group dans tous les onglets`);
+                    console.log(`🔍 Trouvé ${allDetails.length} éléments details.control-group`);
+                    
+                    // Log each detail found
+                    allDetails.forEach((detail, index) => {
+                        const panel = detail.closest('.tab-panel');
+                        const panelId = panel ? panel.id : 'no-panel';
+                        const isHidden = panel ? panel.classList.contains('hidden') : false;
+                        console.log(`  ${index + 1}. Panel: ${panelId}, Hidden: ${isHidden}, Open: ${detail.open}`);
+                    });
                     
                     // Check current state - only consider visible details for state detection
                     const visibleDetails = Array.from(allDetails).filter(detail => {
@@ -4209,10 +4236,13 @@ Texte à analyser :
                         return !panel || !panel.classList.contains('hidden');
                     });
                     
+                    console.log(`👁️ Détails visibles: ${visibleDetails.length}`);
                     const hasOpenDetails = visibleDetails.some(detail => detail.open);
+                    console.log(`📂 A des détails ouverts: ${hasOpenDetails}`);
                     
                     if (hasOpenDetails) {
                         // Collapse all (including hidden ones)
+                        console.log('🔽 Fermeture de tous les volets...');
                         allDetails.forEach(detail => {
                             detail.open = false;
                         });
@@ -4220,9 +4250,10 @@ Texte à analyser :
                         collapseText.textContent = 'Déplier tous les volets';
                         controls.collapseAllBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200');
                         controls.collapseAllBtn.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
-                        console.log('Tous les volets repliés');
+                        console.log('✅ Tous les volets repliés');
                     } else {
                         // Expand all (including hidden ones)
+                        console.log('🔼 Ouverture de tous les volets...');
                         allDetails.forEach(detail => {
                             detail.open = true;
                         });
@@ -4230,7 +4261,7 @@ Texte à analyser :
                         collapseText.textContent = 'Replier tous les volets';
                         controls.collapseAllBtn.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
                         controls.collapseAllBtn.classList.add('bg-gray-100', 'hover:bg-gray-200');
-                        console.log('Tous les volets dépliés');
+                        console.log('✅ Tous les volets dépliés');
                     }
                 });
 
