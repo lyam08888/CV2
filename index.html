@@ -4113,43 +4113,6 @@
                 }
             }
             
-            // Test personnalisé
-            async function runCustomTest() {
-                const prompt = controls.testPrompt?.value?.trim();
-                if (!prompt) {
-                    showNotification('Veuillez saisir un prompt de test', 'error');
-                    return;
-                }
-                
-                if (!controls.testResults || !controls.testOutput) return;
-                
-                controls.testResults.classList.remove('hidden');
-                controls.testOutput.textContent = 'Exécution du test...';
-                
-                try {
-                    const result = await callGeminiAPI(prompt);
-                    controls.testOutput.textContent = result;
-                    showNotification('Test exécuté avec succès', 'success');
-                } catch (error) {
-                    controls.testOutput.textContent = `Erreur: ${error.message}`;
-                    showNotification(`Erreur lors du test: ${error.message}`, 'error');
-                }
-            }
-            
-            // Réinitialiser les paramètres API
-            function resetApiSettings() {
-                if (controls.aiModelSelect) controls.aiModelSelect.value = 'gemini-1.5-flash';
-                if (controls.aiTemperature) {
-                    controls.aiTemperature.value = '0.7';
-                    if (controls.temperatureValue) controls.temperatureValue.textContent = '0.7';
-                }
-                if (controls.aiMaxTokens) {
-                    controls.aiMaxTokens.value = '1000';
-                    if (controls.maxTokensValue) controls.maxTokensValue.textContent = '1000';
-                }
-                showNotification('Paramètres réinitialisés', 'success');
-            }
-            
             // Intégration avec les fonctions IA existantes
             async function generateAIContent(prompt, type = 'general') {
                 try {
@@ -8246,8 +8209,6 @@ Texte à analyser :
                 // Test de l'API
                 if (controls.testGeminiApi) {
                     controls.testGeminiApi.addEventListener('click', testGeminiApi);
-                }
-                    });
                 }
                 
                 // === GESTIONNAIRES D'ÉVÉNEMENTS OPENAI ===
