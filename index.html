@@ -2021,7 +2021,7 @@
                         <div id="fixed-banner-top"></div>
                         <div class="cv-body-container layout-1-col">
                             <div id="cv-col-1-1" class="cv-column">
-                                <div id="banner-module" class="cv-module">
+                                <div id="banner-module" class="cv-module hidden">
                                     <div class="drag-handle"><i class="fas fa-grip-vertical"></i></div>
                                     <div id="recruiter-banner" class="banner-align-left">
                                         <img id="banner-bg-img-preview" src="" alt="Banner background" class="absolute top-0 left-0 w-full h-full object-cover z-0 transition-all duration-300">
@@ -7270,6 +7270,12 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 console.log("Initializing UI components and event listeners...");
                 
                 reinitializePreviewSelectors();
+                
+                // Initialisation forcée du banner comme masqué
+                if (preview.bannerModule) {
+                    preview.bannerModule.classList.add('hidden');
+                }
+                
                 initializeSortableForPage(1);
                 
                 populateFontSelectors();
@@ -8416,8 +8422,9 @@ Texte à analyser :
                 });
 
                 // Collapse all details/expand functionality
-                if (controls.collapseAllBtn) {
-                    controls.collapseAllBtn.addEventListener('click', () => {
+                setTimeout(() => {
+                    if (controls.collapseAllBtn) {
+                        controls.collapseAllBtn.addEventListener('click', () => {
                     // Sélectionner tous les détails dans tous les onglets, même cachés
                     const allDetails = document.querySelectorAll('details.control-group');
                     const collapseIcon = document.getElementById('collapse-icon');
@@ -8467,7 +8474,8 @@ Texte à analyser :
                         console.log('✅ Tous les volets dépliés');
                     }
                     });
-                }
+                    }
+                }, 100); // Attendre 100ms que le DOM soit prêt
 
                 // Gestionnaires d'événements avec vérification d'existence
                 if (controls.aiSummarizeBtn) {
