@@ -1847,14 +1847,27 @@
                 repaired = repaired.replace(/: "([^"]*?)(\s*[,}\]])$/gm, ': "$1"$2');
                 repaired = repaired.replace(/: "([^"]*?)$/gm, ': "$1"');
                 
-                // 3. Réparer les arrays - ajouter des virgules manquantes
+                // 3. Réparation spéciale pour les arrays mal formatés
+                console.log("🔧 Réparation des arrays...");
+                
+                // Ajouter des virgules entre objets consécutifs dans les arrays
                 repaired = repaired.replace(/}\s*{/g, '}, {');
                 repaired = repaired.replace(/]\s*\[/g, '], [');
-                repaired = repaired.replace(/"(\s*){/g, '", {');
-                repaired = repaired.replace(/}(\s*)"/g, '}, "');
                 
-                // 4. Réparer les objets dans les arrays - virgules manquantes
-                repaired = repaired.replace(/}(\s*){"title":/g, '}, {"title":');
+                // Réparer spécifiquement les patterns problématiques d'arrays
+                repaired = repaired.replace(/}(\s*){"/g, '}, {$1"');  // }{"prop" → }, {"prop"
+                repaired = repaired.replace(/"(\s*){"/g, '", {$1"');  // "text"{"prop" → "text", {"prop"
+                repaired = repaired.replace(/}(\s*)"/g, '}, $1"');    // }"text" → }, "text"
+                
+                // Cas spécifiques pour les arrays d'objets
+                repaired = repaired.replace(/}(\s+){"title"/g, '}, $1{"title"');
+                repaired = repaired.replace(/}(\s+){"meta"/g, '}, $1{"meta"');
+                repaired = repaired.replace(/}(\s+){"desc"/g, '}, $1{"desc"');
+                
+                // Nettoyer les doubles virgules
+                repaired = repaired.replace(/,(\s*,)+/g, ',');
+                
+                // 4. Réparer les objets dans les arrays - patterns plus génériques
                 repaired = repaired.replace(/}(\s*){"[^"]+"/g, '}, {$1"');
                 
                 // 5. Gérer les guillemets non échappés dans les valeurs
@@ -1881,6 +1894,9 @@
                 // 9. Ajouter des guillemets manquants aux valeurs
                 repaired = repaired.replace(/:\s*([^",{\[\]}\s][^,}\]]*?)(\s*[,}])/g, ': "$1"$2');
                 
+                // 10. Réparation spécialisée pour les arrays problématiques
+                repaired = fixArraySyntax(repaired);
+                
                 // Test intermédiaire
                 try {
                     JSON.parse(repaired);
@@ -1890,13 +1906,40 @@
                     console.log("🔧 Réparation avancée nécessaire...", e.message);
                 }
                 
-                // 10. Réparation drastique - reconstruction manuelle
+                // 11. Réparation drastique - reconstruction manuelle
                 try {
                     return reconstructJson(repaired);
                 } catch {
                     console.warn("⚠️ Impossible de réparer le JSON - retour à un objet vide");
                     return '{}';
                 }
+            }
+            
+            function fixArraySyntax(jsonStr) {
+                console.log("🔧 Réparation spécialisée des arrays...");
+                
+                // Trouver tous les arrays et les réparer individuellement
+                return jsonStr.replace(/"(experiences|formations)"\s*:\s*\[([^\]]*(?:\][^\]]*)*?)\]/g, (match, arrayName, arrayContent) => {
+                    console.log(`🔧 Réparation de l'array "${arrayName}"`);
+                    
+                    // Nettoyer le contenu de l'array
+                    let cleaned = arrayContent;
+                    
+                    // Réparer les objets consécutifs sans virgules
+                    cleaned = cleaned.replace(/}\s*{/g, '}, {');
+                    
+                    // Ajouter des virgules entre chaînes et objets
+                    cleaned = cleaned.replace(/"(\s*){/g, '", {');
+                    cleaned = cleaned.replace(/}(\s*)"/g, '}, "');
+                    
+                    // Nettoyer les virgules multiples
+                    cleaned = cleaned.replace(/,(\s*,)+/g, ',');
+                    
+                    // Supprimer les virgules avant la fermeture
+                    cleaned = cleaned.replace(/,(\s*)$/g, '');
+                    
+                    return `"${arrayName}": [${cleaned}]`;
+                });
             }
             
             function reconstructJson(brokenJson) {
@@ -2062,6 +2105,7 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                                 // Nettoyer et valider le JSON
                                 try {
                                     const cleanedJson = cleanJsonResponse(rawText);
+                                    console.log("🧹 JSON nettoyé:", cleanedJson);
                                     result = JSON.parse(cleanedJson);
                                     console.log("✅ JSON parsé avec succès:", result);
                                 } catch (parseError) {
@@ -2070,6 +2114,7 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                                     
                                     // Tentative de réparation automatique
                                     const repairedJson = repairJsonResponse(rawText);
+                                    console.log("🔧 JSON après réparation:", repairedJson);
                                     try {
                                         result = JSON.parse(repairedJson);
                                         console.log("🔧✅ JSON réparé et parsé:", result);
