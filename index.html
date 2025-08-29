@@ -574,82 +574,310 @@
                 
                 <!-- TAB: Mise en Page -->
                 <div id="panel-layout" class="tab-panel hidden space-y-4">
+                    <!-- IA LAYOUT GENERATOR -->
                     <details class="control-group" open>
-                        <summary><span>Mise en Colonnes</span><label class="completion-label"><input type="checkbox" id="completion-layout-cols" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content">
-                            <div class="flex gap-2"><button data-layout="layout-1-col" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">1</button><button data-layout="layout-2-col-33-67" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">33/67</button><button data-layout="layout-2-col-50-50" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">50/50</button><button data-layout="layout-2-col-67-33" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">67/33</button></div>
+                        <summary><span>🤖 Générateur IA de Mise en Page</span><label class="completion-label"><input type="checkbox" id="completion-layout-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <button id="ai-layout-professional" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-md hover:from-blue-700 hover:to-indigo-700 flex items-center justify-center gap-2">
+                                <i class="fas fa-magic-wand-sparkles"></i> Mise en Page Professionnelle IA
+                            </button>
+                            <button id="ai-layout-creative" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-md hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2">
+                                <i class="fas fa-palette"></i> Mise en Page Créative IA
+                            </button>
+                            <button id="ai-layout-modern" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-md hover:from-teal-700 hover:to-cyan-700 flex items-center justify-center gap-2">
+                                <i class="fas fa-rocket"></i> Mise en Page Moderne IA
+                            </button>
+                            <button id="ai-layout-random" class="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 px-4 rounded-md hover:from-orange-700 hover:to-red-700 flex items-center justify-center gap-2">
+                                <i class="fas fa-dice"></i> Mise en Page Aléatoire Intelligente
+                            </button>
                         </div>
                     </details>
+
+                    <!-- LAYOUT STRUCTURE -->
                     <details class="control-group" open>
-                        <summary><span>Espacements & Tailles</span><label class="completion-label"><input type="checkbox" id="completion-layout-spacing" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <summary><span>Structure & Colonnes</span><label class="completion-label"><input type="checkbox" id="completion-layout-structure" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-4">
-                            <div><label for="page-margin" class="block text-sm font-medium text-gray-700">Marge Page: <span id="page-margin-value">2</span>cm</label><input type="range" id="page-margin" min="0.5" max="3" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
-                            <div><label for="module-spacing" class="block text-sm font-medium text-gray-700">Espace Blocs: <span id="module-spacing-value">1.5</span>rem</label><input type="range" id="module-spacing" min="0" max="4" step="0.1" value="1.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
-                            <div><label for="item-spacing" class="block text-sm font-medium text-gray-700">Espace Éléments: <span id="item-spacing-value">0.5</span>rem</label><input type="range" id="item-spacing" min="0" max="2" step="0.1" value="0.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
-                            <div><label for="font-size-h1" class="block text-sm font-medium text-gray-700">Taille Titre Principal: <span id="font-size-h1-value">40</span>pt</label><input type="range" id="font-size-h1" min="20" max="50" step="1" value="40" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-h2" class="block text-sm font-medium text-gray-700">Taille Titres Section: <span id="font-size-h2-value">21</span>pt</label><input type="range" id="font-size-h2" min="14" max="30" step="1" value="21" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-p" class="block text-sm font-medium text-gray-700">Taille Paragraphe: <span id="font-size-p-value">10</span>pt</label><input type="range" id="font-size-p" min="8" max="14" step="0.5" value="10" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-banner" class="block text-sm font-medium text-gray-700">Taille Bannière: <span id="font-size-banner-value">9</span>pt</label><input type="range" id="font-size-banner" min="7" max="12" step="0.5" value="9" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="line-height" class="block text-sm font-medium text-gray-700">Interligne: <span id="line-height-value">1.6</span></label><input type="range" id="line-height" min="0.8" max="2.5" step="0.1" value="1.6" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="paragraph-spacing" class="block text-sm font-medium text-gray-700">Espace Paragraphe: <span id="paragraph-spacing-value">0.5</span>rem</label><input type="range" id="paragraph-spacing" min="0" max="2" step="0.1" value="0.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Disposition générale</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button data-layout="layout-1-col" class="layout-btn bg-gray-200 p-3 rounded-md text-sm">📄 1 Colonne</button>
+                                    <button data-layout="layout-2-col-33-67" class="layout-btn bg-gray-200 p-3 rounded-md text-sm">📊 33/67</button>
+                                    <button data-layout="layout-2-col-50-50" class="layout-btn bg-gray-200 p-3 rounded-md text-sm">⚖️ 50/50</button>
+                                    <button data-layout="layout-2-col-67-33" class="layout-btn bg-gray-200 p-3 rounded-md text-sm">📈 67/33</button>
+                                    <button data-layout="layout-3-col" class="layout-btn bg-gray-200 p-3 rounded-md text-sm">🏛️ 3 Colonnes</button>
+                                    <button data-layout="layout-zigzag" class="layout-btn bg-gray-200 p-3 rounded-md text-sm">⚡ Zigzag</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Ordre des sections</label>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button id="shuffle-sections" class="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600">🔀 Réorganiser aléatoirement</button>
+                                    <button id="optimize-sections" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">🎯 Optimiser l'ordre IA</button>
+                                </div>
+                            </div>
                         </div>
+                    </details>
+
+                    <!-- ADVANCED SPACING -->
+                    <details class="control-group" open>
+                        <summary><span>Espacements Avancés</span><label class="completion-label"><input type="checkbox" id="completion-layout-spacing" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label for="page-margin-top" class="block text-sm font-medium text-gray-700">Marge Haut: <span id="page-margin-top-value">2</span>cm</label><input type="range" id="page-margin-top" min="0" max="5" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="page-margin-bottom" class="block text-sm font-medium text-gray-700">Marge Bas: <span id="page-margin-bottom-value">2</span>cm</label><input type="range" id="page-margin-bottom" min="0" max="5" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="page-margin-left" class="block text-sm font-medium text-gray-700">Marge Gauche: <span id="page-margin-left-value">2</span>cm</label><input type="range" id="page-margin-left" min="0" max="5" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="page-margin-right" class="block text-sm font-medium text-gray-700">Marge Droite: <span id="page-margin-right-value">2</span>cm</label><input type="range" id="page-margin-right" min="0" max="5" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                            </div>
+                            <div><label for="column-gap" class="block text-sm font-medium text-gray-700">Espace entre Colonnes: <span id="column-gap-value">2</span>rem</label><input type="range" id="column-gap" min="0.5" max="5" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                            <div><label for="section-spacing" class="block text-sm font-medium text-gray-700">Espace Sections: <span id="section-spacing-value">1.5</span>rem</label><input type="range" id="section-spacing" min="0" max="6" step="0.1" value="1.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                            <div><label for="subsection-spacing" class="block text-sm font-medium text-gray-700">Espace Sous-sections: <span id="subsection-spacing-value">1</span>rem</label><input type="range" id="subsection-spacing" min="0" max="4" step="0.1" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                            <div><label for="item-spacing" class="block text-sm font-medium text-gray-700">Espace Éléments: <span id="item-spacing-value">0.5</span>rem</label><input type="range" id="item-spacing" min="0" max="3" step="0.1" value="0.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                        </div>
+                    </details>
+
+                    <!-- TYPOGRAPHY ADVANCED -->
+                    <details class="control-group" open>
+                        <summary><span>Typographie Avancée</span><label class="completion-label"><input type="checkbox" id="completion-layout-typography" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label for="font-size-h1" class="block text-sm font-medium text-gray-700">Titre Principal: <span id="font-size-h1-value">40</span>pt</label><input type="range" id="font-size-h1" min="16" max="60" step="0.5" value="40" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="font-size-h2" class="block text-sm font-medium text-gray-700">Titres Section: <span id="font-size-h2-value">21</span>pt</label><input type="range" id="font-size-h2" min="12" max="36" step="0.5" value="21" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="font-size-h3" class="block text-sm font-medium text-gray-700">Sous-titres: <span id="font-size-h3-value">16</span>pt</label><input type="range" id="font-size-h3" min="10" max="24" step="0.5" value="16" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="font-size-p" class="block text-sm font-medium text-gray-700">Paragraphe: <span id="font-size-p-value">10</span>pt</label><input type="range" id="font-size-p" min="8" max="16" step="0.25" value="10" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="font-size-small" class="block text-sm font-medium text-gray-700">Texte petit: <span id="font-size-small-value">8</span>pt</label><input type="range" id="font-size-small" min="6" max="12" step="0.25" value="8" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="font-size-caption" class="block text-sm font-medium text-gray-700">Légendes: <span id="font-size-caption-value">7</span>pt</label><input type="range" id="font-size-caption" min="5" max="10" step="0.25" value="7" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label for="line-height-headings" class="block text-sm font-medium text-gray-700">Interligne Titres: <span id="line-height-headings-value">1.2</span></label><input type="range" id="line-height-headings" min="0.8" max="2" step="0.05" value="1.2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="line-height-body" class="block text-sm font-medium text-gray-700">Interligne Corps: <span id="line-height-body-value">1.6</span></label><input type="range" id="line-height-body" min="1" max="3" step="0.05" value="1.6" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="letter-spacing" class="block text-sm font-medium text-gray-700">Espacement Lettres: <span id="letter-spacing-value">0</span>px</label><input type="range" id="letter-spacing" min="-2" max="5" step="0.1" value="0" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="word-spacing" class="block text-sm font-medium text-gray-700">Espacement Mots: <span id="word-spacing-value">0</span>px</label><input type="range" id="word-spacing" min="-5" max="10" step="0.5" value="0" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- ADVANCED LAYOUT OPTIONS -->
+                    <details class="control-group" open>
+                        <summary><span>Options Avancées</span><label class="completion-label"><input type="checkbox" id="completion-layout-advanced" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Alignements</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button data-text-align="left" class="text-align-btn bg-gray-200 p-2 rounded-md text-sm">⬅️ Gauche</button>
+                                    <button data-text-align="center" class="text-align-btn bg-gray-200 p-2 rounded-md text-sm">⬌ Centré</button>
+                                    <button data-text-align="right" class="text-align-btn bg-gray-200 p-2 rounded-md text-sm">➡️ Droite</button>
+                                    <button data-text-align="justify" class="text-align-btn bg-gray-200 p-2 rounded-md text-sm">⬌ Justifié</button>
+                                    <button data-text-align="mixed" class="text-align-btn bg-gray-200 p-2 rounded-md text-sm">🎨 Mixte</button>
+                                    <button data-text-align="dynamic" class="text-align-btn bg-gray-200 p-2 rounded-md text-sm">🤖 IA</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Indentations</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label for="paragraph-indent" class="block text-xs text-gray-600">Retrait Paragraphe: <span id="paragraph-indent-value">0</span>rem</label><input type="range" id="paragraph-indent" min="0" max="3" step="0.1" value="0" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                    <div><label for="list-indent" class="block text-xs text-gray-600">Retrait Listes: <span id="list-indent-value">1</span>rem</label><input type="range" id="list-indent" min="0.5" max="4" step="0.1" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Effets visuels</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="drop-shadows" class="cv-input">Ombres portées</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="rounded-corners" class="cv-input">Coins arrondis</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="section-borders" class="cv-input">Bordures sections</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="alternating-bg" class="cv-input">Fond alterné</label>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
                     </details>
                 </div>
                 
                 <!-- TAB: Styles Globaux -->
                 <div id="panel-styles" class="tab-panel hidden space-y-4">
-                     <details class="control-group" open>
-                        <summary><span>Thèmes</span><label class="completion-label"><input type="checkbox" id="completion-styles-themes" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content">
-                            <div id="theme-buttons" class="grid grid-cols-3 gap-2">
-                                <button data-theme="professional" class="theme-btn bg-gray-200 p-2 rounded-md text-sm">Pro</button>
-                                <button data-theme="creative" class="theme-btn bg-gray-200 p-2 rounded-md text-sm">Créatif</button>
-                                <button data-theme="modern" class="theme-btn bg-gray-200 p-2 rounded-md text-sm">Moderne</button>
-                            </div>
+                    <!-- IA STYLE GENERATOR -->
+                    <details class="control-group" open>
+                        <summary><span>🎨 Générateur IA de Styles</span><label class="completion-label"><input type="checkbox" id="completion-styles-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <button id="ai-style-professional" class="w-full bg-gradient-to-r from-gray-700 to-blue-800 text-white py-3 px-4 rounded-md hover:from-gray-800 hover:to-blue-900 flex items-center justify-center gap-2">
+                                <i class="fas fa-briefcase"></i> Style Professionnel IA
+                            </button>
+                            <button id="ai-style-creative" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-md hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2">
+                                <i class="fas fa-paint-brush"></i> Style Créatif IA
+                            </button>
+                            <button id="ai-style-minimalist" class="w-full bg-gradient-to-r from-gray-400 to-gray-600 text-white py-3 px-4 rounded-md hover:from-gray-500 hover:to-gray-700 flex items-center justify-center gap-2">
+                                <i class="fas fa-minus"></i> Style Minimaliste IA
+                            </button>
+                            <button id="ai-style-luxury" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-800 text-white py-3 px-4 rounded-md hover:from-yellow-700 hover:to-yellow-900 flex items-center justify-center gap-2">
+                                <i class="fas fa-crown"></i> Style Luxe IA
+                            </button>
+                            <button id="ai-style-random" class="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 px-4 rounded-md hover:from-green-700 hover:to-teal-700 flex items-center justify-center gap-2">
+                                <i class="fas fa-magic-wand-sparkles"></i> Style Surprise IA
+                            </button>
                         </div>
                     </details>
-                     <details class="control-group" open>
-                        <summary><span>Couleurs</span><label class="completion-label"><input type="checkbox" id="completion-styles-colors" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content">
+
+                    <!-- ADVANCED THEMES -->
+                    <details class="control-group" open>
+                        <summary><span>Thèmes Avancés</span><label class="completion-label"><input type="checkbox" id="completion-styles-themes" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div id="theme-buttons" class="grid grid-cols-3 gap-2">
+                                <button data-theme="professional" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">💼 Pro</button>
+                                <button data-theme="creative" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">🎨 Créatif</button>
+                                <button data-theme="modern" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">🚀 Moderne</button>
+                                <button data-theme="elegant" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">✨ Élégant</button>
+                                <button data-theme="tech" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">💻 Tech</button>
+                                <button data-theme="artistic" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">🎭 Artistique</button>
+                                <button data-theme="minimalist" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">⚪ Minimal</button>
+                                <button data-theme="luxury" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">👑 Luxe</button>
+                                <button data-theme="vintage" class="theme-btn bg-gray-200 p-3 rounded-md text-sm">📜 Vintage</button>
+                            </div>
+                            <button id="random-theme" class="w-full bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600 mt-3">🎲 Thème Aléatoire</button>
+                        </div>
+                    </details>
+
+                    <!-- ADVANCED COLORS -->
+                    <details class="control-group" open>
+                        <summary><span>Palette de Couleurs Avancée</span><label class="completion-label"><input type="checkbox" id="completion-styles-colors" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label for="primary-color-picker" class="block text-sm font-medium text-gray-700">Principale</label>
-                                    <input type="color" id="primary-color-picker" value="#2563eb" class="cv-input w-full h-10 p-1 border rounded-md">
+                                    <label for="primary-color-picker" class="block text-sm font-medium text-gray-700">Couleur Principale</label>
+                                    <input type="color" id="primary-color-picker" value="#2563eb" class="cv-input w-full h-12 p-1 border rounded-md">
                                 </div>
                                 <div>
-                                    <label for="secondary-color-picker" class="block text-sm font-medium text-gray-700">Secondaire</label>
-                                    <div class="flex items-center">
-                                        <input type="color" id="secondary-color-picker" value="#334155" class="cv-input w-full h-10 p-1 border rounded-md">
-                                        <button id="ai-color-btn" title="Suggestion IA" class="ml-2 text-blue-600 hover:text-blue-800"><i class="fas fa-wand-magic-sparkles"></i></button>
-                                    </div>
+                                    <label for="secondary-color-picker" class="block text-sm font-medium text-gray-700">Couleur Secondaire</label>
+                                    <input type="color" id="secondary-color-picker" value="#334155" class="cv-input w-full h-12 p-1 border rounded-md">
                                 </div>
-                                <div class="col-span-2">
-                                    <label for="body-text-color-picker" class="block text-sm font-medium text-gray-700">Texte du corps</label>
-                                    <input type="color" id="body-text-color-picker" value="#334155" class="cv-input w-full h-10 p-1 border rounded-md">
+                                <div>
+                                    <label for="accent-color-picker" class="block text-sm font-medium text-gray-700">Couleur d'Accent</label>
+                                    <input type="color" id="accent-color-picker" value="#f59e0b" class="cv-input w-full h-12 p-1 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="neutral-color-picker" class="block text-sm font-medium text-gray-700">Couleur Neutre</label>
+                                    <input type="color" id="neutral-color-picker" value="#6b7280" class="cv-input w-full h-12 p-1 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="background-color-picker" class="block text-sm font-medium text-gray-700">Arrière-plan</label>
+                                    <input type="color" id="background-color-picker" value="#ffffff" class="cv-input w-full h-12 p-1 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="text-color-picker" class="block text-sm font-medium text-gray-700">Texte Principal</label>
+                                    <input type="color" id="text-color-picker" value="#1f2937" class="cv-input w-full h-12 p-1 border rounded-md">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mt-4">
+                                <button id="ai-harmonious-colors" class="bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-600 text-sm">🎨 Harmonie IA</button>
+                                <button id="ai-contrast-colors" class="bg-purple-500 text-white py-2 px-3 rounded-md hover:bg-purple-600 text-sm">⚡ Contraste IA</button>
+                                <button id="random-palette" class="bg-orange-500 text-white py-2 px-3 rounded-md hover:bg-orange-600 text-sm">🎲 Palette Aléatoire</button>
+                            </div>
+                            <!-- Palettes pré-définies -->
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Palettes Pré-définies</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button data-palette="ocean" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #0ea5e9, #06b6d4, #10b981);"></button>
+                                    <button data-palette="sunset" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #f59e0b, #ef4444, #ec4899);"></button>
+                                    <button data-palette="forest" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #16a34a, #84cc16, #65a30d);"></button>
+                                    <button data-palette="royal" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #7c3aed, #a855f7, #3b82f6);"></button>
+                                    <button data-palette="autumn" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #dc2626, #ea580c, #d97706);"></button>
+                                    <button data-palette="mono" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #374151, #6b7280, #9ca3af);"></button>
+                                    <button data-palette="pastel" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #fbbf24, #f472b6, #a78bfa);"></button>
+                                    <button data-palette="neon" class="palette-btn h-8 rounded-md" style="background: linear-gradient(90deg, #06ffa5, #00d4ff, #ff006e);"></button>
                                 </div>
                             </div>
                         </div>
                     </details>
-                     <details class="control-group" open>
-                        <summary><span>Polices</span><label class="completion-label"><input type="checkbox" id="completion-styles-fonts" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+
+                    <!-- ADVANCED FONTS -->
+                    <details class="control-group" open>
+                        <summary><span>Typographie Professionnelle</span><label class="completion-label"><input type="checkbox" id="completion-styles-fonts" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label for="font-family-h1-select" class="block text-sm font-medium text-gray-700">Titre Principal (H1)</label>
+                                    <select id="font-family-h1-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                </div>
+                                <div>
+                                    <label for="font-family-h2-select" class="block text-sm font-medium text-gray-700">Titres de Section (H2)</label>
+                                    <select id="font-family-h2-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                </div>
+                                <div>
+                                    <label for="font-family-h3-select" class="block text-sm font-medium text-gray-700">Sous-titres (H3)</label>
+                                    <select id="font-family-h3-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                </div>
+                                <div>
+                                    <label for="font-family-body-select" class="block text-sm font-medium text-gray-700">Corps de Texte</label>
+                                    <select id="font-family-body-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                </div>
+                                <div>
+                                    <label for="font-family-accent-select" class="block text-sm font-medium text-gray-700">Texte d'Accent</label>
+                                    <select id="font-family-accent-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button id="ai-font-pairing" class="bg-indigo-500 text-white py-2 px-3 rounded-md hover:bg-indigo-600 text-sm">🤖 Pairing IA</button>
+                                <button id="random-fonts" class="bg-purple-500 text-white py-2 px-3 rounded-md hover:bg-purple-600 text-sm">🎲 Polices Aléatoires</button>
+                                <button id="reset-fonts" class="bg-gray-500 text-white py-2 px-3 rounded-md hover:bg-gray-600 text-sm">↺ Reset</button>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- VISUAL EFFECTS -->
+                    <details class="control-group" open>
+                        <summary><span>Effets Visuels</span><label class="completion-label"><input type="checkbox" id="completion-styles-effects" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-4">
                             <div>
-                                <label for="font-family-h1-select" class="block text-sm font-medium text-gray-700">Titre Principal (H1)</label>
-                                <select id="font-family-h1-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Style des Titres de Section</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button data-title-style="style-underline" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">📝 Souligné</button>
+                                    <button data-title-style="style-side-line" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">📏 Ligne Côté</button>
+                                    <button data-title-style="style-background" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">🎨 Fond Coloré</button>
+                                    <button data-title-style="style-boxed" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">📦 Encadré</button>
+                                    <button data-title-style="style-gradient" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">🌈 Dégradé</button>
+                                    <button data-title-style="style-shadow" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">👤 Ombre</button>
+                                    <button data-title-style="style-3d" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">🔮 3D</button>
+                                    <button data-title-style="style-neon" class="section-title-style-btn bg-gray-200 p-3 rounded-md text-sm">💡 Néon</button>
+                                </div>
                             </div>
                             <div>
-                                <label for="font-family-h2-select" class="block text-sm font-medium text-gray-700">Titres de Section (H2)</label>
-                                <select id="font-family-h2-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Effets Globaux</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="global-shadows" class="cv-input">🌑 Ombres globales</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="global-gradients" class="cv-input">🌈 Dégradés</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="global-borders" class="cv-input">🔲 Bordures</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="global-rounded" class="cv-input">🔘 Coins arrondis</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="global-animation" class="cv-input">⚡ Animations</label>
+                                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="global-texture" class="cv-input">🎨 Textures</label>
+                                </div>
                             </div>
                             <div>
-                                <label for="font-family-body-select" class="block text-sm font-medium text-gray-700">Corps de Texte</label>
-                                <select id="font-family-body-select" class="cv-input w-full p-2 border rounded-md"></select>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Opacité et Transparence</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label for="section-opacity" class="block text-xs text-gray-600">Opacité Sections: <span id="section-opacity-value">1</span></label><input type="range" id="section-opacity" min="0.1" max="1" step="0.05" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                    <div><label for="background-opacity" class="block text-xs text-gray-600">Opacité Fond: <span id="background-opacity-value">1</span></label><input type="range" id="background-opacity" min="0.1" max="1" step="0.05" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                </div>
                             </div>
                         </div>
                     </details>
-                     <details class="control-group" open>
-                        <summary><span>Style des Titres de Section</span><label class="completion-label"><input type="checkbox" id="completion-styles-titles" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content">
-                            <div class="grid grid-cols-2 gap-2">
-                                <button data-title-style="style-underline" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm active">Souligné</button>
-                                <button data-title-style="style-side-line" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Ligne Côté</button>
-                                <button data-title-style="style-background" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Fond</button>
-                                <button data-title-style="style-boxed" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm">Encadré</button>
+
+                    <!-- PATTERN & TEXTURE -->
+                    <details class="control-group" open>
+                        <summary><span>Motifs & Textures</span><label class="completion-label"><input type="checkbox" id="completion-styles-patterns" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Motifs de Fond</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button data-pattern="none" class="pattern-btn bg-gray-200 p-3 rounded-md text-sm">🚫 Aucun</button>
+                                    <button data-pattern="dots" class="pattern-btn bg-gray-200 p-3 rounded-md text-sm">⚫ Points</button>
+                                    <button data-pattern="lines" class="pattern-btn bg-gray-200 p-3 rounded-md text-sm">📏 Lignes</button>
+                                    <button data-pattern="grid" class="pattern-btn bg-gray-200 p-3 rounded-md text-sm">⚏ Grille</button>
+                                    <button data-pattern="waves" class="pattern-btn bg-gray-200 p-3 rounded-md text-sm">🌊 Vagues</button>
+                                    <button data-pattern="geometric" class="pattern-btn bg-gray-200 p-3 rounded-md text-sm">🔷 Géométrique</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label for="pattern-opacity" class="block text-xs text-gray-600">Opacité Motif: <span id="pattern-opacity-value">0.1</span></label><input type="range" id="pattern-opacity" min="0" max="0.5" step="0.01" value="0.1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                                <div><label for="pattern-scale" class="block text-xs text-gray-600">Échelle Motif: <span id="pattern-scale-value">1</span></label><input type="range" id="pattern-scale" min="0.5" max="3" step="0.1" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
                             </div>
                         </div>
                     </details>
@@ -1043,6 +1271,287 @@
                 if (savedKey && controls.geminiApiKey) {
                     controls.geminiApiKey.value = savedKey;
                     updateApiStatus('loaded', 'Clé API chargée');
+                }
+            }
+
+            // Fonctions utilitaires pour les générateurs de styles
+            function applyLayoutSettings(layout) {
+                if (layout.columns) {
+                    document.querySelectorAll('.column-btn').forEach(btn => btn.classList.remove('active'));
+                    const colBtn = document.querySelector(`[data-columns="${layout.columns}"]`);
+                    if (colBtn) colBtn.classList.add('active');
+                    controls.columns = layout.columns;
+                }
+                if (layout.columnGap) {
+                    const slider = document.getElementById('column-gap-slider');
+                    if (slider) {
+                        slider.value = layout.columnGap;
+                        document.getElementById('column-gap-value').textContent = layout.columnGap;
+                    }
+                }
+                if (layout.sectionSpacing) {
+                    const slider = document.getElementById('section-spacing-slider');
+                    if (slider) {
+                        slider.value = layout.sectionSpacing;
+                        document.getElementById('section-spacing-value').textContent = layout.sectionSpacing;
+                    }
+                }
+                ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'].forEach(margin => {
+                    if (layout[margin]) {
+                        const slider = document.getElementById(`${margin.toLowerCase().replace('margin', 'margin-')}-slider`);
+                        if (slider) {
+                            slider.value = layout[margin];
+                            document.getElementById(`${margin.toLowerCase().replace('margin', 'margin-')}-value`).textContent = layout[margin];
+                        }
+                    }
+                });
+                if (layout.fontSize) {
+                    document.querySelectorAll('.font-size-btn').forEach(btn => btn.classList.remove('active'));
+                    const sizeBtn = document.querySelector(`[data-font-size="${layout.fontSize}"]`);
+                    if (sizeBtn) sizeBtn.classList.add('active');
+                }
+                if (layout.lineHeight) {
+                    document.querySelectorAll('.line-height-btn').forEach(btn => btn.classList.remove('active'));
+                    const heightBtn = document.querySelector(`[data-line-height="${layout.lineHeight}"]`);
+                    if (heightBtn) heightBtn.classList.add('active');
+                }
+                if (layout.alignment) {
+                    document.querySelectorAll('.alignment-btn').forEach(btn => btn.classList.remove('active'));
+                    const alignBtn = document.querySelector(`[data-alignment="${layout.alignment}"]`);
+                    if (alignBtn) alignBtn.classList.add('active');
+                }
+                updateLayoutInPreview();
+            }
+
+            function applyStyleSettings(style) {
+                if (style.primaryColor) {
+                    document.getElementById('primary-color-picker').value = style.primaryColor;
+                }
+                if (style.secondaryColor) {
+                    document.getElementById('secondary-color-picker').value = style.secondaryColor;
+                }
+                if (style.accentColor) {
+                    document.getElementById('accent-color-picker').value = style.accentColor;
+                }
+                if (style.neutralColor) {
+                    document.getElementById('neutral-color-picker').value = style.neutralColor;
+                }
+                if (style.backgroundColor) {
+                    document.getElementById('background-color-picker').value = style.backgroundColor;
+                }
+                if (style.textColor) {
+                    document.getElementById('text-color-picker').value = style.textColor;
+                }
+                
+                // Appliquer les polices
+                ['H1', 'H2', 'H3', 'Body', 'Accent'].forEach(type => {
+                    const key = `font${type}`;
+                    if (style[key]) {
+                        const select = document.getElementById(`font-family-${type.toLowerCase()}-select`);
+                        if (select) select.value = style[key];
+                    }
+                });
+
+                // Appliquer le style de titre
+                if (style.titleStyle) {
+                    document.querySelectorAll('.section-title-style-btn').forEach(btn => btn.classList.remove('active'));
+                    const titleBtn = document.querySelector(`[data-title-style="${style.titleStyle}"]`);
+                    if (titleBtn) titleBtn.classList.add('active');
+                }
+
+                // Appliquer les effets
+                if (style.effects) {
+                    Object.keys(style.effects).forEach(effect => {
+                        const checkbox = document.getElementById(`global-${effect}`);
+                        if (checkbox) checkbox.checked = style.effects[effect];
+                    });
+                }
+
+                updateStylesInPreview();
+            }
+
+            function updateLayoutInPreview() {
+                // Mise à jour du layout dans la prévisualisation
+                const preview = document.getElementById('cv-preview');
+                if (preview) {
+                    // Appliquer les styles de layout
+                    const root = document.documentElement;
+                    const columnGap = document.getElementById('column-gap-slider')?.value || 20;
+                    const sectionSpacing = document.getElementById('section-spacing-slider')?.value || 20;
+                    
+                    root.style.setProperty('--column-gap', `${columnGap}px`);
+                    root.style.setProperty('--section-spacing', `${sectionSpacing}px`);
+                    
+                    ['top', 'bottom', 'left', 'right'].forEach(side => {
+                        const value = document.getElementById(`margin-${side}-slider`)?.value || 20;
+                        root.style.setProperty(`--margin-${side}`, `${value}px`);
+                    });
+                }
+            }
+
+            function updateStylesInPreview() {
+                // Mise à jour des styles dans la prévisualisation
+                const root = document.documentElement;
+                
+                // Appliquer les couleurs
+                ['primary', 'secondary', 'accent', 'neutral', 'background', 'text'].forEach(color => {
+                    const picker = document.getElementById(`${color}-color-picker`);
+                    if (picker) {
+                        root.style.setProperty(`--color-${color}`, picker.value);
+                    }
+                });
+
+                // Appliquer les polices
+                ['h1', 'h2', 'h3', 'body', 'accent'].forEach(type => {
+                    const select = document.getElementById(`font-family-${type}-select`);
+                    if (select && select.value) {
+                        root.style.setProperty(`--font-${type}`, select.value);
+                    }
+                });
+            }
+
+            // Fonctions utilitaires supplémentaires pour les styles
+            function applyPredefinedPalette(paletteName) {
+                const palettes = {
+                    ocean: {
+                        primaryColor: '#0ea5e9',
+                        secondaryColor: '#06b6d4',
+                        accentColor: '#10b981',
+                        neutralColor: '#64748b',
+                        backgroundColor: '#f0f9ff',
+                        textColor: '#0f172a'
+                    },
+                    sunset: {
+                        primaryColor: '#f59e0b',
+                        secondaryColor: '#ef4444',
+                        accentColor: '#ec4899',
+                        neutralColor: '#6b7280',
+                        backgroundColor: '#fffbeb',
+                        textColor: '#1c1917'
+                    },
+                    forest: {
+                        primaryColor: '#16a34a',
+                        secondaryColor: '#84cc16',
+                        accentColor: '#65a30d',
+                        neutralColor: '#78716c',
+                        backgroundColor: '#f7fee7',
+                        textColor: '#1c1917'
+                    },
+                    royal: {
+                        primaryColor: '#7c3aed',
+                        secondaryColor: '#a855f7',
+                        accentColor: '#3b82f6',
+                        neutralColor: '#64748b',
+                        backgroundColor: '#faf5ff',
+                        textColor: '#1e1b4b'
+                    },
+                    autumn: {
+                        primaryColor: '#dc2626',
+                        secondaryColor: '#ea580c',
+                        accentColor: '#d97706',
+                        neutralColor: '#78716c',
+                        backgroundColor: '#fef2f2',
+                        textColor: '#1c1917'
+                    },
+                    mono: {
+                        primaryColor: '#374151',
+                        secondaryColor: '#6b7280',
+                        accentColor: '#9ca3af',
+                        neutralColor: '#d1d5db',
+                        backgroundColor: '#ffffff',
+                        textColor: '#111827'
+                    },
+                    pastel: {
+                        primaryColor: '#fbbf24',
+                        secondaryColor: '#f472b6',
+                        accentColor: '#a78bfa',
+                        neutralColor: '#9ca3af',
+                        backgroundColor: '#fefce8',
+                        textColor: '#1f2937'
+                    },
+                    neon: {
+                        primaryColor: '#06ffa5',
+                        secondaryColor: '#00d4ff',
+                        accentColor: '#ff006e',
+                        neutralColor: '#64748b',
+                        backgroundColor: '#0f0f23',
+                        textColor: '#f1f5f9'
+                    }
+                };
+
+                const palette = palettes[paletteName];
+                if (palette) {
+                    applyStyleSettings(palette);
+                    showToast(`Palette ${paletteName} appliquée 🎨`, "success");
+                }
+            }
+
+            function applyBackgroundPattern(patternName) {
+                const root = document.documentElement;
+                const patterns = {
+                    none: 'none',
+                    dots: 'radial-gradient(circle, var(--color-neutral) 1px, transparent 1px)',
+                    lines: 'linear-gradient(90deg, var(--color-neutral) 1px, transparent 1px)',
+                    grid: 'linear-gradient(var(--color-neutral) 1px, transparent 1px), linear-gradient(90deg, var(--color-neutral) 1px, transparent 1px)',
+                    waves: 'repeating-linear-gradient(45deg, transparent, transparent 10px, var(--color-neutral) 10px, var(--color-neutral) 20px)',
+                    geometric: 'repeating-conic-gradient(var(--color-neutral) 0% 25%, transparent 0% 50%)'
+                };
+
+                root.style.setProperty('--background-pattern', patterns[patternName] || 'none');
+                showToast(`Motif ${patternName} appliqué`, "success");
+            }
+
+            async function generateHarmoniousColors() {
+                try {
+                    const prompt = "Génère une palette de 6 couleurs harmonieuses pour un CV professionnel. Réponds avec un objet JSON contenant: primaryColor, secondaryColor, accentColor, neutralColor, backgroundColor, textColor (toutes en hex).";
+                    const response = await callGeminiAPI(prompt);
+                    const colors = JSON.parse(response);
+                    applyStyleSettings(colors);
+                    showToast("Couleurs harmonieuses générées par IA 🎨", "success");
+                } catch (error) {
+                    console.error('Erreur génération couleurs:', error);
+                    showToast("Erreur lors de la génération des couleurs", "error");
+                }
+            }
+
+            async function generateContrastColors() {
+                try {
+                    const prompt = "Génère une palette de 6 couleurs à fort contraste pour un CV moderne et impactant. Réponds avec un objet JSON contenant: primaryColor, secondaryColor, accentColor, neutralColor, backgroundColor, textColor (toutes en hex).";
+                    const response = await callGeminiAPI(prompt);
+                    const colors = JSON.parse(response);
+                    applyStyleSettings(colors);
+                    showToast("Couleurs contrastées générées par IA ⚡", "success");
+                } catch (error) {
+                    console.error('Erreur génération couleurs:', error);
+                    showToast("Erreur lors de la génération des couleurs", "error");
+                }
+            }
+
+            function generateRandomPalette() {
+                const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#84cc16', '#06b6d4', '#6366f1', '#8b5cf6', '#d946ef'];
+                const randomColors = {
+                    primaryColor: colors[Math.floor(Math.random() * colors.length)],
+                    secondaryColor: colors[Math.floor(Math.random() * colors.length)],
+                    accentColor: colors[Math.floor(Math.random() * colors.length)],
+                    neutralColor: '#6b7280',
+                    backgroundColor: '#ffffff',
+                    textColor: '#1f2937'
+                };
+                applyStyleSettings(randomColors);
+                showToast("Palette aléatoire appliquée 🎲", "success");
+            }
+
+            async function generateAIFontPairing() {
+                try {
+                    const fontList = fonts.map(f => f.name).join(', ');
+                    const prompt = `Choisir une combinaison harmonieuse de 5 polices pour un CV professionnel parmi: ${fontList}. Réponds avec un objet JSON contenant: fontH1, fontH2, fontH3, fontBody, fontAccent.`;
+                    const response = await callGeminiAPI(prompt);
+                    const fontPairing = JSON.parse(response);
+                    applyStyleSettings(fontPairing);
+                    showToast("Pairing de polices généré par IA 🤖", "success");
+                } catch (error) {
+                    console.error('Erreur génération polices:', error);
+                    showToast("Erreur lors de la génération du pairing", "error");
                 }
             }
             
@@ -3468,6 +3977,300 @@ Texte à analyser :
                 console.log('   - Interface de test personnalisé');
                 console.log('   - Intégration complète avec toutes les fonctions IA');
             }
+
+            // ==============================================
+            // AI GENERATORS EVENT LISTENERS
+            // ==============================================
+
+            // AI Layout Generators
+            const aiLayoutProfessional = document.getElementById('ai-layout-professional');
+            if (aiLayoutProfessional) {
+                aiLayoutProfessional.addEventListener('click', () => {
+                    const professionalLayout = {
+                        columns: 2,
+                        columnGap: 30,
+                        sectionSpacing: 25,
+                        marginTop: 30,
+                        marginBottom: 30,
+                        marginLeft: 25,
+                        marginRight: 25,
+                        fontSize: 'medium',
+                        lineHeight: 'normal',
+                        alignment: 'left',
+                        indentation: 0
+                    };
+                    applyLayoutSettings(professionalLayout);
+                    showToast("Layout professionnel appliqué par IA 🤖", "success");
+                });
+            }
+
+            const aiLayoutCreative = document.getElementById('ai-layout-creative');
+            if (aiLayoutCreative) {
+                aiLayoutCreative.addEventListener('click', () => {
+                    const creativeLayout = {
+                        columns: 1,
+                        columnGap: 40,
+                        sectionSpacing: 35,
+                        marginTop: 20,
+                        marginBottom: 20,
+                        marginLeft: 30,
+                        marginRight: 30,
+                        fontSize: 'large',
+                        lineHeight: 'relaxed',
+                        alignment: 'center',
+                        indentation: 10
+                    };
+                    applyLayoutSettings(creativeLayout);
+                    showToast("Layout créatif appliqué par IA 🎨", "success");
+                });
+            }
+
+            const aiLayoutModern = document.getElementById('ai-layout-modern');
+            if (aiLayoutModern) {
+                aiLayoutModern.addEventListener('click', () => {
+                    const modernLayout = {
+                        columns: 3,
+                        columnGap: 20,
+                        sectionSpacing: 30,
+                        marginTop: 15,
+                        marginBottom: 15,
+                        marginLeft: 20,
+                        marginRight: 20,
+                        fontSize: 'small',
+                        lineHeight: 'tight',
+                        alignment: 'justify',
+                        indentation: 5
+                    };
+                    applyLayoutSettings(modernLayout);
+                    showToast("Layout moderne appliqué par IA 🚀", "success");
+                });
+            }
+
+            const aiLayoutRandom = document.getElementById('ai-layout-random');
+            if (aiLayoutRandom) {
+                aiLayoutRandom.addEventListener('click', async () => {
+                    try {
+                        const prompt = `Génère un layout de CV unique et créatif avec ces paramètres:
+                        - Nombre de colonnes (1-4)
+                        - Espacement entre colonnes (10-50px)
+                        - Espacement entre sections (15-40px) 
+                        - Marges (10-40px)
+                        - Taille de police (small/medium/large/xlarge)
+                        - Hauteur de ligne (tight/normal/relaxed/loose)
+                        - Alignement (left/center/right/justify)
+                        - Indentation (0-20px)
+                        
+                        Réponds uniquement avec un objet JSON valide.`;
+                        
+                        const response = await callGeminiAPI(prompt);
+                        const layout = JSON.parse(response);
+                        applyLayoutSettings(layout);
+                        showToast("Layout aléatoire généré par IA ✨", "success");
+                    } catch (error) {
+                        console.error('Erreur génération layout IA:', error);
+                        // Fallback aléatoire
+                        const randomLayout = {
+                            columns: Math.floor(Math.random() * 4) + 1,
+                            columnGap: Math.floor(Math.random() * 40) + 10,
+                            sectionSpacing: Math.floor(Math.random() * 25) + 15,
+                            marginTop: Math.floor(Math.random() * 30) + 10,
+                            marginBottom: Math.floor(Math.random() * 30) + 10,
+                            marginLeft: Math.floor(Math.random() * 30) + 10,
+                            marginRight: Math.floor(Math.random() * 30) + 10,
+                            fontSize: ['small', 'medium', 'large', 'xlarge'][Math.floor(Math.random() * 4)],
+                            lineHeight: ['tight', 'normal', 'relaxed', 'loose'][Math.floor(Math.random() * 4)],
+                            alignment: ['left', 'center', 'right', 'justify'][Math.floor(Math.random() * 4)],
+                            indentation: Math.floor(Math.random() * 20)
+                        };
+                        applyLayoutSettings(randomLayout);
+                        showToast("Layout aléatoire appliqué ✨", "success");
+                    }
+                });
+            }
+
+            // AI Style Generators
+            const aiStyleProfessional = document.getElementById('ai-style-professional');
+            if (aiStyleProfessional) {
+                aiStyleProfessional.addEventListener('click', () => {
+                    const professionalStyle = {
+                        primaryColor: '#1e40af',
+                        secondaryColor: '#374151',
+                        accentColor: '#3b82f6',
+                        neutralColor: '#6b7280',
+                        backgroundColor: '#ffffff',
+                        textColor: '#1f2937',
+                        fontH1: 'Merriweather',
+                        fontH2: 'Source Sans Pro',
+                        fontH3: 'Source Sans Pro',
+                        fontBody: 'Source Sans Pro',
+                        fontAccent: 'Merriweather',
+                        titleStyle: 'style-underline',
+                        effects: { shadows: true, gradients: false, borders: true, rounded: false }
+                    };
+                    applyStyleSettings(professionalStyle);
+                    showToast("Style professionnel appliqué par IA 💼", "success");
+                });
+            }
+
+            const aiStyleCreative = document.getElementById('ai-style-creative');
+            if (aiStyleCreative) {
+                aiStyleCreative.addEventListener('click', () => {
+                    const creativeStyle = {
+                        primaryColor: '#8b5cf6',
+                        secondaryColor: '#ec4899',
+                        accentColor: '#f59e0b',
+                        neutralColor: '#6b7280',
+                        backgroundColor: '#fefbff',
+                        textColor: '#1e293b',
+                        fontH1: 'Playfair Display',
+                        fontH2: 'Nunito',
+                        fontH3: 'Nunito',
+                        fontBody: 'Nunito',
+                        fontAccent: 'Dancing Script',
+                        titleStyle: 'style-gradient',
+                        effects: { shadows: true, gradients: true, borders: false, rounded: true }
+                    };
+                    applyStyleSettings(creativeStyle);
+                    showToast("Style créatif appliqué par IA 🎨", "success");
+                });
+            }
+
+            const aiStyleMinimalist = document.getElementById('ai-style-minimalist');
+            if (aiStyleMinimalist) {
+                aiStyleMinimalist.addEventListener('click', () => {
+                    const minimalistStyle = {
+                        primaryColor: '#374151',
+                        secondaryColor: '#6b7280',
+                        accentColor: '#9ca3af',
+                        neutralColor: '#d1d5db',
+                        backgroundColor: '#ffffff',
+                        textColor: '#111827',
+                        fontH1: 'Inter',
+                        fontH2: 'Inter',
+                        fontH3: 'Inter',
+                        fontBody: 'Inter',
+                        fontAccent: 'Inter',
+                        titleStyle: 'style-side-line',
+                        effects: { shadows: false, gradients: false, borders: false, rounded: false }
+                    };
+                    applyStyleSettings(minimalistStyle);
+                    showToast("Style minimaliste appliqué par IA ⚪", "success");
+                });
+            }
+
+            const aiStyleLuxury = document.getElementById('ai-style-luxury');
+            if (aiStyleLuxury) {
+                aiStyleLuxury.addEventListener('click', () => {
+                    const luxuryStyle = {
+                        primaryColor: '#d97706',
+                        secondaryColor: '#92400e',
+                        accentColor: '#fbbf24',
+                        neutralColor: '#78716c',
+                        backgroundColor: '#fffbeb',
+                        textColor: '#1c1917',
+                        fontH1: 'Cormorant Garamond',
+                        fontH2: 'Lora',
+                        fontH3: 'Lora',
+                        fontBody: 'Crimson Text',
+                        fontAccent: 'Italianno',
+                        titleStyle: 'style-3d',
+                        effects: { shadows: true, gradients: true, borders: true, rounded: false }
+                    };
+                    applyStyleSettings(luxuryStyle);
+                    showToast("Style luxe appliqué par IA 👑", "success");
+                });
+            }
+
+            const aiStyleRandom = document.getElementById('ai-style-random');
+            if (aiStyleRandom) {
+                aiStyleRandom.addEventListener('click', async () => {
+                    try {
+                        const fontList = fonts.map(f => f.name).join(', ');
+                        const prompt = `Génère un style de CV unique et harmonieux avec:
+                        - Palette de couleurs cohérente (6 couleurs en hex: primaryColor, secondaryColor, accentColor, neutralColor, backgroundColor, textColor)
+                        - Combinaison de polices professionnelles (fontH1, fontH2, fontH3, fontBody, fontAccent parmi: ${fontList})
+                        - Style de titre (titleStyle: style-underline/style-side-line/style-background/style-boxed/style-gradient/style-shadow/style-3d/style-neon)
+                        - Effets visuels (effects: {shadows: boolean, gradients: boolean, borders: boolean, rounded: boolean})
+                        
+                        Réponds avec un objet JSON valide uniquement.`;
+                        
+                        const response = await callGeminiAPI(prompt);
+                        const style = JSON.parse(response);
+                        applyStyleSettings(style);
+                        showToast("Style surprise généré par IA ✨", "success");
+                    } catch (error) {
+                        console.error('Erreur génération style IA:', error);
+                        // Fallback aléatoire
+                        const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
+                        const randomStyle = {
+                            primaryColor: colors[Math.floor(Math.random() * colors.length)],
+                            secondaryColor: colors[Math.floor(Math.random() * colors.length)],
+                            accentColor: colors[Math.floor(Math.random() * colors.length)],
+                            neutralColor: '#6b7280',
+                            backgroundColor: '#ffffff',
+                            textColor: '#1f2937',
+                            fontH1: fonts[Math.floor(Math.random() * fonts.length)].name,
+                            fontH2: fonts[Math.floor(Math.random() * fonts.length)].name,
+                            fontH3: fonts[Math.floor(Math.random() * fonts.length)].name,
+                            fontBody: fonts[Math.floor(Math.random() * fonts.length)].name,
+                            fontAccent: fonts[Math.floor(Math.random() * fonts.length)].name,
+                            titleStyle: ['style-underline', 'style-side-line', 'style-background', 'style-boxed', 'style-gradient', 'style-shadow', 'style-3d', 'style-neon'][Math.floor(Math.random() * 8)],
+                            effects: {
+                                shadows: Math.random() > 0.5,
+                                gradients: Math.random() > 0.5,
+                                borders: Math.random() > 0.5,
+                                rounded: Math.random() > 0.5
+                            }
+                        };
+                        applyStyleSettings(randomStyle);
+                        showToast("Style surprise appliqué ✨", "success");
+                    }
+                });
+            }
+
+            // Additional Style Controls Event Listeners
+            const paletteButtons = document.querySelectorAll('.palette-btn');
+            paletteButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const palette = btn.dataset.palette;
+                    applyPredefinedPalette(palette);
+                });
+            });
+
+            // Pattern controls
+            const patternButtons = document.querySelectorAll('.pattern-btn');
+            patternButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const pattern = btn.dataset.pattern;
+                    applyBackgroundPattern(pattern);
+                });
+            });
+
+            // Additional AI color generators
+            const aiHarmoniousColors = document.getElementById('ai-harmonious-colors');
+            if (aiHarmoniousColors) {
+                aiHarmoniousColors.addEventListener('click', generateHarmoniousColors);
+            }
+
+            const aiContrastColors = document.getElementById('ai-contrast-colors');
+            if (aiContrastColors) {
+                aiContrastColors.addEventListener('click', generateContrastColors);
+            }
+
+            const randomPalette = document.getElementById('random-palette');
+            if (randomPalette) {
+                randomPalette.addEventListener('click', generateRandomPalette);
+            }
+
+            // Font pairing AI
+            const aiFontPairing = document.getElementById('ai-font-pairing');
+            if (aiFontPairing) {
+                aiFontPairing.addEventListener('click', generateAIFontPairing);
+            }
+
+            // ==============================================
+            // END AI GENERATORS EVENT LISTENERS
+            // ==============================================
             
             // --- START THE APP ---
             initializeAll();
