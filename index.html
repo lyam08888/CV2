@@ -504,6 +504,62 @@
             }
         }
 
+        /* 🚀 STYLES POUR CLÉS MULTIPLES GEMINI */
+        .gemini-key-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .gemini-key-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #3b82f6;
+        }
+        
+        .gemini-key-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active { background-color: #10b981; }
+        .status-error { background-color: #ef4444; }
+        .status-untested { background-color: #6b7280; }
+        
+        .key-actions {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .key-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .key-action-btn:hover {
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .quota-indicator {
+            font-size: 10px;
+            color: #6b7280;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
     </style>
 </head>
 <body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #f3f4f6;">
@@ -776,6 +832,70 @@
                                 <div class="flex items-center gap-3">
                                     <i id="api-status-icon" class="text-xl"></i>
                                     <span id="api-status-text" class="font-medium"></span>
+                                </div>
+                            </div>
+
+                            <!-- 🚀 CLÉS GEMINI MULTIPLES POUR DÉPASSER LES LIMITES -->
+                            <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                                <h4 class="font-bold text-blue-800 mb-3 flex items-center">
+                                    <i class="fas fa-infinity text-blue-600 mr-2"></i>
+                                    Clés Gemini Multiples (Illimité)
+                                </h4>
+                                <p class="text-xs text-blue-700 mb-3">
+                                    🔄 Ajoutez plusieurs clés Gemini pour rotation automatique et contournement des limites de 50 requêtes/jour
+                                </p>
+                                
+                                <!-- Conseils d'optimisation -->
+                                <div class="bg-blue-100 rounded-lg p-3 mb-3">
+                                    <h5 class="font-semibold text-blue-800 mb-2">💡 Stratégies pour maximiser l'usage gratuit :</h5>
+                                    <ul class="text-xs text-blue-700 space-y-1">
+                                        <li>• Créez plusieurs comptes Google avec des emails différents</li>
+                                        <li>• Obtenez une clé API Gemini gratuite pour chaque compte</li>
+                                        <li>• Le système fera la rotation automatiquement (50×N requêtes/jour)</li>
+                                        <li>• Utilisez le fallback OpenAI pour une sécurité maximale</li>
+                                        <li>• Surveillez le compteur de requêtes en temps réel</li>
+                                    </ul>
+                                    <div class="mt-2 p-2 bg-blue-200 rounded text-xs">
+                                        <strong>Exemple :</strong> 3 clés = 150 requêtes gratuites par jour ! 🚀
+                                    </div>
+                                </div>
+                                
+                                <div id="gemini-keys-container">
+                                    <!-- Les clés supplémentaires apparaîtront ici -->
+                                </div>
+                                
+                                <div class="flex gap-2 mt-3">
+                                    <button 
+                                        id="add-gemini-key" 
+                                        type="button" 
+                                        class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                                    >
+                                        <i class="fas fa-plus mr-1"></i>
+                                        Ajouter une clé Gemini
+                                    </button>
+                                    <button 
+                                        id="test-all-gemini-keys" 
+                                        type="button" 
+                                        class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                                    >
+                                        <i class="fas fa-check-double mr-1"></i>
+                                        Tester toutes les clés
+                                    </button>
+                                </div>
+                                
+                                <div id="gemini-keys-status" class="mt-3 text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Clés actives:</span>
+                                        <span id="active-gemini-keys-count" class="font-bold text-blue-600">1</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Requêtes aujourd'hui:</span>
+                                        <span id="total-gemini-requests" class="font-bold text-green-600">0</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Limite théorique:</span>
+                                        <span class="font-bold text-purple-600" id="theoretical-limit">50</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1617,6 +1737,12 @@
                 toggleApiKeyVisibility: document.getElementById('toggle-api-key-visibility'),
                 saveGeminiApiKey: document.getElementById('save-gemini-api-key'),
                 testGeminiApi: document.getElementById('test-gemini-api'),
+                // Multiple Gemini Keys
+                geminiKeysContainer: document.getElementById('gemini-keys-container'),
+                addGeminiKey: document.getElementById('add-gemini-key'),
+                testAllGeminiKeys: document.getElementById('test-all-gemini-keys'),
+                activeGeminiKeysCount: document.getElementById('active-gemini-keys-count'),
+                totalGeminiRequests: document.getElementById('total-gemini-requests'),
                 // OpenAI Controls
                 openaiApiKey: document.getElementById('openai-api-key'),
                 toggleOpenaiKey: document.getElementById('toggle-openai-key'),
@@ -2196,6 +2322,264 @@
                     'gemini-pro': 'gemini-pro'
                 }
             };
+
+            // 🚀 GESTIONNAIRE DE CLÉS MULTIPLES GEMINI (CONTOURNEMENT LIMITES)
+            class GeminiKeysManager {
+                constructor() {
+                    this.keys = this.loadKeys();
+                    this.currentKeyIndex = 0;
+                    this.dailyLimits = {}; // Suivi des limites par clé
+                    this.loadDailyLimits();
+                }
+
+                loadKeys() {
+                    const keys = localStorage.getItem('gemini-multiple-keys');
+                    return keys ? JSON.parse(keys) : [];
+                }
+
+                saveKeys() {
+                    localStorage.setItem('gemini-multiple-keys', JSON.stringify(this.keys));
+                    this.updateUI();
+                }
+
+                loadDailyLimits() {
+                    const today = new Date().toDateString();
+                    const stored = localStorage.getItem('gemini-daily-limits');
+                    this.dailyLimits = stored ? JSON.parse(stored) : {};
+                    
+                    // Reset si c'est un nouveau jour
+                    if (this.dailyLimits.date !== today) {
+                        this.dailyLimits = { date: today };
+                        this.saveDailyLimits();
+                    }
+                }
+
+                saveDailyLimits() {
+                    localStorage.setItem('gemini-daily-limits', JSON.stringify(this.dailyLimits));
+                }
+
+                addKey(key, name = '') {
+                    if (!key || key.length < 10) {
+                        showNotification('Clé API invalide', 'error');
+                        return false;
+                    }
+                    
+                    // Vérifier si la clé existe déjà
+                    const exists = this.keys.find(k => k.key === key);
+                    if (exists) {
+                        showNotification('Cette clé existe déjà', 'warning');
+                        return false;
+                    }
+
+                    this.keys.push({
+                        id: Date.now(),
+                        key: key,
+                        name: name || `Clé ${this.keys.length + 1}`,
+                        active: true,
+                        requestsToday: 0,
+                        lastUsed: null,
+                        status: 'untested'
+                    });
+                    
+                    this.saveKeys();
+                    showNotification(`Clé "${name || 'Nouvelle clé'}" ajoutée avec succès`, 'success');
+                    return true;
+                }
+
+                removeKey(id) {
+                    this.keys = this.keys.filter(k => k.id !== id);
+                    this.saveKeys();
+                }
+
+                async testKey(key) {
+                    try {
+                        const response = await fetch(`${GEMINI_CONFIG.baseUrl}gemini-1.5-flash:generateContent?key=${key}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ role: "user", parts: [{ text: "Test" }] }],
+                                generationConfig: { maxOutputTokens: 5 }
+                            })
+                        });
+                        
+                        return response.ok;
+                    } catch (error) {
+                        return false;
+                    }
+                }
+
+                async testAllKeys() {
+                    showLoader('Test de toutes les clés Gemini...');
+                    let testedCount = 0;
+                    let activeCount = 0;
+
+                    for (let keyObj of this.keys) {
+                        const isValid = await this.testKey(keyObj.key);
+                        keyObj.status = isValid ? 'active' : 'error';
+                        keyObj.active = isValid;
+                        if (isValid) activeCount++;
+                        testedCount++;
+                    }
+
+                    this.saveKeys();
+                    hideLoader();
+                    
+                    showNotification(`Test terminé: ${activeCount}/${testedCount} clés actives`, 
+                                   activeCount > 0 ? 'success' : 'error');
+                }
+
+                getActiveKey() {
+                    const activeKeys = this.keys.filter(k => k.active);
+                    if (activeKeys.length === 0) {
+                        // Fallback vers la clé principale
+                        return localStorage.getItem('gemini-api-key');
+                    }
+
+                    // Rotation intelligente: éviter les clés qui ont atteint leur limite
+                    for (let i = 0; i < activeKeys.length; i++) {
+                        const keyIndex = (this.currentKeyIndex + i) % activeKeys.length;
+                        const keyObj = activeKeys[keyIndex];
+                        
+                        const keyId = keyObj.id.toString();
+                        const requestsToday = this.dailyLimits[keyId] || 0;
+                        
+                        if (requestsToday < 45) { // Marge de sécurité sous les 50
+                            this.currentKeyIndex = keyIndex;
+                            return keyObj.key;
+                        }
+                    }
+
+                    // Si toutes les clés sont proches de la limite, utiliser celle avec le moins de requêtes
+                    const bestKey = activeKeys.reduce((best, current) => {
+                        const currentRequests = this.dailyLimits[current.id.toString()] || 0;
+                        const bestRequests = this.dailyLimits[best.id.toString()] || 0;
+                        return currentRequests < bestRequests ? current : best;
+                    });
+
+                    return bestKey.key;
+                }
+
+                trackRequest(apiKey) {
+                    // Trouver la clé utilisée et incrémenter son compteur
+                    const keyObj = this.keys.find(k => k.key === apiKey);
+                    if (keyObj) {
+                        const keyId = keyObj.id.toString();
+                        this.dailyLimits[keyId] = (this.dailyLimits[keyId] || 0) + 1;
+                        keyObj.requestsToday = this.dailyLimits[keyId];
+                        keyObj.lastUsed = new Date().toISOString();
+                        this.saveDailyLimits();
+                        this.saveKeys();
+                        this.updateUI();
+                    }
+                }
+
+                getTotalRequests() {
+                    return Object.values(this.dailyLimits).reduce((sum, count) => {
+                        return typeof count === 'number' ? sum + count : sum;
+                    }, 0);
+                }
+
+                updateUI() {
+                    if (controls.activeGeminiKeysCount) {
+                        const activeCount = this.keys.filter(k => k.active).length;
+                        controls.activeGeminiKeysCount.textContent = activeCount + 1; // +1 pour la clé principale
+                    }
+                    
+                    if (controls.totalGeminiRequests) {
+                        controls.totalGeminiRequests.textContent = this.getTotalRequests();
+                    }
+
+                    // 🚀 Afficher la limite théorique totale
+                    const theoreticalLimitElement = document.getElementById('theoretical-limit');
+                    if (theoreticalLimitElement) {
+                        const totalKeys = this.keys.filter(k => k.active).length + 1; // +1 pour clé principale
+                        const theoreticalLimit = totalKeys * 50;
+                        theoreticalLimitElement.textContent = theoreticalLimit;
+                        theoreticalLimitElement.title = `${totalKeys} clés × 50 requêtes = ${theoreticalLimit} requêtes/jour`;
+                    }
+
+                    this.renderKeysUI();
+                }
+
+                renderKeysUI() {
+                    if (!controls.geminiKeysContainer) return;
+                    
+                    controls.geminiKeysContainer.innerHTML = '';
+                    
+                    this.keys.forEach((keyObj, index) => {
+                        const keyElement = document.createElement('div');
+                        keyElement.className = 'bg-white border border-gray-200 rounded-lg p-3 mb-2';
+                        
+                        const statusIcon = keyObj.status === 'active' ? '🟢' : 
+                                         keyObj.status === 'error' ? '🔴' : '⚪';
+                        
+                        keyElement.innerHTML = `
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span>${statusIcon}</span>
+                                        <input type="text" value="${keyObj.name}" 
+                                               onchange="geminiKeysManager.updateKeyName(${keyObj.id}, this.value)"
+                                               class="font-medium text-sm bg-transparent border-none outline-none">
+                                        <span class="text-xs text-gray-500">(${keyObj.requestsToday || 0}/50)</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400 font-mono">
+                                        ${keyObj.key.substring(0, 15)}...
+                                    </div>
+                                </div>
+                                <div class="flex gap-1">
+                                    <button onclick="geminiKeysManager.testSingleKey(${keyObj.id})" 
+                                            class="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 rounded">
+                                        Test
+                                    </button>
+                                    <button onclick="geminiKeysManager.toggleKey(${keyObj.id})" 
+                                            class="text-${keyObj.active ? 'green' : 'gray'}-600 hover:text-${keyObj.active ? 'green' : 'gray'}-800 text-xs px-2 py-1 rounded">
+                                        ${keyObj.active ? 'ON' : 'OFF'}
+                                    </button>
+                                    <button onclick="geminiKeysManager.removeKey(${keyObj.id})" 
+                                            class="text-red-600 hover:text-red-800 text-xs px-2 py-1 rounded">
+                                        ✕
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        controls.geminiKeysContainer.appendChild(keyElement);
+                    });
+                }
+
+                updateKeyName(id, newName) {
+                    const keyObj = this.keys.find(k => k.id === id);
+                    if (keyObj) {
+                        keyObj.name = newName;
+                        this.saveKeys();
+                    }
+                }
+
+                async testSingleKey(id) {
+                    const keyObj = this.keys.find(k => k.id === id);
+                    if (!keyObj) return;
+
+                    const isValid = await this.testKey(keyObj.key);
+                    keyObj.status = isValid ? 'active' : 'error';
+                    keyObj.active = isValid;
+                    this.saveKeys();
+                    
+                    showNotification(`Clé "${keyObj.name}": ${isValid ? 'Valide ✅' : 'Erreur ❌'}`, 
+                                   isValid ? 'success' : 'error');
+                }
+
+                toggleKey(id) {
+                    const keyObj = this.keys.find(k => k.id === id);
+                    if (keyObj) {
+                        keyObj.active = !keyObj.active;
+                        this.saveKeys();
+                    }
+                }
+            }
+
+            // Instancier le gestionnaire
+            const geminiKeysManager = new GeminiKeysManager();
             
             // Sauvegarder la clé API
             function saveGeminiApiKey() {
@@ -2739,41 +3123,65 @@
             // Appel à l'API Gemini avec gestion avancée des erreurs
             async function callGeminiAPI(prompt, options = {}) {
                 const startTime = Date.now();
-                const apiKey = localStorage.getItem('gemini-api-key');
+                
+                // 🚀 UTILISATION DES CLÉS MULTIPLES POUR CONTOURNER LES LIMITES
+                const apiKey = geminiKeysManager.getActiveKey();
                 
                 // Log du début de la fonction
-                console.log('🔵 [GEMINI] Début callGeminiAPI', {
+                console.log('🔵 [GEMINI] Début callGeminiAPI avec clés multiples', {
                     timestamp: new Date().toISOString(),
                     prompt_length: prompt?.length || 0,
                     options: options,
-                    has_api_key: !!apiKey
+                    has_api_key: !!apiKey,
+                    total_keys: geminiKeysManager.keys.length,
+                    active_keys: geminiKeysManager.keys.filter(k => k.active).length,
+                    total_requests_today: geminiKeysManager.getTotalRequests()
                 });
                 
                 APILogger.log('info', 'gemini', 'call-start', {
                     prompt_length: prompt?.length || 0,
                     model: options.model || controls.aiModelSelect?.value || 'gemini-1.5-flash',
-                    has_api_key: !!apiKey
+                    has_api_key: !!apiKey,
+                    multi_keys_count: geminiKeysManager.keys.length,
+                    requests_today: geminiKeysManager.getTotalRequests()
                 });
                 
                 if (!apiKey) {
-                    console.error('❌ [GEMINI] Clé API manquante');
-                    APILogger.log('error', 'gemini', 'call-error', { error: 'Clé API non configurée' });
-                    throw new Error('Clé API non configurée');
+                    console.error('❌ [GEMINI] Aucune clé API disponible (principale + multiples)');
+                    APILogger.log('error', 'gemini', 'call-error', { error: 'Aucune clé API configurée' });
+                    throw new Error('Aucune clé API Gemini configurée. Ajoutez au moins une clé dans l\'onglet API.');
                 }
 
-                // Vérifier si le quota est encore dépassé
+                // Vérifier si le quota est encore dépassé pour TOUTES les clés
                 if (isQuotaExceeded()) {
                     const retryAfter = localStorage.getItem('gemini-retry-after');
                     const retryTime = new Date(parseInt(retryAfter));
-                    const errorMsg = `QUOTA_EXCEEDED: Quota dépassé. Prochaine tentative possible à ${retryTime.toLocaleString()}`;
                     
-                    console.warn('⚠️ [GEMINI] Quota déjà dépassé', { retryTime: retryTime.toISOString() });
-                    APILogger.log('warning', 'gemini', 'quota-check', { 
-                        error: 'Quota déjà dépassé',
-                        retry_time: retryTime.toISOString()
-                    });
+                    // Vérifier si on a des clés alternatives avec du quota disponible
+                    const totalRequests = geminiKeysManager.getTotalRequests();
+                    const maxPossibleRequests = (geminiKeysManager.keys.length + 1) * 45; // +1 pour clé principale
                     
-                    throw new Error(errorMsg);
+                    if (totalRequests < maxPossibleRequests) {
+                        console.log('🔄 [GEMINI] Quota principal dépassé mais clés alternatives disponibles', {
+                            total_requests: totalRequests,
+                            max_possible: maxPossibleRequests
+                        });
+                    } else {
+                        const errorMsg = `QUOTA_EXCEEDED: Toutes les clés Gemini ont atteint leur limite. Prochaine tentative possible à ${retryTime.toLocaleString()}`;
+                        
+                        console.warn('⚠️ [GEMINI] Toutes les clés ont atteint leur quota', { 
+                            retryTime: retryTime.toISOString(),
+                            total_requests: totalRequests,
+                            max_possible: maxPossibleRequests
+                        });
+                        APILogger.log('warning', 'gemini', 'all-quotas-exceeded', { 
+                            error: 'Toutes les clés ont atteint leur quota',
+                            retry_time: retryTime.toISOString(),
+                            total_requests: totalRequests
+                        });
+                        
+                        throw new Error(errorMsg);
+                    }
                 }
                 
                 const model = options.model || controls.aiModelSelect?.value || 'gemini-1.5-flash';
@@ -2957,6 +3365,13 @@
                             content_length: content.length,
                             model: model,
                             prompt_length: prompt.length
+                        });
+
+                        // 🚀 TRACKER LA REQUÊTE POUR LE SYSTÈME MULTI-CLÉS
+                        geminiKeysManager.trackRequest(apiKey);
+                        console.log(`📊 [GEMINI] Requête trackée`, {
+                            requests_today: geminiKeysManager.getTotalRequests(),
+                            key_used: apiKey.substring(0, 10) + '...'
                         });
 
                         return content;
@@ -6418,6 +6833,26 @@ Texte à analyser :
                 if (controls.saveGeminiApiKey) {
                     controls.saveGeminiApiKey.addEventListener('click', saveGeminiApiKey);
                 }
+                
+                // 🚀 EVENT LISTENERS POUR CLÉS MULTIPLES GEMINI
+                if (controls.addGeminiKey) {
+                    controls.addGeminiKey.addEventListener('click', () => {
+                        const key = prompt('Entrez votre clé API Gemini supplémentaire:');
+                        if (key && key.trim()) {
+                            const name = prompt('Nom pour cette clé (optionnel):') || `Clé ${geminiKeysManager.keys.length + 1}`;
+                            geminiKeysManager.addKey(key.trim(), name);
+                        }
+                    });
+                }
+                
+                if (controls.testAllGeminiKeys) {
+                    controls.testAllGeminiKeys.addEventListener('click', () => {
+                        geminiKeysManager.testAllKeys();
+                    });
+                }
+                
+                // Mettre à jour l'UI au chargement
+                geminiKeysManager.updateUI();
                 
                 // Basculer visibilité clé
                 if (controls.toggleApiKeyVisibility) {
