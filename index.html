@@ -594,6 +594,14 @@
                             <span class="text-gray-500">OpenAI:</span>
                             <span id="openai-status-dot" class="w-2 h-2 bg-gray-300 rounded-full"></span>
                         </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Mistral:</span>
+                            <span id="mistral-status-dot" class="w-2 h-2 bg-gray-300 rounded-full"></span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Groq:</span>
+                            <span id="groq-status-dot" class="w-2 h-2 bg-gray-300 rounded-full"></span>
+                        </div>
                     </div>
                     
                     <!-- Compteur de requêtes -->
@@ -696,6 +704,57 @@
                 <div id="panel-api" class="tab-panel hidden space-y-4 pt-3">
                     
                     <!-- Sélecteur API Principal -->
+                    <details class="control-group" open>
+                        <summary>
+                            <span class="flex items-center gap-2">
+                                <i class="fas fa-brain text-purple-600"></i>
+                                🎯 Sélection Automatique d'API
+                                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full ml-auto">SMART</span>
+                            </span>
+                        </summary>
+                        <div class="control-group-content space-y-4">
+                            <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-md p-4">
+                                <div class="flex items-start gap-3 mb-3">
+                                    <i class="fas fa-magic text-purple-600 text-xl mt-1"></i>
+                                    <div class="text-sm text-purple-800">
+                                        <p class="font-bold mb-1">Sélection Intelligente des APIs</p>
+                                        <p class="mb-2">Le système choisit automatiquement la meilleure API disponible selon vos préférences</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-sort-amount-down text-purple-600 mr-1"></i>
+                                        Ordre de Priorité
+                                    </label>
+                                    <select 
+                                        id="api-priority" 
+                                        class="w-full p-3 border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white"
+                                    >
+                                        <option value="gemini-first">🤖 Gemini → 🟢 OpenAI → 🇫🇷 APIs Gratuites</option>
+                                        <option value="openai-first">🟢 OpenAI → 🤖 Gemini → 🇫🇷 APIs Gratuites</option>
+                                        <option value="free-first">🇫🇷 APIs Gratuites → 🤖 Gemini → 🟢 OpenAI</option>
+                                        <option value="groq-first">⚡ Groq → 🤖 Gemini → 🟢 OpenAI</option>
+                                        <option value="mistral-first">🇫🇷 Mistral → 🤗 HuggingFace → ⚡ Groq</option>
+                                    </select>
+                                    <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                                        <i class="fas fa-info-circle text-blue-500"></i>
+                                        <strong>APIs Gratuites :</strong> Mistral AI 🇫🇷, Groq ⚡, HuggingFace 🤗<br>
+                                        <strong>Fonctionnement :</strong> Si l'API principale échoue, le système bascule automatiquement vers l'alternative suivante.
+                                    </div>
+                                </div>
+                                
+                                <!-- Test du système -->
+                                <div class="mt-4 pt-3 border-t border-purple-200">
+                                    <button id="test-auto-priority" class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
+                                        <i class="fas fa-flask mr-1"></i> Tester la Sélection Automatique
+                                    </button>
+                                    <div id="auto-priority-test-result" class="mt-2 text-sm hidden"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    
                     <!-- Configuration Google Gemini -->
                     <details id="gemini-config" class="control-group" open>
                         <summary>
@@ -1718,6 +1777,7 @@
                 openaiApiKey: document.getElementById('openai-api-key'),
                 toggleOpenaiKey: document.getElementById('toggle-openai-key'),
                 openaiModel: document.getElementById('openai-model'),
+                apiPriority: document.getElementById('api-priority'),
                 testOpenaiConnection: document.getElementById('test-openai-connection'),
                 combinedApiStatus: document.getElementById('combined-api-status'),
                 combinedStatusIcon: document.getElementById('combined-status-icon'),
@@ -4311,6 +4371,9 @@
                         tokens_used: result.length
                     });
                     
+                    // Mettre à jour les indicateurs de statut
+                    onAPISuccess('huggingface');
+                    
                     return result;
                     
                 } catch (error) {
@@ -4389,6 +4452,9 @@
                         tokens_used: data.usage?.total_tokens || 0
                     });
                     
+                    // Mettre à jour les indicateurs de statut
+                    onAPISuccess('mistral');
+                    
                     return result;
                     
                 } catch (error) {
@@ -4466,6 +4532,9 @@
                         duration: duration,
                         tokens_used: data.usage?.total_tokens || 0
                     });
+                    
+                    // Mettre à jour les indicateurs de statut
+                    onAPISuccess('groq');
                     
                     return result;
                     
@@ -4845,16 +4914,32 @@
                     // Vérifier les clés API disponibles pour déterminer l'API active
                     const geminiKeys = GeminiKeysManager?.getAllKeys();
                     const openaiKey = localStorage.getItem('openai-api-key');
+                    const mistralKey = localStorage.getItem('mistral-api-key');
+                    const groqKey = localStorage.getItem('groq-api-key');
+                    const hfToken = localStorage.getItem('huggingface-token');
                     const priority = localStorage.getItem('api-priority') || 'gemini-first';
                     
+                    // Déterminer l'API active selon la priorité
                     if (priority === 'gemini-first' && geminiKeys && geminiKeys.length > 0) {
                         apiType = 'gemini';
                     } else if (priority === 'openai-first' && openaiKey) {
                         apiType = 'openai';
+                    } else if (priority === 'free-first' && (mistralKey || groqKey || hfToken)) {
+                        apiType = 'free-apis';
+                    } else if (priority === 'groq-first' && groqKey) {
+                        apiType = 'groq';
+                    } else if (priority === 'mistral-first' && mistralKey) {
+                        apiType = 'mistral';
                     } else if (geminiKeys && geminiKeys.length > 0) {
                         apiType = 'gemini';
                     } else if (openaiKey) {
                         apiType = 'openai';
+                    } else if (mistralKey) {
+                        apiType = 'mistral';
+                    } else if (groqKey) {
+                        apiType = 'groq';
+                    } else if (hfToken) {
+                        apiType = 'huggingface';
                     } else {
                         apiType = 'none';
                     }
@@ -4876,6 +4961,30 @@
                         activeName.textContent = '🟢 OpenAI ChatGPT';
                         const model = controls.openaiModel?.value || 'gpt-4o';
                         activeBadge.textContent = model.toUpperCase();
+                        activeBadge.className = 'px-2 py-1 bg-green-100 text-green-600 text-xs rounded-full font-mono';
+                        break;
+                    case 'mistral':
+                        activeDot.classList.add('bg-red-500');
+                        activeName.textContent = '🇫🇷 Mistral AI';
+                        activeBadge.textContent = 'FRANÇAIS';
+                        activeBadge.className = 'px-2 py-1 bg-red-100 text-red-600 text-xs rounded-full font-mono';
+                        break;
+                    case 'groq':
+                        activeDot.classList.add('bg-purple-500');
+                        activeName.textContent = '⚡ Groq';
+                        activeBadge.textContent = 'ULTRA-RAPIDE';
+                        activeBadge.className = 'px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded-full font-mono';
+                        break;
+                    case 'huggingface':
+                        activeDot.classList.add('bg-orange-500');
+                        activeName.textContent = '🤗 HuggingFace';
+                        activeBadge.textContent = 'GRATUIT';
+                        activeBadge.className = 'px-2 py-1 bg-orange-100 text-orange-600 text-xs rounded-full font-mono';
+                        break;
+                    case 'free-apis':
+                        activeDot.classList.add('bg-green-500');
+                        activeName.textContent = '🇫🇷 APIs Gratuites';
+                        activeBadge.textContent = 'SMART';
                         activeBadge.className = 'px-2 py-1 bg-green-100 text-green-600 text-xs rounded-full font-mono';
                         break;
                     case 'auto-fallback':
@@ -4901,6 +5010,8 @@
             function updateDetailedAPIStatus() {
                 const geminiDot = document.getElementById('gemini-status-dot');
                 const openaiDot = document.getElementById('openai-status-dot');
+                const mistralDot = document.getElementById('mistral-status-dot');
+                const groqDot = document.getElementById('groq-status-dot');
                 
                 if (geminiDot) {
                     const geminiKeys = GeminiKeysManager?.getAllKeys();
@@ -4917,6 +5028,24 @@
                         openaiDot.className = 'w-2 h-2 bg-green-500 rounded-full';
                     } else {
                         openaiDot.className = 'w-2 h-2 bg-red-500 rounded-full';
+                    }
+                }
+                
+                if (mistralDot) {
+                    const mistralKey = localStorage.getItem('mistral-api-key');
+                    if (mistralKey && mistralKey.trim()) {
+                        mistralDot.className = 'w-2 h-2 bg-green-500 rounded-full';
+                    } else {
+                        mistralDot.className = 'w-2 h-2 bg-red-500 rounded-full';
+                    }
+                }
+                
+                if (groqDot) {
+                    const groqKey = localStorage.getItem('groq-api-key');
+                    if (groqKey && groqKey.trim()) {
+                        groqDot.className = 'w-2 h-2 bg-green-500 rounded-full';
+                    } else {
+                        groqDot.className = 'w-2 h-2 bg-red-500 rounded-full';
                     }
                 }
             }
@@ -4995,6 +5124,52 @@
                 
                 // Mettre à jour les statuts détaillés
                 updateDetailedAPIStatus();
+            }
+            
+            // Fonction pour tester la sélection automatique d'API
+            async function testAutoPriority() {
+                const testButton = document.getElementById('test-auto-priority');
+                const resultDiv = document.getElementById('auto-priority-test-result');
+                
+                if (!testButton || !resultDiv) return;
+                
+                const originalText = testButton.innerHTML;
+                testButton.disabled = true;
+                testButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test en cours...';
+                resultDiv.classList.remove('hidden');
+                resultDiv.innerHTML = '<div class="text-blue-600"><i class="fas fa-spinner fa-spin"></i> Test de la sélection automatique...</div>';
+                
+                try {
+                    const testPrompt = "Test de sélection automatique d'API. Réponds simplement 'Test réussi' avec le nom de l'API utilisée.";
+                    
+                    // Utiliser la fonction de priorité existante
+                    const result = await callAIWithPriority(testPrompt, { maxTokens: 50 });
+                    
+                    if (result) {
+                        const priority = localStorage.getItem('api-priority') || 'gemini-first';
+                        resultDiv.innerHTML = `
+                            <div class="text-green-600">
+                                <i class="fas fa-check-circle"></i> ✅ Test réussi!<br>
+                                <div class="text-xs mt-1 text-gray-600">
+                                    Priorité: ${priority === 'gemini-first' ? '🤖 Gemini → 🟢 OpenAI' : '🟢 OpenAI → 🤖 Gemini'}<br>
+                                    Réponse: ${result.substring(0, 100)}...
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Mettre à jour les indicateurs
+                        updateSidebarAPIStatus();
+                        updateDailyRequestsCounter();
+                    } else {
+                        resultDiv.innerHTML = '<div class="text-red-600"><i class="fas fa-exclamation-circle"></i> ❌ Test échoué: aucune API disponible</div>';
+                    }
+                    
+                } catch (error) {
+                    resultDiv.innerHTML = `<div class="text-red-600"><i class="fas fa-exclamation-circle"></i> ❌ Erreur: ${error.message}</div>`;
+                } finally {
+                    testButton.disabled = false;
+                    testButton.innerHTML = originalText;
+                }
             }
 
 
@@ -7505,13 +7680,48 @@ Texte à analyser :
                 
                 // === GESTIONNAIRES D'ÉVÉNEMENTS API ===
                 
-
-
-
-
-
-
-
+                // Event listener pour le sélecteur de priorité API
+                if (controls.apiPriority) {
+                    controls.apiPriority.addEventListener('change', (e) => {
+                        const priority = e.target.value;
+                        localStorage.setItem('api-priority', priority);
+                        
+                        // Mettre à jour le statut dans la sidebar
+                        updateSidebarAPIStatus();
+                        
+                        let priorityText = '';
+                        switch (priority) {
+                            case 'gemini-first':
+                                priorityText = '🤖 Gemini → 🟢 OpenAI → 🇫🇷 APIs Gratuites';
+                                break;
+                            case 'openai-first':
+                                priorityText = '🟢 OpenAI → 🤖 Gemini → 🇫🇷 APIs Gratuites';
+                                break;
+                            case 'free-first':
+                                priorityText = '🇫🇷 APIs Gratuites → 🤖 Gemini → 🟢 OpenAI';
+                                break;
+                            case 'groq-first':
+                                priorityText = '⚡ Groq → 🤖 Gemini → 🟢 OpenAI';
+                                break;
+                            case 'mistral-first':
+                                priorityText = '🇫🇷 Mistral → 🤗 HuggingFace → ⚡ Groq';
+                                break;
+                            default:
+                                priorityText = priority;
+                        }
+                        showNotification(`🎯 Priorité API mise à jour: ${priorityText}`, 'success');
+                    });
+                    
+                    // Charger la priorité sauvegardée
+                    const savedPriority = localStorage.getItem('api-priority') || 'gemini-first';
+                    controls.apiPriority.value = savedPriority;
+                }
+                
+                // Event listener pour le test de priorité automatique
+                const testAutoPriorityBtn = document.getElementById('test-auto-priority');
+                if (testAutoPriorityBtn) {
+                    testAutoPriorityBtn.addEventListener('click', testAutoPriority);
+                }
 
                 // Charger les clés API sauvegardées
                 const savedGeminiKey = localStorage.getItem('gemini-api-key');
