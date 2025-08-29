@@ -3590,6 +3590,13 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 try {
                     showLoader("L'IA réfléchit...");
                     
+                    // Vérifier si le quota est encore dépassé
+                    if (isQuotaExceeded()) {
+                        const retryAfter = localStorage.getItem('gemini-retry-after');
+                        const retryTime = new Date(parseInt(retryAfter));
+                        throw new Error(`QUOTA_EXCEEDED: Quota dépassé. Prochaine tentative possible à ${retryTime.toLocaleString()}`);
+                    }
+                    
                     let result;
                     if (schema) {
                         // Pour les schémas JSON, utiliser l'API avec responseSchema
@@ -3619,8 +3626,27 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                         });
 
                         if (!response.ok) {
-                            const errorBody = await response.text();
-                            throw new Error(`Erreur API: ${response.status} ${response.statusText} - ${errorBody}`);
+                            const errorData = await response.text();
+                            let errorObj;
+                            try {
+                                errorObj = JSON.parse(errorData);
+                            } catch (e) {
+                                errorObj = { error: { message: errorData } };
+                            }
+
+                            // Gestion spécifique des erreurs de quota
+                            if (response.status === 429) {
+                                const retryAfter = extractRetryAfter(errorObj) || 86400000; // 24h par défaut
+                                localStorage.setItem('gemini-quota-exceeded', Date.now().toString());
+                                localStorage.setItem('gemini-retry-after', (Date.now() + retryAfter).toString());
+                                
+                                const quotaError = new Error('QUOTA_EXCEEDED');
+                                quotaError.originalError = errorObj;
+                                quotaError.retryAfter = retryAfter;
+                                throw quotaError;
+                            }
+
+                            throw new Error(`Erreur API: ${response.status} ${response.statusText} - ${errorData}`);
                         }
 
                         const data = await response.json();
@@ -4487,19 +4513,30 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 }
                 
                 controls.analyzeBtn.addEventListener('click', async () => {
-                    let text = controls.aiInput.value;
-                    if (!text) { showNotification("Veuillez coller du texte à analyser.", "error"); return; }
-                    
-                    // Nettoyage préalable du texte
-                    text = cleanInputText(text);
-                    console.log("🧹 Texte nettoyé:", text);
-                    
-                    // Vérification de la clé API
-                    const apiKey = localStorage.getItem('gemini-api-key');
-                    if (!apiKey) {
-                        showNotification("⚠️ Clé API non configurée ! Allez dans l'onglet API pour configurer votre clé Gemini.", "error");
-                        return;
-                    }
+                    try {
+                        let text = controls.aiInput.value;
+                        if (!text) { showNotification("Veuillez coller du texte à analyser.", "error"); return; }
+                        
+                        // Nettoyage préalable du texte
+                        text = cleanInputText(text);
+                        console.log("🧹 Texte nettoyé:", text);
+                        
+                        // Vérification de la clé API (pour Gemini prioritaire)
+                        const apiKey = localStorage.getItem('gemini-api-key');
+                        const openaiKey = localStorage.getItem('openai-api-key');
+                        const priority = localStorage.getItem('api-priority') || 'gemini-first';
+                        
+                        // Vérifier qu'au moins une API est configurée
+                        if (!apiKey && !openaiKey) {
+                            showNotification("⚠️ Aucune clé API configurée ! Allez dans l'onglet API pour configurer Gemini ou OpenAI.", "error");
+                            return;
+                        }
+                        
+                        // Si priorité Gemini mais pas de clé Gemini, vérifier OpenAI
+                        if (priority.includes('gemini') && !apiKey && !openaiKey) {
+                            showNotification("⚠️ Clé API Gemini non configurée ! Configurez une clé Gemini ou OpenAI dans l'onglet API.", "error");
+                            return;
+                        }
                     
                     const schema = {
                         type: "OBJECT",
@@ -4580,7 +4617,27 @@ Texte à analyser :
 """${text}"""`;
                     
                     console.log("🤖 Prompt envoyé à l'IA:", prompt);
-                    const extractedData = await callGeminiAPI(prompt, schema);
+                    
+                    // Utiliser le système de priorité avec fallback
+                    let extractedData;
+                    try {
+                        // Tenter d'abord avec le système de priorité pour les appels standards
+                        extractedData = await callAIWithPriority(prompt);
+                        // Si réussi, parser le JSON manuellement car callAIWithPriority retourne du texte
+                        if (typeof extractedData === 'string') {
+                            try {
+                                extractedData = JSON.parse(extractedData);
+                            } catch (e) {
+                                // Si le parsing échoue, utiliser la fonction legacy avec schema
+                                extractedData = await callGeminiAPI(prompt, schema);
+                            }
+                        }
+                    } catch (error) {
+                        console.warn("🔄 Erreur avec le système de priorité, tentative avec schema:", error.message);
+                        // Fallback vers la fonction legacy avec schema
+                        extractedData = await callGeminiAPI(prompt, schema);
+                    }
+                    
                     console.log("📥 Données extraites par l'IA:", extractedData);
                     
                     if (extractedData) {
@@ -4627,6 +4684,24 @@ Texte à analyser :
                     } else {
                         showNotification("Erreur : L'IA n'a pas pu extraire les données", "error");
                     }
+                } catch (error) {
+                    console.error("❌ Erreur lors de l'analyse IA:", error);
+                    hideLoader();
+                    
+                    // Gestion spécifique des erreurs de quota
+                    if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
+                        const currentModel = controls.openaiModel?.value || 'gpt-4o';
+                        if (error.message.includes('gemini') || error.message.includes('Gemini')) {
+                            showNotification(`⚠️ Quota Gemini dépassé ! Basculement automatique vers ${currentModel.toUpperCase()} disponible dans l'onglet API.`, "warning");
+                        } else {
+                            showNotification(`⚠️ Quota ${currentModel.toUpperCase()} dépassé ! Configurez une autre API dans l'onglet API.`, "warning");
+                        }
+                    } else if (error.message.includes('API non configurée') || error.message.includes('clé API')) {
+                        showNotification("⚠️ " + error.message, "error");
+                    } else {
+                        showNotification(`❌ Erreur de l'IA: ${error.message}. Vérifiez votre connexion et réessayez.`, "error");
+                    }
+                }
                 });
                 
                 // === GESTIONNAIRES D'ÉVÉNEMENTS API ===
