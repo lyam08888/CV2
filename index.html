@@ -356,6 +356,7 @@
             <!-- TABS -->
             <div id="tab-navigation" class="flex flex-wrap -mb-px border-b border-gray-200">
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-ia"><i class="fa-solid fa-robot mr-1"></i> IA</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-api"><i class="fa-solid fa-key mr-1"></i> API</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content"><i class="fa-solid fa-file-lines mr-1"></i> Contenu</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout"><i class="fa-solid fa-columns mr-1"></i> Mise en Page</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-styles"><i class="fa-solid fa-palette mr-1"></i> Styles</button>
@@ -388,6 +389,101 @@
                             <button id="ai-synthesize-skills-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2"><i class="fas fa-magic-wand-sparkles"></i> Synthétiser les compétences</button>
                             <button id="ai-limit-skills-btn" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 flex items-center justify-center gap-2"><i class="fas fa-filter"></i> Limiter les compétences</button>
                             <button id="floating-ai-btn" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 px-4 rounded-md hover:from-indigo-600 hover:to-purple-700 flex items-center justify-center gap-2"><i class="fas fa-magic-wand-sparkles"></i> Synthétise IA</button>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- TAB: API -->
+                <div id="panel-api" class="tab-panel hidden space-y-4">
+                    <details class="control-group" open>
+                        <summary><span>Configuration API Gemini</span><label class="completion-label"><input type="checkbox" id="completion-api-config" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+                                <div class="flex items-start gap-2">
+                                    <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                                    <div class="text-sm text-blue-800">
+                                        <p class="font-medium">Configuration de l'API Gemini</p>
+                                        <p>Obtenez votre clé API sur <a href="https://makersuite.google.com/app/apikey" target="_blank" class="underline hover:text-blue-900">Google AI Studio</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="gemini-api-key" class="block text-sm font-medium text-gray-700 mb-2">Clé API Gemini</label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="gemini-api-key" placeholder="AIza..." class="flex-1 p-2 border rounded-md text-sm font-mono" />
+                                    <button id="toggle-api-key-visibility" class="bg-gray-500 text-white px-3 py-2 rounded-md hover:bg-gray-600 text-sm">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button id="save-gemini-api-key" class="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 text-sm">
+                                        <i class="fa-solid fa-save"></i>
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">La clé sera sauvegardée de manière sécurisée dans votre navigateur</p>
+                            </div>
+                            
+                            <div id="api-status" class="hidden p-3 rounded-md">
+                                <div class="flex items-center gap-2">
+                                    <i id="api-status-icon" class=""></i>
+                                    <span id="api-status-text" class="text-sm font-medium"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    
+                    <details class="control-group" open>
+                        <summary><span>Test & Validation</span><label class="completion-label"><input type="checkbox" id="completion-api-test" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <button id="test-gemini-api" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-flask"></i> Tester la connexion API
+                            </button>
+                            
+                            <div>
+                                <label for="test-prompt" class="block text-sm font-medium text-gray-700 mb-2">Test personnalisé (optionnel)</label>
+                                <textarea id="test-prompt" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="Écrivez un test personnalisé pour vérifier l'API..."></textarea>
+                                <button id="run-custom-test" class="mt-2 w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-play"></i> Exécuter le test
+                                </button>
+                            </div>
+                            
+                            <div id="test-results" class="hidden mt-3 p-3 border rounded-md bg-gray-50">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Résultat du test :</h4>
+                                <div id="test-output" class="text-sm text-gray-600 whitespace-pre-wrap"></div>
+                            </div>
+                        </div>
+                    </details>
+                    
+                    <details class="control-group" open>
+                        <summary><span>Paramètres IA</span><label class="completion-label"><input type="checkbox" id="completion-api-settings" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div>
+                                <label for="ai-model-select" class="block text-sm font-medium text-gray-700 mb-2">Modèle Gemini</label>
+                                <select id="ai-model-select" class="w-full p-2 border rounded-md text-sm">
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Rapide)</option>
+                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Précis)</option>
+                                    <option value="gemini-pro">Gemini Pro (Standard)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="ai-temperature" class="block text-sm font-medium text-gray-700 mb-2">Créativité: <span id="temperature-value">0.7</span></label>
+                                <input type="range" id="ai-temperature" min="0" max="1" step="0.1" value="0.7" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Précis</span>
+                                    <span>Créatif</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="ai-max-tokens" class="block text-sm font-medium text-gray-700 mb-2">Longueur max: <span id="max-tokens-value">1000</span> tokens</label>
+                                <input type="range" id="ai-max-tokens" min="100" max="2000" step="100" value="1000" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                            </div>
+                            
+                            <div class="pt-3 border-t">
+                                <button id="reset-api-settings" class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-undo"></i> Réinitialiser les paramètres
+                                </button>
+                            </div>
                         </div>
                     </details>
                 </div>
@@ -722,6 +818,24 @@
                 resetCvBtn: document.getElementById('reset-cv-btn'),
                 togglePresentationModeBtn: document.getElementById('toggle-presentation-mode-btn'),
                 toggleOverflowBtn: document.getElementById('toggle-overflow-btn'),
+                // API Controls
+                geminiApiKey: document.getElementById('gemini-api-key'),
+                toggleApiKeyVisibility: document.getElementById('toggle-api-key-visibility'),
+                saveGeminiApiKey: document.getElementById('save-gemini-api-key'),
+                testGeminiApi: document.getElementById('test-gemini-api'),
+                testPrompt: document.getElementById('test-prompt'),
+                runCustomTest: document.getElementById('run-custom-test'),
+                testResults: document.getElementById('test-results'),
+                testOutput: document.getElementById('test-output'),
+                apiStatus: document.getElementById('api-status'),
+                apiStatusIcon: document.getElementById('api-status-icon'),
+                apiStatusText: document.getElementById('api-status-text'),
+                aiModelSelect: document.getElementById('ai-model-select'),
+                aiTemperature: document.getElementById('ai-temperature'),
+                temperatureValue: document.getElementById('temperature-value'),
+                aiMaxTokens: document.getElementById('ai-max-tokens'),
+                maxTokensValue: document.getElementById('max-tokens-value'),
+                resetApiSettings: document.getElementById('reset-api-settings'),
                 aiSummarizeBtn: document.getElementById('ai-summarize-btn'),
                 resetRecruiterBtn: document.getElementById('reset-recruiter-btn'),
                 aiLimitSkillsBtn: document.getElementById('ai-limit-skills-btn'),
@@ -873,6 +987,202 @@
                     toast.classList.remove('show');
                     toast.addEventListener('transitionend', () => toast.remove());
                 }, duration);
+            }
+            
+            // === GEMINI API FUNCTIONS ===
+            
+            // Configuration API
+            const GEMINI_CONFIG = {
+                baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models/',
+                models: {
+                    'gemini-1.5-flash': 'gemini-1.5-flash-latest',
+                    'gemini-1.5-pro': 'gemini-1.5-pro-latest', 
+                    'gemini-pro': 'gemini-pro'
+                }
+            };
+            
+            // Sauvegarder la clé API
+            function saveGeminiApiKey() {
+                const apiKey = controls.geminiApiKey?.value?.trim();
+                if (!apiKey) {
+                    showNotification('Veuillez saisir une clé API valide', 'error');
+                    return;
+                }
+                
+                if (!apiKey.startsWith('AIza')) {
+                    showNotification('Format de clé API invalide. La clé doit commencer par "AIza"', 'error');
+                    return;
+                }
+                
+                try {
+                    localStorage.setItem('gemini-api-key', apiKey);
+                    showNotification('Clé API sauvegardée avec succès', 'success');
+                    updateApiStatus('saved', 'Clé API sauvegardée');
+                } catch (error) {
+                    showNotification('Erreur lors de la sauvegarde', 'error');
+                }
+            }
+            
+            // Charger la clé API
+            function loadGeminiApiKey() {
+                const savedKey = localStorage.getItem('gemini-api-key');
+                if (savedKey && controls.geminiApiKey) {
+                    controls.geminiApiKey.value = savedKey;
+                    updateApiStatus('loaded', 'Clé API chargée');
+                }
+            }
+            
+            // Basculer la visibilité de la clé
+            function toggleApiKeyVisibility() {
+                if (!controls.geminiApiKey || !controls.toggleApiKeyVisibility) return;
+                
+                if (controls.geminiApiKey.type === 'password') {
+                    controls.geminiApiKey.type = 'text';
+                    controls.toggleApiKeyVisibility.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+                } else {
+                    controls.geminiApiKey.type = 'password';
+                    controls.toggleApiKeyVisibility.innerHTML = '<i class="fa-solid fa-eye"></i>';
+                }
+            }
+            
+            // Mettre à jour le statut de l'API
+            function updateApiStatus(type, message) {
+                if (!controls.apiStatus) return;
+                
+                controls.apiStatus.classList.remove('hidden');
+                
+                const statusConfig = {
+                    'saved': { color: 'text-green-700 bg-green-100 border-green-200', icon: 'fa-check-circle text-green-600' },
+                    'loaded': { color: 'text-blue-700 bg-blue-100 border-blue-200', icon: 'fa-info-circle text-blue-600' },
+                    'testing': { color: 'text-yellow-700 bg-yellow-100 border-yellow-200', icon: 'fa-spinner fa-spin text-yellow-600' },
+                    'success': { color: 'text-green-700 bg-green-100 border-green-200', icon: 'fa-check-circle text-green-600' },
+                    'error': { color: 'text-red-700 bg-red-100 border-red-200', icon: 'fa-exclamation-circle text-red-600' }
+                };
+                
+                const config = statusConfig[type] || statusConfig.error;
+                controls.apiStatus.className = `p-3 rounded-md border ${config.color}`;
+                controls.apiStatusIcon.className = `fas ${config.icon}`;
+                controls.apiStatusText.textContent = message;
+            }
+            
+            // Appel à l'API Gemini
+            async function callGeminiAPI(prompt, options = {}) {
+                const apiKey = localStorage.getItem('gemini-api-key');
+                if (!apiKey) {
+                    throw new Error('Clé API non configurée');
+                }
+                
+                const model = options.model || controls.aiModelSelect?.value || 'gemini-1.5-flash';
+                const temperature = options.temperature || parseFloat(controls.aiTemperature?.value || '0.7');
+                const maxTokens = options.maxTokens || parseInt(controls.aiMaxTokens?.value || '1000');
+                
+                const modelName = GEMINI_CONFIG.models[model] || model;
+                const url = `${GEMINI_CONFIG.baseUrl}${modelName}:generateContent?key=${apiKey}`;
+                
+                const requestBody = {
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }],
+                    generationConfig: {
+                        temperature: temperature,
+                        maxOutputTokens: maxTokens
+                    }
+                };
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error?.message || `Erreur API: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                    throw new Error('Réponse invalide de l\'API');
+                }
+                
+                return data.candidates[0].content.parts[0].text;
+            }
+            
+            // Tester la connexion API
+            async function testGeminiApi() {
+                if (!controls.testGeminiApi) return;
+                
+                updateApiStatus('testing', 'Test de la connexion en cours...');
+                
+                try {
+                    const testPrompt = "Réponds simplement 'Test réussi' si tu reçois ce message.";
+                    const result = await callGeminiAPI(testPrompt);
+                    
+                    if (result.toLowerCase().includes('test')) {
+                        updateApiStatus('success', 'Connexion API réussie !');
+                        showNotification('API Gemini connectée avec succès', 'success');
+                    } else {
+                        updateApiStatus('success', 'API connectée (réponse inattendue)');
+                        showNotification('API connectée mais réponse inattendue', 'warning');
+                    }
+                } catch (error) {
+                    updateApiStatus('error', `Erreur: ${error.message}`);
+                    showNotification(`Erreur de connexion: ${error.message}`, 'error');
+                }
+            }
+            
+            // Test personnalisé
+            async function runCustomTest() {
+                const prompt = controls.testPrompt?.value?.trim();
+                if (!prompt) {
+                    showNotification('Veuillez saisir un prompt de test', 'error');
+                    return;
+                }
+                
+                if (!controls.testResults || !controls.testOutput) return;
+                
+                controls.testResults.classList.remove('hidden');
+                controls.testOutput.textContent = 'Exécution du test...';
+                
+                try {
+                    const result = await callGeminiAPI(prompt);
+                    controls.testOutput.textContent = result;
+                    showNotification('Test exécuté avec succès', 'success');
+                } catch (error) {
+                    controls.testOutput.textContent = `Erreur: ${error.message}`;
+                    showNotification(`Erreur lors du test: ${error.message}`, 'error');
+                }
+            }
+            
+            // Réinitialiser les paramètres API
+            function resetApiSettings() {
+                if (controls.aiModelSelect) controls.aiModelSelect.value = 'gemini-1.5-flash';
+                if (controls.aiTemperature) {
+                    controls.aiTemperature.value = '0.7';
+                    if (controls.temperatureValue) controls.temperatureValue.textContent = '0.7';
+                }
+                if (controls.aiMaxTokens) {
+                    controls.aiMaxTokens.value = '1000';
+                    if (controls.maxTokensValue) controls.maxTokensValue.textContent = '1000';
+                }
+                showNotification('Paramètres réinitialisés', 'success');
+            }
+            
+            // Intégration avec les fonctions IA existantes
+            async function generateAIContent(prompt, type = 'general') {
+                try {
+                    showLoader(`Génération ${type} en cours...`);
+                    const result = await callGeminiAPI(prompt);
+                    hideLoader();
+                    return result;
+                } catch (error) {
+                    hideLoader();
+                    showNotification(`Erreur lors de la génération: ${error.message}`, 'error');
+                    throw error;
+                }
             }
             
             function showConfirmModal(title, text) {
@@ -1443,48 +1753,68 @@
                 updateAllStyles();
             }
 
+            // Fonction legacy mise à jour pour utiliser la nouvelle API
             async function callGeminiAPI(prompt, schema) {
-                showLoader("L'IA réfléchit...");
                 try {
-                    const apiKey = ""; // Provided automatically by the environment
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    showLoader("L'IA réfléchit...");
                     
-                    const payload = {
-                        contents: [{ role: "user", parts: [{ text: prompt }] }],
-                        generationConfig: schema ? { responseMimeType: "application/json", responseSchema: schema } : {}
-                    };
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errorBody = await response.text();
-                        throw new Error(`Erreur API: ${response.status} ${response.statusText} - ${errorBody}`);
-                    }
-
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0) {
-                         if (result.candidates[0].finishReason !== "STOP" && result.candidates[0].finishReason !== "MAX_TOKENS") {
-                               throw new Error(`L'IA a été bloquée (raison: ${result.candidates[0].finishReason}). Veuillez reformuler votre demande.`);
-                         }
-                        if (result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
-                            const text = result.candidates[0].content.parts[0].text;
-                            return schema ? JSON.parse(text) : text;
+                    let result;
+                    if (schema) {
+                        // Pour les schémas JSON, utiliser l'API avec responseSchema
+                        const apiKey = localStorage.getItem('gemini-api-key');
+                        if (!apiKey) {
+                            throw new Error('Clé API non configurée');
                         }
+                        
+                        const model = controls.aiModelSelect?.value || 'gemini-1.5-flash';
+                        const modelName = GEMINI_CONFIG.models[model] || model;
+                        const url = `${GEMINI_CONFIG.baseUrl}${modelName}:generateContent?key=${apiKey}`;
+                        
+                        const payload = {
+                            contents: [{ role: "user", parts: [{ text: prompt }] }],
+                            generationConfig: { 
+                                responseMimeType: "application/json", 
+                                responseSchema: schema,
+                                temperature: parseFloat(controls.aiTemperature?.value || '0.7'),
+                                maxOutputTokens: parseInt(controls.aiMaxTokens?.value || '1000')
+                            }
+                        };
+
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const errorBody = await response.text();
+                            throw new Error(`Erreur API: ${response.status} ${response.statusText} - ${errorBody}`);
+                        }
+
+                        const data = await response.json();
+                        
+                        if (data.candidates && data.candidates.length > 0) {
+                            if (data.candidates[0].finishReason !== "STOP" && data.candidates[0].finishReason !== "MAX_TOKENS") {
+                                throw new Error(`L'IA a été bloquée (raison: ${data.candidates[0].finishReason}). Veuillez reformuler votre demande.`);
+                            }
+                            if (data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) {
+                                const text = data.candidates[0].content.parts[0].text;
+                                result = JSON.parse(text);
+                            }
+                        }
+                    } else {
+                        // Pour les prompts simples, utiliser notre nouvelle fonction
+                        result = await generateAIContent(prompt, 'content');
                     }
                     
-                    throw new Error("Réponse invalide ou vide reçue de l'IA.");
-
+                    hideLoader();
+                    return result;
+                    
                 } catch (error) {
+                    hideLoader();
                     console.error("Erreur détaillée de l'IA:", error);
                     showNotification(`Erreur de l'IA : ${error.message}`, 'error', 5000);
                     return null;
-                } finally {
-                    hideLoader();
                 }
             }
             
@@ -2085,6 +2415,49 @@
                     }
                 });
                 
+                // === GESTIONNAIRES D'ÉVÉNEMENTS API ===
+                
+                // Sauvegarde clé API
+                if (controls.saveGeminiApiKey) {
+                    controls.saveGeminiApiKey.addEventListener('click', saveGeminiApiKey);
+                }
+                
+                // Basculer visibilité clé
+                if (controls.toggleApiKeyVisibility) {
+                    controls.toggleApiKeyVisibility.addEventListener('click', toggleApiKeyVisibility);
+                }
+                
+                // Test de l'API
+                if (controls.testGeminiApi) {
+                    controls.testGeminiApi.addEventListener('click', testGeminiApi);
+                }
+                
+                // Test personnalisé
+                if (controls.runCustomTest) {
+                    controls.runCustomTest.addEventListener('click', runCustomTest);
+                }
+                
+                // Réinitialiser paramètres
+                if (controls.resetApiSettings) {
+                    controls.resetApiSettings.addEventListener('click', resetApiSettings);
+                }
+                
+                // Mise à jour des valeurs de curseurs
+                if (controls.aiTemperature && controls.temperatureValue) {
+                    controls.aiTemperature.addEventListener('input', () => {
+                        controls.temperatureValue.textContent = controls.aiTemperature.value;
+                    });
+                }
+                
+                if (controls.aiMaxTokens && controls.maxTokensValue) {
+                    controls.aiMaxTokens.addEventListener('input', () => {
+                        controls.maxTokensValue.textContent = controls.aiMaxTokens.value;
+                    });
+                }
+                
+                // Charger la clé API au démarrage
+                loadGeminiApiKey();
+                
                 controls.generateMailBtn.addEventListener('click', async () => {
                     const nomCandidat = `${controls.prenom.value} ${controls.nom.value}`.trim();
                     const posteCandidat = controls.poste.value;
@@ -2248,6 +2621,45 @@
                 controls.addSkillLevelBtn.addEventListener('click', () => createSkillLevelItem());
 
                 document.querySelectorAll('.a4-page').forEach(setupOverflowObserver);
+                
+                // === INITIALISATION API ===
+                initializeApiTab();
+            }
+            
+            // Fonction d'initialisation complète de l'onglet API
+            function initializeApiTab() {
+                // Charger la clé API sauvegardée
+                loadGeminiApiKey();
+                
+                // Afficher un message d'information si aucune clé n'est configurée
+                const savedKey = localStorage.getItem('gemini-api-key');
+                if (!savedKey) {
+                    updateApiStatus('error', 'Aucune clé API configurée. Veuillez saisir votre clé Gemini.');
+                } else {
+                    updateApiStatus('loaded', 'Clé API chargée depuis le stockage local');
+                }
+                
+                // Initialiser les valeurs des curseurs
+                if (controls.aiTemperature && controls.temperatureValue) {
+                    controls.temperatureValue.textContent = controls.aiTemperature.value;
+                }
+                if (controls.aiMaxTokens && controls.maxTokensValue) {
+                    controls.maxTokensValue.textContent = controls.aiMaxTokens.value;
+                }
+                
+                // Masquer les résultats de test au démarrage
+                if (controls.testResults) {
+                    controls.testResults.classList.add('hidden');
+                }
+                
+                // Message d'accueil dans l'onglet API
+                console.log('🤖 Onglet API Gemini initialisé avec succès');
+                console.log('📋 Fonctionnalités disponibles:');
+                console.log('   - Gestion des clés API avec sauvegarde locale');
+                console.log('   - Test de connexion et validation');
+                console.log('   - Configuration avancée (modèle, température, tokens)');
+                console.log('   - Interface de test personnalisé');
+                console.log('   - Intégration complète avec toutes les fonctions IA');
             }
             
             // --- START THE APP ---
