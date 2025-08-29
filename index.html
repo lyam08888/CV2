@@ -2604,6 +2604,9 @@
             // Instancier le gestionnaire
             const geminiKeysManager = new GeminiKeysManager();
             
+            // Rendre disponible globalement
+            window.geminiKeysManager = geminiKeysManager;
+            
             // Sauvegarder la clé API
             function saveGeminiApiKey() {
                 const apiKey = controls.geminiApiKey?.value?.trim();
@@ -4835,7 +4838,9 @@
             // Fonction pour mettre à jour le statut des APIs dans l'interface
             function updateAPIStatus() {
                 // Mettre à jour les compteurs de clés Gemini
-                const geminiKeys = GeminiKeysManager.getAllKeys();
+                const geminiKeys = (window.geminiKeysManager && typeof window.geminiKeysManager.getAllKeys === 'function') 
+                    ? window.geminiKeysManager.getAllKeys() 
+                    : [];
                 const geminiKeysCountElement = document.getElementById('gemini-keys-count');
                 if (geminiKeysCountElement) {
                     geminiKeysCountElement.textContent = `${geminiKeys.length} clé${geminiKeys.length > 1 ? 's' : ''}`;
@@ -4912,7 +4917,28 @@
                 // Si aucun type spécifié, détecter automatiquement l'API active
                 if (!apiType) {
                     // Vérifier les clés API disponibles pour déterminer l'API active
-                    const geminiKeys = GeminiKeysManager?.getAllKeys();
+                    let geminiKeys = [];
+                    
+                    // Méthode 1: Utiliser le gestionnaire s'il est disponible
+                    if (window.geminiKeysManager && typeof window.geminiKeysManager.getAllKeys === 'function') {
+                        geminiKeys = window.geminiKeysManager.getAllKeys();
+                    } else {
+                        // Méthode 2: Fallback - vérifier directement dans localStorage
+                        const storedKeys = localStorage.getItem('gemini-multiple-keys');
+                        if (storedKeys) {
+                            try {
+                                geminiKeys = JSON.parse(storedKeys);
+                            } catch (e) {
+                                geminiKeys = [];
+                            }
+                        }
+                        // Ajouter la clé principale si elle existe
+                        const mainKey = localStorage.getItem('gemini-api-key');
+                        if (mainKey && mainKey.trim()) {
+                            geminiKeys.push({ key: mainKey, active: true });
+                        }
+                    }
+                    
                     const openaiKey = localStorage.getItem('openai-api-key');
                     const mistralKey = localStorage.getItem('mistral-api-key');
                     const groqKey = localStorage.getItem('groq-api-key');
@@ -5014,7 +5040,28 @@
                 const groqDot = document.getElementById('groq-status-dot');
                 
                 if (geminiDot) {
-                    const geminiKeys = GeminiKeysManager?.getAllKeys();
+                    let geminiKeys = [];
+                    
+                    // Méthode 1: Utiliser le gestionnaire s'il est disponible
+                    if (window.geminiKeysManager && typeof window.geminiKeysManager.getAllKeys === 'function') {
+                        geminiKeys = window.geminiKeysManager.getAllKeys();
+                    } else {
+                        // Méthode 2: Fallback - vérifier directement dans localStorage
+                        const storedKeys = localStorage.getItem('gemini-multiple-keys');
+                        if (storedKeys) {
+                            try {
+                                geminiKeys = JSON.parse(storedKeys);
+                            } catch (e) {
+                                geminiKeys = [];
+                            }
+                        }
+                        // Ajouter la clé principale si elle existe
+                        const mainKey = localStorage.getItem('gemini-api-key');
+                        if (mainKey && mainKey.trim()) {
+                            geminiKeys.push({ key: mainKey, active: true });
+                        }
+                    }
+                    
                     if (geminiKeys && geminiKeys.length > 0) {
                         geminiDot.className = 'w-2 h-2 bg-green-500 rounded-full';
                     } else {
@@ -7034,11 +7081,11 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 populateFontSelectors();
                 populateIconPicker();
                 
-                // Initialiser le statut des APIs
-                updateSidebarAPIStatus();
-                
-                // Mettre à jour les compteurs de requêtes
-                updateDailyRequestsCounter();
+                // Initialiser le statut des APIs - avec délai pour s'assurer que tout est chargé
+                setTimeout(() => {
+                    updateSidebarAPIStatus();
+                    updateDailyRequestsCounter();
+                }, 100);
 
                 // --- EVENT LISTENERS ---
 
