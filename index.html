@@ -1838,40 +1838,123 @@
                     // Continuer avec les réparations
                 }
                 
-                // Fermer les chaînes non terminées à la fin
-                repaired = repaired.replace(/: "([^"]*?)(\s*[,}\]])$/g, ': "$1"$2');
-                repaired = repaired.replace(/: "([^"]*?)$/g, ': "$1"');
+                console.log("🔧 Début de réparation JSON...");
                 
-                // Réparer les guillemets non échappés dans les valeurs
-                repaired = repaired.replace(/: "([^"\\]*(?:\\.[^"\\]*)*)"([^",}\]]*)/g, (match, p1, p2) => {
-                    if (p2.includes('"')) {
-                        const escapedValue = (p1 + p2).replace(/([^\\])"/g, '$1\\"');
+                // 1. Réparer les propriétés sans guillemets
+                repaired = repaired.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+                
+                // 2. Fermer les chaînes non terminées
+                repaired = repaired.replace(/: "([^"]*?)(\s*[,}\]])$/gm, ': "$1"$2');
+                repaired = repaired.replace(/: "([^"]*?)$/gm, ': "$1"');
+                
+                // 3. Réparer les arrays - ajouter des virgules manquantes
+                repaired = repaired.replace(/}\s*{/g, '}, {');
+                repaired = repaired.replace(/]\s*\[/g, '], [');
+                repaired = repaired.replace(/"(\s*){/g, '", {');
+                repaired = repaired.replace(/}(\s*)"/g, '}, "');
+                
+                // 4. Réparer les objets dans les arrays - virgules manquantes
+                repaired = repaired.replace(/}(\s*){"title":/g, '}, {"title":');
+                repaired = repaired.replace(/}(\s*){"[^"]+"/g, '}, {$1"');
+                
+                // 5. Gérer les guillemets non échappés dans les valeurs
+                repaired = repaired.replace(/: "([^"]*)"([^",}\]]*)"([^",}\]]*)/g, (match, p1, p2, p3) => {
+                    if (p2 && p3) {
+                        const escapedValue = (p1 + p2 + p3).replace(/"/g, '\\"');
                         return `: "${escapedValue}"`;
                     }
                     return match;
                 });
                 
-                // Fermer les chaînes ouvertes avant virgules ou accolades
-                repaired = repaired.replace(/: "([^"]*?)(\s*[,}])/g, ': "$1"$2');
+                // 6. Supprimer les retours à la ligne dans les valeurs JSON
+                repaired = repaired.replace(/: "([^"]*)\n([^"]*)"(\s*[,}])/g, ': "$1 $2"$3');
                 
-                // Réparer les virgules manquantes entre propriétés
+                // 7. Réparer les virgules manquantes entre propriétés
                 repaired = repaired.replace(/}(\s*)"([^"]+)":/g, '},$1"$2":');
                 repaired = repaired.replace(/](\s*)"([^"]+)":/g, '],$1"$2":');
-                repaired = repaired.replace(/"(\s*)"([^"]+)":/g, '",$1"$2":');
+                repaired = repaired.replace(/"(\s+)"([^"]+)":/g, '",$1"$2":');
                 
-                // Supprimer les virgules en trop
+                // 8. Supprimer les virgules en trop
                 repaired = repaired.replace(/,(\s*[}\]])/g, '$1');
+                repaired = repaired.replace(/,(\s*,)/g, ',');
                 
-                // Vérification finale
+                // 9. Ajouter des guillemets manquants aux valeurs
+                repaired = repaired.replace(/:\s*([^",{\[\]}\s][^,}\]]*?)(\s*[,}])/g, ': "$1"$2');
+                
+                // Test intermédiaire
                 try {
                     JSON.parse(repaired);
+                    console.log("✅ JSON réparé avec succès");
                     return repaired;
-                } catch {
-                    console.warn("⚠️ Impossible de réparer le JSON");
-                    return '{}';
+                } catch (e) {
+                    console.log("🔧 Réparation avancée nécessaire...", e.message);
                 }
                 
-                return repaired;
+                // 10. Réparation drastique - reconstruction manuelle
+                try {
+                    return reconstructJson(repaired);
+                } catch {
+                    console.warn("⚠️ Impossible de réparer le JSON - retour à un objet vide");
+                    return '{}';
+                }
+            }
+            
+            function reconstructJson(brokenJson) {
+                console.log("🏗️ Reconstruction manuelle du JSON...");
+                
+                // Extraire les principales données même si le JSON est cassé
+                const data = {
+                    nom: extractValue(brokenJson, 'nom'),
+                    prenom: extractValue(brokenJson, 'prenom'),
+                    poste: extractValue(brokenJson, 'poste'),
+                    description: extractValue(brokenJson, 'description'),
+                    experiences: extractArray(brokenJson, 'experiences'),
+                    formations: extractArray(brokenJson, 'formations'),
+                    competences: extractValue(brokenJson, 'competences')
+                };
+                
+                return JSON.stringify(data);
+            }
+            
+            function extractValue(text, key) {
+                const regex = new RegExp(`"${key}"\\s*:\\s*"([^"]*)"`, 'i');
+                const match = text.match(regex);
+                return match ? match[1] : '';
+            }
+            
+            function extractArray(text, key) {
+                const regex = new RegExp(`"${key}"\\s*:\\s*\\[([^\\]]*(?:\\][^\\]]*)*?)\\]`, 'i');
+                const match = text.match(regex);
+                if (!match) return [];
+                
+                const arrayContent = match[1];
+                const items = [];
+                
+                // Extraction simple d'objets dans l'array
+                const objectRegex = /{[^{}]*}/g;
+                let objectMatch;
+                
+                while ((objectMatch = objectRegex.exec(arrayContent)) !== null) {
+                    try {
+                        const cleaned = objectMatch[0]
+                            .replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":')
+                            .replace(/,(\s*[}])/g, '$1');
+                        
+                        const parsed = JSON.parse(cleaned);
+                        items.push(parsed);
+                    } catch {
+                        // Si impossible de parser, extraire les valeurs manuellement
+                        const obj = {};
+                        obj.title = extractValue(objectMatch[0], 'title');
+                        obj.meta = extractValue(objectMatch[0], 'meta');
+                        obj.desc = extractValue(objectMatch[0], 'desc');
+                        if (obj.title || obj.meta || obj.desc) {
+                            items.push(obj);
+                        }
+                    }
+                }
+                
+                return items;
             }
             
             // Fonction fallback sans schema JSON
