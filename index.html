@@ -7312,6 +7312,63 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 controls.addExperienceBtn.addEventListener('click', () => createDynamicItem(controls.experienceList, [{ key: 'title', placeholder: 'Titre du poste' }, { key: 'meta', placeholder: 'Entreprise & Dates' }, { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }]));
                 controls.addFormationBtn.addEventListener('click', () => createDynamicItem(controls.formationList, [{ key: 'title', placeholder: 'Nom du diplôme' }, { key: 'meta', placeholder: 'Établissement & Année' }]));
                 
+                // Collapse all details/expand functionality
+                const collapseAllBtn = document.getElementById('collapse-all-btn');
+                console.log('🔍 Debug: collapseAllBtn trouvé:', collapseAllBtn);
+                if (collapseAllBtn) {
+                    collapseAllBtn.addEventListener('click', () => {
+                        console.log('🔍 Debug: Click détecté sur le bouton collapse!');
+                        // Sélectionner tous les détails dans tous les onglets, même cachés
+                        const allDetails = document.querySelectorAll('details.control-group');
+                        const collapseIcon = document.getElementById('collapse-icon');
+                        const collapseText = document.getElementById('collapse-text');
+                        
+                        console.log(`🔍 Trouvé ${allDetails.length} éléments details.control-group`);
+                        
+                        // Log each detail found
+                        allDetails.forEach((detail, index) => {
+                            const panel = detail.closest('.tab-panel');
+                            const panelId = panel ? panel.id : 'no-panel';
+                            const isHidden = panel ? panel.classList.contains('hidden') : false;
+                            console.log(`  ${index + 1}. Panel: ${panelId}, Hidden: ${isHidden}, Open: ${detail.open}`);
+                        });
+                        
+                        // Check current state - only consider visible details for state detection
+                        const visibleDetails = Array.from(allDetails).filter(detail => {
+                            const panel = detail.closest('.tab-panel');
+                            return !panel || !panel.classList.contains('hidden');
+                        });
+                        
+                        console.log(`👁️ Détails visibles: ${visibleDetails.length}`);
+                        const hasOpenDetails = visibleDetails.some(detail => detail.open);
+                        console.log(`📂 A des détails ouverts: ${hasOpenDetails}`);
+                        
+                        if (hasOpenDetails) {
+                            // Collapse all (including hidden ones)
+                            console.log('🔽 Fermeture de tous les volets...');
+                            allDetails.forEach(detail => {
+                                detail.open = false;
+                            });
+                            collapseIcon.className = 'fa-solid fa-expand';
+                            collapseText.textContent = 'Déplier tous les volets';
+                            controls.collapseAllBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                            controls.collapseAllBtn.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                            console.log('✅ Tous les volets repliés');
+                        } else {
+                            // Expand all (including hidden ones)
+                            console.log('🔼 Ouverture de tous les volets...');
+                            allDetails.forEach(detail => {
+                                detail.open = true;
+                            });
+                            collapseIcon.className = 'fa-solid fa-compress';
+                            collapseText.textContent = 'Replier tous les volets';
+                            controls.collapseAllBtn.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                            controls.collapseAllBtn.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                            console.log('✅ Tous les volets dépliés');
+                        }
+                    });
+                }
+                
                 const controlsPanel = document.getElementById('controls');
                 controlsPanel.addEventListener('input', (e) => {
                     if (e.target.matches('.cv-input, .banner-input, .custom-section-input, #banner-bg-opacity, #banner-bg-blur, #banner-bg-grayscale')) {
@@ -8420,62 +8477,6 @@ Texte à analyser :
                     e.currentTarget.classList.toggle('active');
                     checkAllPagesOverflow();
                 });
-
-                // Collapse all details/expand functionality
-                setTimeout(() => {
-                    if (controls.collapseAllBtn) {
-                        controls.collapseAllBtn.addEventListener('click', () => {
-                    // Sélectionner tous les détails dans tous les onglets, même cachés
-                    const allDetails = document.querySelectorAll('details.control-group');
-                    const collapseIcon = document.getElementById('collapse-icon');
-                    const collapseText = document.getElementById('collapse-text');
-                    
-                    console.log(`🔍 Trouvé ${allDetails.length} éléments details.control-group`);
-                    
-                    // Log each detail found
-                    allDetails.forEach((detail, index) => {
-                        const panel = detail.closest('.tab-panel');
-                        const panelId = panel ? panel.id : 'no-panel';
-                        const isHidden = panel ? panel.classList.contains('hidden') : false;
-                        console.log(`  ${index + 1}. Panel: ${panelId}, Hidden: ${isHidden}, Open: ${detail.open}`);
-                    });
-                    
-                    // Check current state - only consider visible details for state detection
-                    const visibleDetails = Array.from(allDetails).filter(detail => {
-                        const panel = detail.closest('.tab-panel');
-                        return !panel || !panel.classList.contains('hidden');
-                    });
-                    
-                    console.log(`👁️ Détails visibles: ${visibleDetails.length}`);
-                    const hasOpenDetails = visibleDetails.some(detail => detail.open);
-                    console.log(`📂 A des détails ouverts: ${hasOpenDetails}`);
-                    
-                    if (hasOpenDetails) {
-                        // Collapse all (including hidden ones)
-                        console.log('🔽 Fermeture de tous les volets...');
-                        allDetails.forEach(detail => {
-                            detail.open = false;
-                        });
-                        collapseIcon.className = 'fa-solid fa-expand';
-                        collapseText.textContent = 'Déplier tous les volets';
-                        controls.collapseAllBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200');
-                        controls.collapseAllBtn.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
-                        console.log('✅ Tous les volets repliés');
-                    } else {
-                        // Expand all (including hidden ones)
-                        console.log('🔼 Ouverture de tous les volets...');
-                        allDetails.forEach(detail => {
-                            detail.open = true;
-                        });
-                        collapseIcon.className = 'fa-solid fa-compress';
-                        collapseText.textContent = 'Replier tous les volets';
-                        controls.collapseAllBtn.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
-                        controls.collapseAllBtn.classList.add('bg-gray-100', 'hover:bg-gray-200');
-                        console.log('✅ Tous les volets dépliés');
-                    }
-                    });
-                    }
-                }, 100); // Attendre 100ms que le DOM soit prêt
 
                 // Gestionnaires d'événements avec vérification d'existence
                 if (controls.aiSummarizeBtn) {
