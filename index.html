@@ -1959,7 +1959,78 @@
                                 <h3 class="font-semibold text-gray-700">Bannière Recruteur</h3>
                                 <button id="reset-recruiter-btn" class="text-sm text-gray-500 hover:text-red-600" title="Réinitialiser les informations recruteur"><i class="fas fa-undo"></i></button>
                             </div>
-                            <div id="banner-fix-controls"><button id="fix-banner-top-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2"><i class="fas fa-arrow-up"></i>Fixer en haut</button><button id="fix-banner-bottom-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2 mt-2"><i class="fas fa-arrow-down"></i>Fixer en bas</button></div><button id="modular-banner-btn" class="cv-input w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 flex items-center justify-center gap-2 hidden"><i class="fas fa-arrows-up-down-left-right"></i>Rendre modulaire</button><label class="flex items-center gap-2 text-sm"><input type="checkbox" id="toggle-banner-checkbox" class="cv-input">Afficher la bannière</label><label for="banner-style-select" class="text-sm font-medium">Style de Bannière</label><select id="banner-style-select" class="cv-input w-full p-2 border rounded-md"><option value="banner-style-modern">Moderne</option><option value="banner-style-elegant">Élégant</option><option value="banner-style-discret">Discret</option><option value="banner-style-carte">Carte</option><option value="banner-style-degrade">Dégradé</option><option value="banner-style-premium">Premium</option><option value="banner-style-minimal">Minimal</option><option value="banner-style-encadre">Encadré</option><option value="banner-style-ligne-haute">Ligne Haute</option></select><p class="text-sm font-medium">Alignement</p><div class="flex gap-2"><button data-banner-align="left" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm"><i class="fas fa-align-left"></i></button><button data-banner-align="center" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm"><i class="fas fa-align-center"></i></button><button data-banner-align="right" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm"><i class="fas fa-align-right"></i></button><button id="banner-invert-btn" class="p-2 bg-gray-200 rounded-md text-sm" title="Inverser Logo/Texte"><i class="fas fa-right-left"></i></button></div><p class="text-sm font-medium">Taille Logo</p><div class="flex gap-2"><button data-logo-size="sm" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">P</button><button data-logo-size="md" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">M</button><button data-logo-size="lg" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">G</button><button data-logo-size="xl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XL</button><button data-logo-size="xxl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XXL</button></div><div><label for="banner-element-spacing" class="block text-sm font-medium text-gray-700">Espace Bannière: <span id="banner-element-spacing-value">1</span>rem</label><input type="range" id="banner-element-spacing" min="0.5" max="4" step="0.1" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><input type="text" id="banner-nom" placeholder="Votre Nom & Prénom" class="banner-input w-full p-2 border rounded-md"><input type="text" id="banner-poste" placeholder="Votre Poste" class="banner-input w-full p-2 border rounded-md"><input type="email" id="banner-email" placeholder="Email" class="banner-input w-full p-2 border rounded-md"><input type="tel" id="banner-tel" placeholder="Téléphone" class="banner-input w-full p-2 border rounded-md"><div><label for="banner-image" class="block text-sm font-medium text-gray-700">Photo/Logo</label><input type="file" id="banner-image" accept="image/*" class="banner-input mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"></div>
+                            <div id="banner-fix-controls">
+                                <button id="fix-banner-top-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2">
+                                    <i class="fas fa-arrow-up"></i>Fixer en haut
+                                </button>
+                                <button id="fix-banner-bottom-btn" class="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 flex items-center justify-center gap-2 mt-2">
+                                    <i class="fas fa-arrow-down"></i>Fixer en bas
+                                </button>
+                            </div>
+                            
+                            <button id="modular-banner-btn" class="cv-input w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 flex items-center justify-center gap-2 hidden">
+                                <i class="fas fa-arrows-up-down-left-right"></i>Rendre modulaire
+                            </button>
+                            
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="toggle-banner-checkbox" class="cv-input">
+                                Afficher la bannière
+                            </label>
+                            
+                            <label for="banner-style-select" class="text-sm font-medium">Style de Bannière</label>
+                            <select id="banner-style-select" class="cv-input w-full p-2 border rounded-md">
+                                <option value="banner-style-modern">Moderne</option>
+                                <option value="banner-style-elegant">Élégant</option>
+                                <option value="banner-style-discret">Discret</option>
+                                <option value="banner-style-carte">Carte</option>
+                                <option value="banner-style-degrade">Dégradé</option>
+                                <option value="banner-style-premium">Premium</option>
+                                <option value="banner-style-minimal">Minimal</option>
+                                <option value="banner-style-encadre">Encadré</option>
+                                <option value="banner-style-ligne-haute">Ligne Haute</option>
+                            </select>
+                            
+                            <p class="text-sm font-medium">Alignement</p>
+                            <div class="flex gap-2">
+                                <button data-banner-align="left" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">
+                                    <i class="fas fa-align-left"></i>
+                                </button>
+                                <button data-banner-align="center" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">
+                                    <i class="fas fa-align-center"></i>
+                                </button>
+                                <button data-banner-align="right" class="banner-align-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">
+                                    <i class="fas fa-align-right"></i>
+                                </button>
+                                <button id="banner-invert-btn" class="p-2 bg-gray-200 rounded-md text-sm" title="Inverser Logo/Texte">
+                                    <i class="fas fa-right-left"></i>
+                                </button>
+                            </div>
+                            
+                            <p class="text-sm font-medium">Taille Logo</p>
+                            <div class="flex gap-2">
+                                <button data-logo-size="sm" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">P</button>
+                                <button data-logo-size="md" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">M</button>
+                                <button data-logo-size="lg" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">G</button>
+                                <button data-logo-size="xl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XL</button>
+                                <button data-logo-size="xxl" class="logo-size-btn flex-1 bg-gray-200 p-2 rounded-md text-sm">XXL</button>
+                            </div>
+                            
+                            <div>
+                                <label for="banner-element-spacing" class="block text-sm font-medium text-gray-700">
+                                    Espace Bannière: <span id="banner-element-spacing-value">1</span>rem
+                                </label>
+                                <input type="range" id="banner-element-spacing" min="0.5" max="4" step="0.1" value="1" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                            </div>
+                            
+                            <input type="text" id="banner-nom" placeholder="Votre Nom & Prénom" class="banner-input w-full p-2 border rounded-md">
+                            <input type="text" id="banner-poste" placeholder="Votre Poste" class="banner-input w-full p-2 border rounded-md">
+                            <input type="email" id="banner-email" placeholder="Email" class="banner-input w-full p-2 border rounded-md">
+                            <input type="tel" id="banner-tel" placeholder="Téléphone" class="banner-input w-full p-2 border rounded-md">
+                            
+                            <div>
+                                <label for="banner-image" class="block text-sm font-medium text-gray-700">Photo/Logo</label>
+                                <input type="file" id="banner-image" accept="image/*" class="banner-input mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            </div>
                         </div>
                     </details>
                     <details class="control-group" open>
@@ -8997,6 +9068,13 @@ Texte à analyser :
             // S'assurer que tous les éléments de contrôle sont disponibles avant de réinitialiser
             setTimeout(() => {
                 resetCVToDefault(); // Start with a clean slate
+                
+                // S'assurer que la bannière est bien désactivée par défaut
+                const bannerCheckbox = document.getElementById('toggle-banner-checkbox');
+                if (bannerCheckbox) {
+                    bannerCheckbox.checked = false;
+                    updatePreview('form'); // Mettre à jour la prévisualisation
+                }
             }, 100);
         });
 
