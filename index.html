@@ -14,6 +14,32 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     
     <style>
+        /* CSS personnalisé pour forcer le layout côte à côte */
+        @media (min-width: 768px) {
+            .main-layout {
+                display: flex !important;
+                flex-direction: row !important;
+                min-height: 100vh;
+            }
+            .controls-panel {
+                width: 33.333333% !important;
+                flex-shrink: 0;
+            }
+            .preview-panel {
+                width: 66.666667% !important;
+                flex-grow: 1;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .controls-panel {
+                width: 25% !important;
+            }
+            .preview-panel {
+                width: 75% !important;
+            }
+        }
+        
         :root {
             --page-margin: 2cm;
             --primary-color: #2563eb;
@@ -333,9 +359,9 @@
 
     <div id="notification"></div>
 
-    <div class="flex flex-col lg:flex-row min-h-screen">
+    <div class="flex flex-col md:flex-row min-h-screen main-layout">
         <!-- CONTROLS PANEL -->
-        <div id="controls" class="w-full lg:w-1/3 xl:w-1/4 p-6 bg-white shadow-2xl overflow-y-auto flex flex-col no-print">
+        <div id="controls" class="w-full md:w-1/3 lg:w-1/4 controls-panel p-6 bg-white shadow-2xl overflow-y-auto flex flex-col no-print">
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
                 <div class="flex items-center gap-3"><i class="fas fa-magic-wand-sparkles text-3xl text-blue-600"></i><h1 class="text-2xl font-bold text-gray-800">Créateur de CV</h1></div>
                 <div class="flex items-center gap-2">
@@ -976,7 +1002,7 @@
         </div>
 
         <!-- PREVIEW PANEL -->
-        <div class="w-full lg:w-2/3 xl:w-3/4 p-8 bg-gray-200 flex justify-center items-start overflow-auto" id="preview-area">
+        <div class="w-full md:w-2/3 lg:w-3/4 preview-panel p-8 bg-gray-200 flex justify-center items-start overflow-auto" id="preview-area">
             <div id="cv-preview-wrapper">
                 <div class="a4-page-container">
                     <div id="page-1" class="a4-page">
