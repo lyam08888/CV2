@@ -598,6 +598,11 @@
             gap: 4px;
         }
         
+        /* Classe hidden pour masquer les éléments */
+        .hidden {
+            display: none !important;
+        }
+        
         .key-action-btn {
             background: none;
             border: none;
@@ -6715,6 +6720,9 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 
                 setDefaultRecruiterInfo();
                 
+                // Forcer la mise à jour du preview pour masquer le banner par défaut
+                updatePreview('form');
+                
                 // S'assurer que les contrôles de thème sont disponibles avant d'appliquer le thème
                 if (controls.primaryColorPicker && controls.secondaryColorPicker && controls.bodyTextColorPicker) {
                     applyTheme('professional');
@@ -6929,6 +6937,8 @@ RÉPONDRE EN JSON SIMPLE ET VALIDE UNIQUEMENT. Format exact attendu :
                 controls.bannerPoste.value = "Responsable d’activité recrutement – BTP – France";
                 controls.bannerEmail.value = "l.amara@ltd-international.com";
                 controls.bannerTel.value = "01 56 02 12 25 / 06 34 25 32 96";
+                // S'assurer que le banner est désactivé par défaut
+                controls.toggleBanner.checked = false;
             }
 
             function anonymizeCV() {
@@ -8406,7 +8416,8 @@ Texte à analyser :
                 });
 
                 // Collapse all details/expand functionality
-                controls.collapseAllBtn.addEventListener('click', () => {
+                if (controls.collapseAllBtn) {
+                    controls.collapseAllBtn.addEventListener('click', () => {
                     // Sélectionner tous les détails dans tous les onglets, même cachés
                     const allDetails = document.querySelectorAll('details.control-group');
                     const collapseIcon = document.getElementById('collapse-icon');
@@ -8455,7 +8466,8 @@ Texte à analyser :
                         controls.collapseAllBtn.classList.add('bg-gray-100', 'hover:bg-gray-200');
                         console.log('✅ Tous les volets dépliés');
                     }
-                });
+                    });
+                }
 
                 // Gestionnaires d'événements avec vérification d'existence
                 if (controls.aiSummarizeBtn) {
