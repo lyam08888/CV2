@@ -15,28 +15,40 @@
     
     <style>
         /* CSS personnalisé pour forcer le layout côte à côte */
+        .main-layout {
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: 100vh;
+        }
+        
         @media (min-width: 768px) {
             .main-layout {
-                display: flex !important;
                 flex-direction: row !important;
-                min-height: 100vh;
             }
             .controls-panel {
-                width: 33.333333% !important;
-                flex-shrink: 0;
+                width: 400px !important;
+                min-width: 400px !important;
+                max-width: 400px !important;
+                flex-shrink: 0 !important;
+                height: 100vh !important;
+                overflow-y: auto !important;
             }
             .preview-panel {
-                width: 66.666667% !important;
-                flex-grow: 1;
+                flex: 1 !important;
+                width: calc(100% - 400px) !important;
+                height: 100vh !important;
+                overflow-y: auto !important;
             }
         }
         
-        @media (min-width: 1024px) {
+        @media (min-width: 1200px) {
             .controls-panel {
-                width: 25% !important;
+                width: 500px !important;
+                min-width: 500px !important;
+                max-width: 500px !important;
             }
             .preview-panel {
-                width: 75% !important;
+                width: calc(100% - 500px) !important;
             }
         }
         
@@ -359,9 +371,9 @@
 
     <div id="notification"></div>
 
-    <div class="flex flex-col md:flex-row min-h-screen main-layout">
+    <div class="main-layout">
         <!-- CONTROLS PANEL -->
-        <div id="controls" class="w-full md:w-1/3 lg:w-1/4 controls-panel p-6 bg-white shadow-2xl overflow-y-auto flex flex-col no-print">
+        <div id="controls" class="controls-panel bg-white shadow-2xl overflow-y-auto flex flex-col no-print" style="padding: 1.5rem;">
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
                 <div class="flex items-center gap-3"><i class="fas fa-magic-wand-sparkles text-3xl text-blue-600"></i><h1 class="text-2xl font-bold text-gray-800">Créateur de CV</h1></div>
                 <div class="flex items-center gap-2">
@@ -393,16 +405,16 @@
             </div>
 
             <!-- COLLAPSE ALL BUTTON -->
-            <div class="px-4 py-2 border-b border-gray-100">
+            <div class="px-4 pt-2 pb-1">
                 <button id="collapse-all-btn" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors">
                     <i class="fa-solid fa-compress" id="collapse-icon"></i>
                     <span id="collapse-text">Replier tous les volets</span>
                 </button>
             </div>
 
-            <div id="tab-content" class="py-2 flex-grow overflow-y-auto">
+            <div id="tab-content" class="px-4 flex-grow overflow-y-auto">
                 <!-- TAB: IA -->
-                <div id="panel-ia" class="tab-panel space-y-4">
+                <div id="panel-ia" class="tab-panel space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Analyse IA</span><label class="completion-label"><input type="checkbox" id="completion-ia-analyse" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-2">
@@ -421,7 +433,7 @@
                 </div>
 
                 <!-- TAB: API -->
-                <div id="panel-api" class="tab-panel hidden space-y-4">
+                <div id="panel-api" class="tab-panel hidden space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Configuration API Gemini</span><label class="completion-label"><input type="checkbox" id="completion-api-config" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-4">
@@ -533,7 +545,7 @@
                 </div>
 
                 <!-- TAB: Contenu -->
-                <div id="panel-content" class="tab-panel hidden space-y-4">
+                <div id="panel-content" class="tab-panel hidden space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Informations Principales</span><label class="completion-label"><input type="checkbox" id="completion-content-infos" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -616,7 +628,7 @@
                 <!-- TAB: Compétences -->
                 
                 <!-- TAB: Mise en Page -->
-                <div id="panel-layout" class="tab-panel hidden space-y-4">
+                <div id="panel-layout" class="tab-panel hidden space-y-4 pt-3">
                     <!-- IA LAYOUT GENERATOR -->
                     <details class="control-group" open>
                         <summary><span>🤖 Générateur IA de Mise en Page</span><label class="completion-label"><input type="checkbox" id="completion-layout-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -737,7 +749,7 @@
                 </div>
                 
                 <!-- TAB: Styles Globaux -->
-                <div id="panel-styles" class="tab-panel hidden space-y-4">
+                <div id="panel-styles" class="tab-panel hidden space-y-4 pt-3">
                     <!-- IA STYLE GENERATOR -->
                     <details class="control-group" open>
                         <summary><span>🎨 Générateur IA de Styles</span><label class="completion-label"><input type="checkbox" id="completion-styles-ai" class="completion-checkbox"><span>Fait ✅</span></label></summary>
@@ -927,7 +939,7 @@
                 </div>
                 
                 <!-- TAB: Recrutement -->
-                <div id="panel-recrutement" class="tab-panel hidden space-y-4">
+                <div id="panel-recrutement" class="tab-panel hidden space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Présentation Recruteur</span><label class="completion-label"><input type="checkbox" id="completion-ia-presentation" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -976,7 +988,7 @@
                 </div>
                 
                 <!-- TAB: Paramètres -->
-                <div id="panel-settings" class="tab-panel hidden space-y-4">
+                <div id="panel-settings" class="tab-panel hidden space-y-4 pt-3">
                     <details class="control-group" open>
                         <summary><span>Actions CV</span><label class="completion-label"><input type="checkbox" id="completion-actions" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -1002,7 +1014,7 @@
         </div>
 
         <!-- PREVIEW PANEL -->
-        <div class="w-full md:w-2/3 lg:w-3/4 preview-panel p-8 bg-gray-200 flex justify-center items-start overflow-auto" id="preview-area">
+        <div class="preview-panel bg-gray-200 flex justify-center items-start overflow-auto" id="preview-area" style="padding: 2rem;">
             <div id="cv-preview-wrapper">
                 <div class="a4-page-container">
                     <div id="page-1" class="a4-page">
